@@ -1,0 +1,73 @@
+{
+  "name": "my-twin-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@bentley/bentleyjs-core": "^2.7.0",
+    "@bentley/extension-client": "^2.7.0",
+    "@bentley/frontend-application-insights-client": "^2.7.0",
+    "@bentley/frontend-authorization-client": "^2.7.0",
+    "@bentley/geometry-core": "^2.7.0",
+    "@bentley/icons-generic": "^1.0.24",
+    "@bentley/imodelhub-client": "^2.7.0",
+    "@bentley/imodeljs-common": "^2.7.0",
+    "@bentley/imodeljs-frontend": "^2.7.0",
+    "@bentley/imodeljs-i18n": "^2.7.0",
+    "@bentley/imodeljs-markup": "^2.7.0",
+    "@bentley/imodeljs-quantity": "^2.7.0",
+    "@bentley/itwin-client": "^2.7.0",
+    "@bentley/itwin-viewer-react": "^4.1.0",
+    "@bentley/orbitgt-core": "^2.7.0",
+    "@bentley/presentation-common": "^2.7.0",
+    "@bentley/presentation-frontend": "^2.7.0",
+    "@bentley/product-settings-client": "^2.7.0",
+    "@bentley/rbac-client": "^2.7.0",
+    "@bentley/react-scripts": "^3.4.1",
+    "@bentley/telemetry-client": "^2.7.0",
+    "@bentley/ui-abstract": "^2.7.0",
+    "@bentley/ui-components": "^2.7.0",
+    "@bentley/ui-core": "^2.7.0",
+    "@bentley/ui-framework": "^2.7.0",
+    "@bentley/ui-ninezone": "^2.7.0",
+    "@bentley/webgl-compatibility": "^2.7.0",
+    "@svgr/webpack": "^4.3.3",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^10.4.9",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/history": "^4.7.8",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.5",
+    "@types/react": "^16.9.51",
+    "@types/react-dom": "^16.9.8",
+    "@types/unique-random": "^2.1.0",
+    "history": "^4.10.1",
+    "oidc-client": "^1.10.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "typescript": "^3.9.7",
+    "unique-random": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts --max_old_space_size=4096 start",
+    "build": "react-scripts --max_old_space_size=4096 build",
+    "test": "react-scripts --max_old_space_size=4096 test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": [
+    "electron 8.0.0",
+    "last 4 chrome version",
+    "last 4 firefox version",
+    "last 4 safari version",
+    "last 4 ios version",
+    "last 4 ChromeAndroid version",
+    "last 4 edge version",
+    "not dead",
+    "not <0.2%"
+  ]
+}
