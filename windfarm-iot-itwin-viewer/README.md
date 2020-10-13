@@ -2,6 +2,11 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Quickstart
+
+npm install
+npm start
+
 ## Environment Variables
 
 Prior to running the app, add a valid contextId and iModelId for your user in the .env file:
