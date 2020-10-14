@@ -8,7 +8,7 @@ namespace MachineLearning
 {
     class MlApi
     {
-        public static async Task GetPowerAsync(WTInfo info)
+        public static async Task<float> GetPowerAsync(WTInfo info)
         {
             try
             {
@@ -29,8 +29,10 @@ namespace MachineLearning
                         VA_WiSpe_Avg10s = info.WindSpeed,
                         VA_YawPos = info.YawPosition
                     };
+
                     var requestBody = new DMPowerRequestInfo { data = new DMPowerData[1] };
                     requestBody.data[0] = requestInfo;
+
                     var response = await client.PostAsJsonAsync("score", requestBody);
                     if (response.IsSuccessStatusCode)
                     {
@@ -45,17 +47,24 @@ namespace MachineLearning
                         info.PowerGap_DM = Math.Abs(info.Power - info.Power_DM);
 
                         Console.WriteLine($"Power_DM: {info.Power_DM}");
+
+                        return info.Power_DM;
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid Response:" + response.StatusCode.ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
                 info.Power_DM = 0.0f;
-                Console.WriteLine($"GetDataPowerAsync Error: {ex.ToString()}.");
+                Console.Error.WriteLine($"GetDataPowerAsync Error: {ex.ToString()}.");
+                throw ex;
             }
         }
 
-        public static async Task GetGenSpeedAsync(WTInfo info)
+        public static async Task<float> GetGenSpeedAsync(WTInfo info)
         {
             try
             {
@@ -89,13 +98,18 @@ namespace MachineLearning
                         info.GenSpeed_DM = (dmResult.result.Length > 0 ? float.Parse(dmResult.result[0].ToString()) : 0.0f);
 
                         Console.WriteLine($"GenSpeed_DM: {info.GenSpeed_DM}");
+
+                        return info.GenSpeed_DM;
+                    } else {
+                        throw new Exception("Invalid Response:" + response.StatusCode.ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
                 info.GenSpeed_DM = 0.0f;
-                Console.WriteLine($"GetGenSpeedAsync Error: {ex.ToString()}.");
+                Console.Error.WriteLine($"GetGenSpeedAsync Error: {ex.ToString()}.");
+                throw ex;
             }
         }
     }

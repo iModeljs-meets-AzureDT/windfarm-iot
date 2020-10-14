@@ -32,4 +32,10 @@
         public string PowerGap_Status { get; set; }
 
     }
+
+    public class WTMLInfo
+    {
+        public float Power_ML { get; set; }
+        public float GenSpeed_ML { get; set; }
+    }
 }

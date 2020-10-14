@@ -8,6 +8,11 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using MachineLearning;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Doosan.Function
 {
@@ -16,7 +21,7 @@ namespace Doosan.Function
         private static HttpClient client = new HttpClient();
 
         [FunctionName("WindFarmIoT")]
-        public static async void Run([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
+        public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
             var exceptions = new List<Exception>();
             foreach (EventData eventData in events) {
@@ -52,5 +57,58 @@ namespace Doosan.Function
                 }
             }
         }
+
+        [FunctionName("TriggerML")]
+        public static async Task<IActionResult> HttpTriggerML(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+            HttpRequest req, ILogger log)
+        {
+            log.LogInformation("Machine Learning HTTP trigger function processed a request.");
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            try {
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+
+                /*
+                Example request body:
+                {     
+                    "pitchAngle1": 1.99,
+                    "pitchAngle2": 2.02,
+                    "pitchAngle3": 1.92,
+                    "genSpeed": 1212.28,
+                    "genTorque": 6824.49,
+                    "originSysTime": "7/29/2018 11:43:00",
+                    "windDirection": -8.6,
+                    "windSpeed": 6.66,
+                    "yawPosition": 5.05
+                }
+                */
+
+                var info = new WTInfo
+                {
+                    Blade1PitchPosition = data.pitchAngle1,
+                    Blade2PitchPosition = data.pitchAngle2,
+                    Blade3PitchPosition = data.pitchAngle3,
+                    GenSpeed = data.genSpeed,
+                    GenTorque = data.genTorque,
+                    OriginSysTime = data.originSysTime,
+                    WindDir = data.windDirection,
+                    WindSpeed = data.windSpeed,
+                    YawPosition = data.yawPosition
+                };
+
+                var result = new WTMLInfo {
+                    Power_ML = await MlApi.GetPowerAsync(info),
+                    GenSpeed_ML = await MlApi.GetGenSpeedAsync(info)
+                };
+
+                return (ActionResult)new OkObjectResult(result);
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.ToString());
+            }
+        }
+
     }
 }
