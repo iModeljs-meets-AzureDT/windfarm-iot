@@ -9,6 +9,8 @@ npm start
 
 ## Environment Variables
 
+For this Project, these environment variables have already been filled so please skip this section if you intend on using the default models.
+
 Prior to running the app, add a valid contextId and iModelId for your user in the .env file:
 
 ```
