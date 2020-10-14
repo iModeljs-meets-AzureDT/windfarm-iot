@@ -4,6 +4,9 @@ import { Viewer } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
+import { MachineLearningButton, MachineLearningPanel } from "./components/MLButton";
+
+import { UiItemsManager } from "@bentley/ui-abstract";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
@@ -78,6 +81,12 @@ const App: React.FC = () => {
     });
   }
 
+  const setupUi = () => {
+    UiItemsManager.register(new MachineLearningButton());
+  }
+
+  setupUi();
+
   return (
     <div>
       <Header
@@ -89,12 +98,15 @@ const App: React.FC = () => {
         <span>"Logging in...."</span>
       ) : (
         isAuthorized && (
+          <div>
           <Viewer
             contextId={process.env.REACT_APP_TEST_CONTEXT_ID ?? ""}
             iModelId={process.env.REACT_APP_TEST_IMODEL_ID ?? ""}
             authConfig={{ oidcClient: AuthorizationClient.oidcClient }}
             onIModelConnected={onIModelConnection}
           />
+          <MachineLearningPanel />
+          </div>
         )
       )}
     </div>
