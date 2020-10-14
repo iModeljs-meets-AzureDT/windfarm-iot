@@ -37,6 +37,6 @@ dotnet.exe clean /property:GenerateFullPaths=true /consoleloggerparameters:NoSum
 dotnet.exe build /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
 func host start
 
-6. If server is on "Now listening...", you'll need to run the simulation device via:
+6. If server is on "Now listening...", you'll need to run the simulation device to start getting data via:
 https://windfarmsimulation-m6vf5.azurewebsites.net/simulations/be194ffa-ae02-4d98-86a5-eed61628c27d/befc2d4d-1093-4a29-aa99-a778e26cc128
 
