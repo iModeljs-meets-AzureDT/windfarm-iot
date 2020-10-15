@@ -1,4 +1,5 @@
 import "./App.scss";
+import "./MachineLearning.scss";
 
 import { Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";

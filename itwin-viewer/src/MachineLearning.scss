@@ -1,0 +1,88 @@
+.show-control-pane-button {
+  position: absolute;
+  bottom: 10%;
+  left: 2%;
+  box-shadow: 1px 5px 0px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.sample-ui {
+  position: absolute;
+  display: block;
+  float: right;
+  background-origin: border-box;
+  background-color: #333;
+  color: white;
+  bottom: 10%;
+  left: 2%;
+  -webkit-transition: all 500ms ease;
+  -o-transition: all 500ms ease;
+  transition: all 500ms ease;
+  cursor: default;
+  border-radius: 5px;
+  border-color: var(--buic-foreground-body);
+  padding: 10px;
+  border-style: solid;
+  z-index: 1;
+}
+
+.control-pane-header {
+  display: flex;
+  flex-direction: row;
+
+  .control-pane-minimize {
+    padding: 0;
+  }
+
+  .sample-instructions {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  .sample-instructions > span {
+    flex-grow: 1;
+    min-width: 100px;
+    width: 300px;
+  }
+
+  .control-pane-close-button {
+    float: right;
+    padding-top: 4px;
+  }
+}
+
+.minimize-button {
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+  fill: white;
+  padding: 10px 16px 10px 16px;
+}
+.minimize-button:hover {
+  fill:#fff;
+}
+
+#ml-form {
+  display: table;
+}
+
+.ml-p {
+  display: table-row;
+}
+
+.ml-label {
+  display: table-cell;
+}
+
+.ml-input {
+  display: table-cell;
+  margin-left: 10px;
+}
+
+.ml-submit {
+  display: table-cell !important;
+  width: 94% !important;
+  margin-left: 10px !important;
+  margin-top: 5px !important;
+}
+
