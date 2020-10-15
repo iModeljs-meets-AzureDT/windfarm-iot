@@ -2,6 +2,9 @@ import { Extension, IModelApp, NotifyMessageDetails, OutputMessagePriority } fro
 import { I18N } from "@bentley/imodeljs-i18n";
 import { CommonToolbarItem, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
+import MachineLearningPanel from "./components/MLButton";
+import * as ReactDOM from "react-dom";
+import * as React from "react";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
@@ -50,6 +53,7 @@ export class MachineLearningExtension extends Extension {
 
   /** Invoked each time this extension is loaded. */
   public async onExecute(): Promise<void> {
+    ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
   }
 }
 

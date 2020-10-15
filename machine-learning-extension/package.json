@@ -8,7 +8,7 @@
     "prebuild": "cpx ./public/**/* ./lib/imjs_extensions/machinelearning",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc 1>&2 && npm run build:extension",
-    "build:extension": "extension-webpack-tools build -s ./src/MachineLearningExtension.ts -o ./lib/imjs_extensions/machinelearning",
+    "build:extension": "extension-webpack-tools build -s ./src/MachineLearningExtension.tsx -o ./lib/imjs_extensions/machinelearning",
     "postbuild": "cpx ./lib/imjs_extensions/**/* ../itwin-viewer/build/imjs_extensions/."
   },
   "devDependencies": {
@@ -21,14 +21,19 @@
     "@bentley/bentleyjs-core": "2.7.0",
     "@bentley/geometry-core": "2.7.0",
     "@bentley/imodeljs-common": "2.7.0",
-    "@bentley/imodeljs-i18n": "2.7.0",
     "@bentley/imodeljs-frontend": "2.7.0",
-    "@bentley/imodeljs-quantity": "2.7.0",
+    "@bentley/imodeljs-i18n": "2.7.0",
     "@bentley/imodeljs-markup": "2.7.0",
-    "@bentley/product-settings-client": "2.7.0",
+    "@bentley/imodeljs-quantity": "2.7.0",
     "@bentley/orbitgt-core": "2.7.0",
+    "@bentley/product-settings-client": "2.7.0",
     "@bentley/ui-abstract": "2.7.0",
-    "@bentley/webgl-compatibility": "2.7.0"
+    "@bentley/ui-core": "2.7.0",
+    "@bentley/webgl-compatibility": "2.7.0",
+    "@types/react": "^16.9.51",
+    "@types/react-dom": "^16.9.8",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
   "keywords": [],
   "author": "",

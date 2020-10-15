@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 
-export class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
+export default class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
 
   public componentDidMount() {
     this.setState({ collapsed: true });
@@ -108,3 +108,4 @@ export class MachineLearningForm extends React.Component<{}> {
     )
   }
 }
+

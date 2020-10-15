@@ -81,26 +81,43 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(1);
-
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["react"] >= "16.13.1")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["react"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["react"])
+      throw new Error("iModel.js Shared Library " + "react" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "react" + " is not yet loaded." )
+  })();
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__(2);
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const imodeljs_frontend_1 = __webpack_require__(2);
-const ui_abstract_1 = __webpack_require__(3);
-const imodeljs_markup_1 = __webpack_require__(4);
+const imodeljs_frontend_1 = __webpack_require__(3);
+const ui_abstract_1 = __webpack_require__(4);
+const imodeljs_markup_1 = __webpack_require__(5);
+const MLButton_1 = __webpack_require__(6);
+const ReactDOM = __webpack_require__(8);
+const React = __webpack_require__(0);
 class MachineLearningUiItemsProvider {
     constructor(i18n) {
         this.id = "MachineLearningProvider";
@@ -135,6 +152,7 @@ class MachineLearningExtension extends imodeljs_frontend_1.Extension {
     }
     /** Invoked each time this extension is loaded. */
     async onExecute() {
+        ReactDOM.render(React.createElement(MLButton_1.default, null), document.getElementById("machine-learning-panel"));
     }
 }
 exports.MachineLearningExtension = MachineLearningExtension;
@@ -142,7 +160,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -156,7 +174,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
   })();
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -170,7 +188,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
   })();
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -181,6 +199,139 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
     if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/imodeljs-markup"])
       throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-markup" + " is loaded, but is an incompatible version." )
     throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-markup" + " is not yet loaded." )
+  })();
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(0);
+const ui_core_1 = __webpack_require__(7);
+class MachineLearningPanel extends React.Component {
+    componentDidMount() {
+        this.setState({ collapsed: true });
+    }
+    switchCollapse() {
+        const collapsed = !this.state.collapsed;
+        this.setState({ collapsed });
+    }
+    render() {
+        if (this.state && this.state.collapsed) {
+            return (React.createElement(React.Fragment, null,
+                React.createElement(ui_core_1.Button, { size: ui_core_1.ButtonSize.Large, buttonType: ui_core_1.ButtonType.Blue, className: "show-control-pane-button", onClick: this.switchCollapse.bind(this) }, "Power Prediction")));
+        }
+        return (React.createElement(React.Fragment, null,
+            React.createElement("div", { className: "sample-ui" },
+                React.createElement("div", { className: "control-pane-header" },
+                    React.createElement("div", { className: "sample-instructions" },
+                        React.createElement("span", null, "Input Parameters")),
+                    React.createElement("svg", { className: "minimize-button control-pane-minimize", onClick: this.switchCollapse.bind(this) },
+                        React.createElement("use", { href: "icons.svg#minimize" }),
+                        React.createElement("title", null, "Minimize"))),
+                React.createElement(MachineLearningForm, null))));
+    }
+}
+exports.default = MachineLearningPanel;
+class MachineLearningForm extends React.Component {
+    alertData(e) {
+        e.preventDefault();
+        const messageBody = {};
+        [...document.getElementsByClassName("ml-input")].forEach((mlInput) => {
+            let inputElement = mlInput;
+            if (inputElement.name === "originSysTime") {
+                messageBody[inputElement.name] = inputElement.value;
+            }
+            else {
+                messageBody[inputElement.name] = parseFloat(inputElement.value);
+            }
+        });
+        console.log(JSON.stringify(messageBody));
+    }
+    render() {
+        return (React.createElement("div", null,
+            React.createElement("hr", null),
+            React.createElement("form", { id: "ml-form" },
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Blade 1 Pitch Angle: "),
+                    React.createElement("input", { type: "text", name: "pitchAngle1", className: "ml-input", defaultValue: "1.99" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Blade 1 Pitch Angle: "),
+                    React.createElement("input", { type: "text", name: "pitchAngle2", className: "ml-input", defaultValue: "2.02" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Blade 2 Pitch Angle: "),
+                    React.createElement("input", { type: "text", name: "pitchAngle3", className: "ml-input", defaultValue: "1.92" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Generator Speed: "),
+                    React.createElement("input", { type: "text", name: "genSpeed", className: "ml-input", defaultValue: "1212.28" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Generator Torque: "),
+                    React.createElement("input", { type: "text", name: "genTorque", className: "ml-input", defaultValue: "6824.49" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Time: "),
+                    React.createElement("input", { type: "text", name: "originSysTime", className: "ml-input", defaultValue: "7/29/2018 11:43:03" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Wind Direction: "),
+                    React.createElement("input", { type: "text", name: "windDirection", className: "ml-input", defaultValue: "-8.6" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Wind Speed: "),
+                    React.createElement("input", { type: "text", name: "windSpeed", className: "ml-input", defaultValue: "6.66" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement("label", { className: "ml-label" }, "Yaw Position: "),
+                    React.createElement("input", { type: "text", name: "yawPosition", className: "ml-input", defaultValue: "5.05" }),
+                    " ",
+                    React.createElement("br", null)),
+                React.createElement("label", { className: "ml-label" }),
+                React.createElement(ui_core_1.Button, { className: "ml-submit", size: ui_core_1.ButtonSize.Large, buttonType: ui_core_1.ButtonType.Blue, onClick: this.alertData.bind(this) }, "Submit"))));
+    }
+}
+exports.MachineLearningForm = MachineLearningForm;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/ui-core"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"])
+      throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is not yet loaded." )
+  })();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["react-dom"] >= "16.13.1")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["react-dom"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["react-dom"])
+      throw new Error("iModel.js Shared Library " + "react-dom" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "react-dom" + " is not yet loaded." )
   })();
 
 /***/ })

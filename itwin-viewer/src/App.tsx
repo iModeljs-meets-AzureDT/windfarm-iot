@@ -4,7 +4,6 @@ import { Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
-import { MachineLearningPanel } from "./components/MLButton";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
@@ -105,7 +104,7 @@ const App: React.FC = () => {
             onIModelConnected={onIModelConnection}
             extensions={extensions}
           />
-          <MachineLearningPanel />
+          <div id="machine-learning-panel"></div>
           </div>
         )
       )}
