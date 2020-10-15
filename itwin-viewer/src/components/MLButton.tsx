@@ -1,6 +1,4 @@
 import * as React from "react";
-import { CommonToolbarItem, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsProvider } from "@bentley/ui-abstract";
-import { IModelApp, NotifyMessageDetails, OutputMessagePriority } from "@bentley/imodeljs-frontend";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 
 export class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
@@ -108,22 +106,5 @@ export class MachineLearningForm extends React.Component<{}> {
         </form>
       </div>
     )
-  }
-}
-
-export class MachineLearningButton implements UiItemsProvider {
-  public readonly id = "MLButtonProvider";
-  /** provideToolbarButtonItems() is called for each registered UI provider as the Frontstage is building toolbars. We are adding an action button to the ContentManipulation Horizontal toolbar
-   * in General use Frontstages.
-   */
-  public provideToolbarButtonItems(_stageId: string, stageUsage: string, toolbarUsage: ToolbarUsage, toolbarOrientation: ToolbarOrientation): CommonToolbarItem[] {
-    if (stageUsage === StageUsage.General && toolbarUsage === ToolbarUsage.ContentManipulation && toolbarOrientation === ToolbarOrientation.Horizontal) {
-      const simpleActionSpec = ToolbarItemUtilities.createActionButton("Open message box", 1000, "icon-lightbulb", "Added Tool", () => this.startTool());
-      return [simpleActionSpec];
-    }
-    return [];
-  }
-  public startTool() {
-    IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "A test button"));
   }
 }
