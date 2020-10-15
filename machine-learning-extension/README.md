@@ -11,3 +11,4 @@ Extensions add functionality and UI to the itwin-viewer.
 
 On build, extensions create a lib folder named "imjs_extensions/<extension_name>" that our itwin-viewer uses if registered in the itwin app. This sample provides a way to add buttons to the itwin-viewer.
 
+watch was added to automatically move the build files into the itwin-viewer. This provides a more seamless experience during development.
