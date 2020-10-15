@@ -1,0 +1,35 @@
+{
+  "name": "machine-learning-extensoin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "watch \"npm run build\" src",
+    "prebuild": "cpx ./public/**/* ./lib/imjs_extensions/machinelearning",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc 1>&2 && npm run build:extension",
+    "build:extension": "extension-webpack-tools build -s ./src/MachineLearningExtension.ts -o ./lib/imjs_extensions/machinelearning",
+    "postbuild": "cpx ./lib/imjs_extensions/**/* ../itwin-viewer/build/imjs_extensions/."
+  },
+  "devDependencies": {
+    "@bentley/build-tools": "2.7.0",
+    "@bentley/extension-webpack-tools": "2.7.0",
+    "typescript": "~3.7.4",
+    "watch": "^1.0.2"
+  },
+  "dependencies": {
+    "@bentley/bentleyjs-core": "2.7.0",
+    "@bentley/geometry-core": "2.7.0",
+    "@bentley/imodeljs-common": "2.7.0",
+    "@bentley/imodeljs-i18n": "2.7.0",
+    "@bentley/imodeljs-frontend": "2.7.0",
+    "@bentley/imodeljs-quantity": "2.7.0",
+    "@bentley/product-settings-client": "2.7.0",
+    "@bentley/orbitgt-core": "2.7.0",
+    "@bentley/ui-abstract": "2.7.0",
+    "@bentley/webgl-compatibility": "2.7.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
