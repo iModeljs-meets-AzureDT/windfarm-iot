@@ -9,7 +9,7 @@ import * as React from "react";
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
   public static i18n: I18N;
-
+  
   public constructor(i18n: I18N) {
     MachineLearningUiItemsProvider.i18n = i18n;
   }

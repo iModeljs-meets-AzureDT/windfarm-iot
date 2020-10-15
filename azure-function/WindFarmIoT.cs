@@ -1,7 +1,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.EventHubs;
 using System.Text;
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
@@ -18,8 +17,6 @@ namespace Doosan.Function
 {
     public static class WindFarmIoT
     {
-        private static HttpClient client = new HttpClient();
-
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
@@ -53,14 +50,13 @@ namespace Doosan.Function
                     // We need to keep processing the rest of the batch - capture this exception and continue.
                     // Also, consider capturing details of the message that failed processing so it can be processed again later.
                     exceptions.Add(e);
-                    client = null;
                 }
             }
         }
 
         [FunctionName("TriggerML")]
         public static async Task<IActionResult> HttpTriggerML(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
             HttpRequest req, ILogger log)
         {
             log.LogInformation("Machine Learning HTTP trigger function processed a request.");

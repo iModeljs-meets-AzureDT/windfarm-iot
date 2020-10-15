@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
+import MLClient from "../client/MLClient";
 
 export default class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
 
@@ -42,11 +43,12 @@ export default class MachineLearningPanel extends React.Component<{}, { collapse
 
 export class MachineLearningForm extends React.Component<{}> {
 
-  private alertData(e: any) {
+  private async alertData(e: any) {
     e.preventDefault();
 
     const messageBody: any = {};
 
+    try {
     [...document.getElementsByClassName("ml-input")].forEach((mlInput) => {
       let inputElement = mlInput as HTMLInputElement;
       if (inputElement.name === "originSysTime") {
@@ -56,7 +58,12 @@ export class MachineLearningForm extends React.Component<{}> {
       }
     })
 
-    console.log(JSON.stringify(messageBody));
+    const response = await MLClient.getPredictedMLPower(JSON.stringify(messageBody));
+    console.log(response);
+
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 

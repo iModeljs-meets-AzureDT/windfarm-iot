@@ -116,7 +116,7 @@ const imodeljs_frontend_1 = __webpack_require__(3);
 const ui_abstract_1 = __webpack_require__(4);
 const imodeljs_markup_1 = __webpack_require__(5);
 const MLButton_1 = __webpack_require__(6);
-const ReactDOM = __webpack_require__(8);
+const ReactDOM = __webpack_require__(9);
 const React = __webpack_require__(0);
 class MachineLearningUiItemsProvider {
     constructor(i18n) {
@@ -210,6 +210,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(0);
 const ui_core_1 = __webpack_require__(7);
+const MLClient_1 = __webpack_require__(8);
 class MachineLearningPanel extends React.Component {
     componentDidMount() {
         this.setState({ collapsed: true });
@@ -236,19 +237,25 @@ class MachineLearningPanel extends React.Component {
 }
 exports.default = MachineLearningPanel;
 class MachineLearningForm extends React.Component {
-    alertData(e) {
+    async alertData(e) {
         e.preventDefault();
         const messageBody = {};
-        [...document.getElementsByClassName("ml-input")].forEach((mlInput) => {
-            let inputElement = mlInput;
-            if (inputElement.name === "originSysTime") {
-                messageBody[inputElement.name] = inputElement.value;
-            }
-            else {
-                messageBody[inputElement.name] = parseFloat(inputElement.value);
-            }
-        });
-        console.log(JSON.stringify(messageBody));
+        try {
+            [...document.getElementsByClassName("ml-input")].forEach((mlInput) => {
+                let inputElement = mlInput;
+                if (inputElement.name === "originSysTime") {
+                    messageBody[inputElement.name] = inputElement.value;
+                }
+                else {
+                    messageBody[inputElement.name] = parseFloat(inputElement.value);
+                }
+            });
+            const response = await MLClient_1.default.getPredictedMLPower(JSON.stringify(messageBody));
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
     render() {
         return (React.createElement("div", null,
@@ -322,6 +329,36 @@ exports.MachineLearningForm = MachineLearningForm;
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class MLClient {
+    static async getPredictedMLPower(inputParams) {
+        const response = await fetch(this.url, {
+            method: "POST",
+            body: inputParams,
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                throw response.statusText;
+            }
+        })
+            .then((data) => {
+            return data;
+        });
+        return response;
+    }
+}
+exports.default = MLClient;
+MLClient.url = "http://localhost:7071/api/triggerml";
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
