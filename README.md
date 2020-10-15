@@ -24,3 +24,8 @@ Responsibilties include:
 3. Visualize live Iot sensor data and warning/errors from the ADT instance.
 4. Provide a historical time slider to visualize past events
 5. Provide a UI to send inputs back to the azure function to predict manually manipulated variables.
+
+### **3. machine-learning-extension**
+
+This extension adds UI components and functionality to our machine learning
+API.
