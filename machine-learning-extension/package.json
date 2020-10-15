@@ -24,6 +24,7 @@
     "@bentley/imodeljs-i18n": "2.7.0",
     "@bentley/imodeljs-frontend": "2.7.0",
     "@bentley/imodeljs-quantity": "2.7.0",
+    "@bentley/imodeljs-markup": "2.7.0",
     "@bentley/product-settings-client": "2.7.0",
     "@bentley/orbitgt-core": "2.7.0",
     "@bentley/ui-abstract": "2.7.0",

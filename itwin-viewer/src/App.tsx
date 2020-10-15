@@ -1,12 +1,10 @@
 import "./App.scss";
 
-import { Viewer } from "@bentley/itwin-viewer-react";
+import { Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
-import { MachineLearningButton, MachineLearningPanel } from "./components/MLButton";
-
-import { UiItemsManager } from "@bentley/ui-abstract";
+import { MachineLearningPanel } from "./components/MLButton";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
@@ -81,11 +79,12 @@ const App: React.FC = () => {
     });
   }
 
-  const setupUi = () => {
-    UiItemsManager.register(new MachineLearningButton());
-  }
-
-  setupUi();
+  const extensions: ViewerExtension[] = [
+    {
+      name: "machinelearning",
+      url: "http://localhost:3000"
+    }
+  ]
 
   return (
     <div>
@@ -104,6 +103,7 @@ const App: React.FC = () => {
             iModelId={process.env.REACT_APP_TEST_IMODEL_ID ?? ""}
             authConfig={{ oidcClient: AuthorizationClient.oidcClient }}
             onIModelConnected={onIModelConnection}
+            extensions={extensions}
           />
           <MachineLearningPanel />
           </div>
