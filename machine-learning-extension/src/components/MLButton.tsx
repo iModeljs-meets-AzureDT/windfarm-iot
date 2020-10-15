@@ -59,7 +59,7 @@ export class MachineLearningForm extends React.Component<{}> {
     })
 
     const response = await MLClient.getPredictedMLPower(JSON.stringify(messageBody));
-    console.log(response);
+    alert(JSON.stringify(response));
 
     } catch (error) {
       console.error(error);
