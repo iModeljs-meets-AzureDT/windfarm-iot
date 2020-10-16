@@ -154,10 +154,13 @@ class MachineLearningExtension extends imodeljs_frontend_1.Extension {
     /** Invoked each time this extension is loaded. */
     async onExecute() {
         var _a;
+        // We need a location to bind the component to.
         const MLNode = document.createElement("div");
         MLNode.id = "machine-learning-panel";
         (_a = document.getElementById("root")) === null || _a === void 0 ? void 0 : _a.appendChild(MLNode);
-        ReactDOM.render(React.createElement(MLButton_1.default, null), document.getElementById("machine-learning-panel"));
+        await imodeljs_frontend_1.IModelApp.viewManager.onViewOpen.addOnce(async () => {
+            ReactDOM.render(React.createElement(MLButton_1.default, null), document.getElementById("machine-learning-panel"));
+        });
     }
 }
 exports.MachineLearningExtension = MachineLearningExtension;

@@ -55,10 +55,15 @@ export class MachineLearningExtension extends Extension {
 
   /** Invoked each time this extension is loaded. */
   public async onExecute(): Promise<void> {
+
+    // We need a location to bind the component to.
     const MLNode = document.createElement("div");
     MLNode.id = "machine-learning-panel";
     document.getElementById("root")?.appendChild(MLNode);
-    ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+
+    await IModelApp.viewManager.onViewOpen.addOnce(async () => {
+      ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+    });
   }
 }
 
