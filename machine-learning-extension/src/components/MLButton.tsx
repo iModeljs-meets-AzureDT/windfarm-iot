@@ -29,7 +29,7 @@ export default class MachineLearningPanel extends React.Component<{}, { collapse
               <span>Input Parameters</span>
             </div>
             <svg className="minimize-button control-pane-minimize" onClick={this.switchCollapse.bind(this)}>
-              <use href="icons.svg#minimize"></use>
+              <use href="/imjs_extensions/machinelearning/icons.svg#minimize"></use>
               <title>Minimize</title>
             </svg>
           </div>

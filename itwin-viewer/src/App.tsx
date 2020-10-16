@@ -1,5 +1,4 @@
 import "./App.scss";
-import "./MachineLearning.scss";
 
 import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
@@ -99,6 +98,7 @@ const App: React.FC = () => {
   }
 
   const useCustomBackend = false;
+  const useExtensions = true;
 
   return (
     <div>
@@ -117,10 +117,9 @@ const App: React.FC = () => {
             iModelId={process.env.REACT_APP_TEST_IMODEL_ID ?? ""}
             authConfig={{ oidcClient: AuthorizationClient.oidcClient }}
             onIModelConnected={onIModelConnection}
-            extensions={extensions}
+            extensions={useExtensions? extensions : undefined}
             backend={useCustomBackend ? backendOptions : undefined}
           />
-          <div id="machine-learning-panel"></div>
           </div>
         )
       )}

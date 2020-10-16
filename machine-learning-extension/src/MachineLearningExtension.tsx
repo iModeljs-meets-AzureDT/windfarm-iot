@@ -6,6 +6,8 @@ import MachineLearningPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 
+import "./MachineLearning.scss";
+
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
   public static i18n: I18N;
@@ -53,6 +55,9 @@ export class MachineLearningExtension extends Extension {
 
   /** Invoked each time this extension is loaded. */
   public async onExecute(): Promise<void> {
+    const MLNode = document.createElement("div");
+    MLNode.id = "machine-learning-panel";
+    document.getElementById("root")?.appendChild(MLNode);
     ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
   }
 }
