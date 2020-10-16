@@ -1,7 +1,7 @@
 import "./App.scss";
 import "./MachineLearning.scss";
 
-import { Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
+import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
@@ -86,6 +86,20 @@ const App: React.FC = () => {
     }
   ]
 
+  const backendOptions: IModelBackendOptions = {
+    customBackend: {
+      rpcParams: {
+        info: {
+          title: "general-purpose-imodeljs-backend", version: "v2.0"
+        },
+        uriPrefix: "http://localhost:3001"
+      }
+
+    }
+  }
+
+  const useCustomBackend = true;
+
   return (
     <div>
       <Header
@@ -104,6 +118,7 @@ const App: React.FC = () => {
             authConfig={{ oidcClient: AuthorizationClient.oidcClient }}
             onIModelConnected={onIModelConnection}
             extensions={extensions}
+            backend={useCustomBackend ? backendOptions : undefined}
           />
           <div id="machine-learning-panel"></div>
           </div>
