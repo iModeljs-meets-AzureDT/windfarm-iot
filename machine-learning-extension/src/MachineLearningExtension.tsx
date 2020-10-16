@@ -1,4 +1,4 @@
-import { Extension, IModelApp, NotifyMessageDetails, OutputMessagePriority } from "@bentley/imodeljs-frontend"
+import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMessagePriority, ScreenViewport } from "@bentley/imodeljs-frontend"
 import { I18N } from "@bentley/imodeljs-i18n";
 import { CommonToolbarItem, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
@@ -7,6 +7,7 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 
 import "./MachineLearning.scss";
+import { UiFramework } from "@bentley/ui-framework";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
@@ -24,12 +25,21 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
 
     return [
       ToolbarItemUtilities.createActionButton(
-        "machinelearningextension-button",
+        "machinelearningextension-button-notify",
         200,
         "icon-lightbulb",
         "Machine Learning",
         () => {
-          IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "Machine learning button"));
+          IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "The opened imodel is " + MachineLearningExtension.imodel!.name));
+        }
+      ),
+      ToolbarItemUtilities.createActionButton(
+        "machinelearningextension-button-backstage",
+        205,
+        "icon-window",
+        "Machine Learning Backstage",
+        () => {
+          UiFramework.backstageManager.toggle();
         }
       )
     ]
@@ -41,6 +51,8 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
 export class MachineLearningExtension extends Extension {
   // Override the _defaultNs to setup a namespace.
   protected _defaultNs = "machinelearning";
+  public static viewport?: ScreenViewport;
+  public static imodel?: IModelConnection;
 
   /** Invoked the first time this extension is loaded. */
   public async onLoad(): Promise<void> {
@@ -61,7 +73,11 @@ export class MachineLearningExtension extends Extension {
     MLNode.id = "machine-learning-panel";
     document.getElementById("root")?.appendChild(MLNode);
 
-    await IModelApp.viewManager.onViewOpen.addOnce(async () => {
+    await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
+      MachineLearningExtension.viewport = vp;
+      MachineLearningExtension.imodel = vp.iModel;
+
+      // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
       ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
     });
   }

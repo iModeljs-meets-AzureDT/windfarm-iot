@@ -119,6 +119,7 @@ const MLButton_1 = __webpack_require__(6);
 const ReactDOM = __webpack_require__(9);
 const React = __webpack_require__(0);
 __webpack_require__(10);
+const ui_framework_1 = __webpack_require__(14);
 class MachineLearningUiItemsProvider {
     constructor(i18n) {
         this.id = "MachineLearningProvider";
@@ -130,8 +131,11 @@ class MachineLearningUiItemsProvider {
             toolbarOrientation !== ui_abstract_1.ToolbarOrientation.Vertical)
             return [];
         return [
-            ui_abstract_1.ToolbarItemUtilities.createActionButton("machinelearningextension-button", 200, "icon-lightbulb", "Machine Learning", () => {
-                imodeljs_frontend_1.IModelApp.notifications.outputMessage(new imodeljs_frontend_1.NotifyMessageDetails(imodeljs_frontend_1.OutputMessagePriority.Info, "Machine learning button"));
+            ui_abstract_1.ToolbarItemUtilities.createActionButton("machinelearningextension-button-notify", 200, "icon-lightbulb", "Machine Learning", () => {
+                imodeljs_frontend_1.IModelApp.notifications.outputMessage(new imodeljs_frontend_1.NotifyMessageDetails(imodeljs_frontend_1.OutputMessagePriority.Info, "The opened imodel is " + MachineLearningExtension.imodel.name));
+            }),
+            ui_abstract_1.ToolbarItemUtilities.createActionButton("machinelearningextension-button-backstage", 205, "icon-window", "Machine Learning Backstage", () => {
+                ui_framework_1.UiFramework.backstageManager.toggle();
             })
         ];
     }
@@ -158,7 +162,10 @@ class MachineLearningExtension extends imodeljs_frontend_1.Extension {
         const MLNode = document.createElement("div");
         MLNode.id = "machine-learning-panel";
         (_a = document.getElementById("root")) === null || _a === void 0 ? void 0 : _a.appendChild(MLNode);
-        await imodeljs_frontend_1.IModelApp.viewManager.onViewOpen.addOnce(async () => {
+        await imodeljs_frontend_1.IModelApp.viewManager.onViewOpen.addOnce(async (vp) => {
+            MachineLearningExtension.viewport = vp;
+            MachineLearningExtension.imodel = vp.iModel;
+            // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
             ReactDOM.render(React.createElement(MLButton_1.default, null), document.getElementById("machine-learning-panel"));
         });
     }
@@ -795,6 +802,20 @@ function toComment(sourceMap) {
   var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
   return "/*# ".concat(data, " */");
 }
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/ui-framework"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-framework"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-framework"])
+      throw new Error("iModel.js Shared Library " + "@bentley/ui-framework" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/ui-framework" + " is not yet loaded." )
+  })();
 
 /***/ })
 /******/ ]);
