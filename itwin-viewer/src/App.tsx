@@ -91,13 +91,13 @@ const App: React.FC = () => {
         info: {
           title: "general-purpose-imodeljs-backend", version: "v2.0"
         },
-        uriPrefix: "http://localhost:3001"
+        uriPrefix: "http://localhost:3003"
       }
 
     }
   }
 
-  const useCustomBackend = false;
+  const useCustomBackend = true;
   const useExtensions = true;
 
   return (
