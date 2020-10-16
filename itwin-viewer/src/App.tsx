@@ -98,7 +98,7 @@ const App: React.FC = () => {
     }
   }
 
-  const useCustomBackend = true;
+  const useCustomBackend = false;
 
   return (
     <div>
