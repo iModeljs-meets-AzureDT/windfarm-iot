@@ -59,7 +59,7 @@ export class MachineLearningForm extends React.Component<{}> {
     })
 
     const response = await MLClient.getPredictedMLPower(JSON.stringify(messageBody));
-    alert(JSON.stringify(response));
+    (document.getElementById("ml-power-result") as HTMLTextAreaElement).value = response["power_ML"];
 
     } catch (error) {
       console.error(error);
@@ -108,8 +108,10 @@ export class MachineLearningForm extends React.Component<{}> {
             <label className="ml-label">Yaw Position: </label>
             <input type="text" name="yawPosition" className="ml-input" defaultValue="5.05"></input> <br />
           </p>
-          <label className="ml-label"></label>
-          <Button className="ml-submit" size={ButtonSize.Large} buttonType={ButtonType.Blue} onClick={this.alertData.bind(this)}>Submit</Button>
+          <p className="ml-p">
+            <Button className="ml-submit" size={ButtonSize.Large} buttonType={ButtonType.Blue} onClick={this.alertData.bind(this)}>Submit</Button>
+            <div className="ml-label"><label>Predicted Power: </label><textarea readOnly id="ml-power-result"></textarea></div> <br />
+          </p>
         </form>
       </div>
     )

@@ -77,12 +77,19 @@
 .ml-input {
   display: table-cell;
   margin-left: 10px;
+  width: 92%;
 }
 
 .ml-submit {
   display: table-cell !important;
-  width: 94% !important;
-  margin-left: 10px !important;
+  width: 80% !important;
   margin-top: 5px !important;
 }
+
+#ml-power-result {
+  vertical-align: middle;
+  height: 19px;
+  resize: none;
+}
+
 

@@ -251,7 +251,7 @@ class MachineLearningForm extends React.Component {
                 }
             });
             const response = await MLClient_1.default.getPredictedMLPower(JSON.stringify(messageBody));
-            alert(JSON.stringify(response));
+            document.getElementById("ml-power-result").value = response["power_ML"];
         }
         catch (error) {
             console.error(error);
@@ -306,8 +306,13 @@ class MachineLearningForm extends React.Component {
                     React.createElement("input", { type: "text", name: "yawPosition", className: "ml-input", defaultValue: "5.05" }),
                     " ",
                     React.createElement("br", null)),
-                React.createElement("label", { className: "ml-label" }),
-                React.createElement(ui_core_1.Button, { className: "ml-submit", size: ui_core_1.ButtonSize.Large, buttonType: ui_core_1.ButtonType.Blue, onClick: this.alertData.bind(this) }, "Submit"))));
+                React.createElement("p", { className: "ml-p" },
+                    React.createElement(ui_core_1.Button, { className: "ml-submit", size: ui_core_1.ButtonSize.Large, buttonType: ui_core_1.ButtonType.Blue, onClick: this.alertData.bind(this) }, "Submit"),
+                    React.createElement("div", { className: "ml-label" },
+                        React.createElement("label", null, "Predicted Power: "),
+                        React.createElement("textarea", { readOnly: true, id: "ml-power-result" })),
+                    " ",
+                    React.createElement("br", null)))));
     }
 }
 exports.MachineLearningForm = MachineLearningForm;
