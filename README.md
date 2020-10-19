@@ -28,3 +28,11 @@ Responsibilties include:
 ### **3. windfarm-extension**
 
 This extension adds UI components and functionality to our viewer.
+
+### **4. device-simulation**
+
+1. Go to ["Azure IoT Device Simulation"](https://windfarmsimulation-m6vf5.azurewebsites.net/devicemodels)
+2. Select "Device Models" menu and click "Add Device Models" 
+3. upload all the json and js files in the Advanced tab.
+4. Select Simulations menu and click "New Simulation" 
+5. Set up wind turbine simulation
