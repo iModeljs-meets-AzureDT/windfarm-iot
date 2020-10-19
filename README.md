@@ -25,7 +25,6 @@ Responsibilties include:
 4. Provide a historical time slider to visualize past events
 5. Provide a UI to send inputs back to the azure function to predict manually manipulated variables.
 
-### **3. machine-learning-extension**
+### **3. windfarm-extension**
 
-This extension adds UI components and functionality to our machine learning
-API.
+This extension adds UI components and functionality to our viewer.
