@@ -6,7 +6,7 @@ import MachineLearningPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 
-import "./MachineLearning.scss";
+import "./WindFarm.scss";
 import { UiFramework } from "@bentley/ui-framework";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
@@ -30,7 +30,7 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
         "icon-lightbulb",
         "Machine Learning",
         () => {
-          IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "The opened imodel is " + MachineLearningExtension.imodel!.name));
+          IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "The opened imodel is " + WindfarmExtension.imodel!.name));
         }
       ),
       ToolbarItemUtilities.createActionButton(
@@ -48,9 +48,9 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
 }
 
 
-export class MachineLearningExtension extends Extension {
+export class WindfarmExtension extends Extension {
   // Override the _defaultNs to setup a namespace.
-  protected _defaultNs = "machinelearning";
+  protected _defaultNs = "windfarm";
   public static viewport?: ScreenViewport;
   public static imodel?: IModelConnection;
 
@@ -74,8 +74,8 @@ export class MachineLearningExtension extends Extension {
     document.getElementById("root")?.appendChild(MLNode);
 
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
-      MachineLearningExtension.viewport = vp;
-      MachineLearningExtension.imodel = vp.iModel;
+      WindfarmExtension.viewport = vp;
+      WindfarmExtension.imodel = vp.iModel;
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
       ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
@@ -83,4 +83,4 @@ export class MachineLearningExtension extends Extension {
   }
 }
 
-IModelApp.extensionAdmin.register(new MachineLearningExtension("machinelearning"));
+IModelApp.extensionAdmin.register(new WindfarmExtension("windfarm"));

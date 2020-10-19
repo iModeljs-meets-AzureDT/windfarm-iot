@@ -80,7 +80,7 @@ const App: React.FC = () => {
 
   const extensions: ViewerExtension[] = [
     {
-      name: "machinelearning",
+      name: "windfarm",
       url: "http://localhost:3000"
     }
   ]
