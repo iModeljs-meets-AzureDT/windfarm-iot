@@ -59,7 +59,7 @@ export class MachineLearningForm extends React.Component<{}> {
     })
 
     const response = await MLClient.getPredictedMLPower(JSON.stringify(messageBody));
-    (document.getElementById("ml-power-result") as HTMLTextAreaElement).value = response["power_ML"];
+    (document.getElementById("ml-power-result") as HTMLTextAreaElement).value = response["power_DM"];
 
     } catch (error) {
       console.error(error);
