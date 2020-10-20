@@ -1,14 +1,14 @@
 {
-  "name": "machine-learning-extensoin",
+  "name": "windfarm-extension",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "watch": "watch \"npm run build\" src",
-    "prebuild": "cpx ./public/**/* ./lib/imjs_extensions/machinelearning",
+    "prebuild": "cpx ./public/**/* ./lib/imjs_extensions/windfarm",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc 1>&2 && npm run build:extension",
-    "build:extension": "extension-webpack-tools build -s ./src/MachineLearningExtension.tsx -o ./lib/imjs_extensions/machinelearning",
+    "build:extension": "extension-webpack-tools build -s ./src/WindfarmExtension.tsx -o ./lib/imjs_extensions/windfarm",
     "postbuild": "cpx ./lib/imjs_extensions/**/* ../itwin-viewer/build/imjs_extensions/."
   },
   "devDependencies": {
@@ -29,6 +29,7 @@
     "@bentley/product-settings-client": "2.7.0",
     "@bentley/ui-abstract": "2.7.0",
     "@bentley/ui-core": "2.7.0",
+    "@bentley/ui-framework": "2.7.0",
     "@bentley/webgl-compatibility": "2.7.0",
     "@types/react": "^16.9.51",
     "@types/react-dom": "^16.9.8",

@@ -6,6 +6,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 1. npm install
 2. npm start
+3. (Optional): npm run watch in windfarm-iot/windfarm-extension to enable the windfarm extension.
 
 ## Environment Variables
 
