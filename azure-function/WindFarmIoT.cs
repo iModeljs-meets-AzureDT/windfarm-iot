@@ -24,14 +24,22 @@ namespace Doosan.Function
         public string turbineObserved;
     }
 
+    struct TemperatureValues {
+        public float nacelle;
+        public float gearBox;
+        public float generator;
+    }
+
     public static class WindFarmIoT
     {
         private static DigitalTwinsClient client;
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
+        private const bool flush = false;
 
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
+            if (flush) return;
             if (client == null) Authenticate(log);
             var exceptions = new List<Exception>();
             foreach (EventData eventData in events) {
@@ -69,25 +77,28 @@ namespace Doosan.Function
         }
 
         private static async Task processSensorData(string deviceId, JObject sensorData) {
-            var info = new WTInfo
-            {
+            var info = new WTInfo {
                 Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
                 Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
                 Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
-                GenSpeed = (float)sensorData.GetValue("genSpeed"),
-                GenTorque = (float)sensorData.GetValue("genTorque"),
                 OriginSysTime = (string)sensorData.GetValue("originSysTime"),
                 Power = (float)sensorData.GetValue("power_PM"),
                 WindDir = (float)sensorData.GetValue("windDirection"),
                 WindSpeed = (float)sensorData.GetValue("windSpeed"),
                 YawPosition = (float)sensorData.GetValue("yawPosition")
             };
+            var tempValues = new TemperatureValues() {
+                nacelle = (float)sensorData.GetValue("nacelleTemp"),
+                gearBox = (float)sensorData.GetValue("gearboxTemp"),
+                generator = (float)sensorData.GetValue("convTemp"),
+            };
 
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
-            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info));
+            if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
+            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info, tempValues));
 
-            float powerDM = await MlApi.GetPowerAsync(info);
+            float powerDM = 1000;
             float powerPM = (float)sensorData.GetValue("power_PM");
             float powerObserved = (float)sensorData.GetValue("power");
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerObserved, powerPM, powerDM));
@@ -111,7 +122,7 @@ namespace Doosan.Function
             return dtIds;
         }
 
-        private static string generatePatchForSensor(WTInfo info) {
+        private static string generatePatchForSensor(WTInfo info, TemperatureValues tempValues) {
             UpdateOperationsUtility uou = new UpdateOperationsUtility();
 
             uou.AppendReplaceOp("/blade1PitchAngle", info.Blade1PitchPosition);
@@ -120,9 +131,9 @@ namespace Doosan.Function
             uou.AppendReplaceOp("/yawPosition", info.YawPosition);
             uou.AppendReplaceOp("/windDirection", info.WindDir);
             uou.AppendReplaceOp("/windSpeed", info.WindSpeed);
-            uou.AppendReplaceOp("/temperatureNacelle", 50);
-            uou.AppendReplaceOp("/temperatureGenerator", 50);
-            uou.AppendReplaceOp("/temperatureGearBox", 50);
+            uou.AppendReplaceOp("/temperatureNacelle", tempValues.nacelle);
+            uou.AppendReplaceOp("/temperatureGenerator", tempValues.generator);
+            uou.AppendReplaceOp("/temperatureGearBox", tempValues.gearBox);
 
             return uou.Serialize();
         }
@@ -168,8 +179,6 @@ namespace Doosan.Function
                     Blade1PitchPosition = data.pitchAngle1,
                     Blade2PitchPosition = data.pitchAngle2,
                     Blade3PitchPosition = data.pitchAngle3,
-                    GenSpeed = data.genSpeed,
-                    GenTorque = data.genTorque,
                     OriginSysTime = data.originSysTime,
                     WindDir = data.windDirection,
                     WindSpeed = data.windSpeed,

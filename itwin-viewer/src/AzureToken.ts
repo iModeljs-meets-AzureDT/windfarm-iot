@@ -1,7 +1,7 @@
 import * as Msal from "msal";
 
 const AdtAppId = "0b07f429-9f4b-4714-9392-cc5e8e80c8b0";
-// const TsiAppId = "120d688d-1518-4cf7-bd38-182f158850b6";
+const TsiAppId = "120d688d-1518-4cf7-bd38-182f158850b6";
 const ClientId = "4015f714-a893-43a9-a74c-e58740afbefc";
 const TenantId = "067e9632-ea4c-4ed9-9e6d-e294956e284b";
 
@@ -27,9 +27,9 @@ export class AzureAuth {
     return this.fetchToken([AdtAppId + "/.default"]);
   }
 
-//   public static async getTsiToken() {
-//     return this.fetchToken([TsiAppId + "/.default"]);
-//   }
+  public static async getTsiToken() {
+    return this.fetchToken([TsiAppId + "/.default"]);
+  }
 
   private static async fetchToken(scopes: any) {
     const msalInstance = new Msal.UserAgentApplication(AzureAuth.msalConfig);
