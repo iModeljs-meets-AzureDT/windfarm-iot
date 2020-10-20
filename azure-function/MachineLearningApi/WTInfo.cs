@@ -35,7 +35,7 @@
 
     public class WTMLInfo
     {
-        public float Power_ML { get; set; }
-        public float GenSpeed_ML { get; set; }
+        public float Power_DM { get; set; }
+        public float GenSpeed_DM { get; set; }
     }
 }

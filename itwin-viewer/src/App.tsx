@@ -4,6 +4,7 @@ import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-vi
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
+import { AdtDataLink } from "./AdtDataLink";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
@@ -15,6 +16,8 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
 
   useEffect(() => {
     const initOidc = async () => {
@@ -80,7 +83,7 @@ const App: React.FC = () => {
 
   const extensions: ViewerExtension[] = [
     {
-      name: "machinelearning",
+      name: "windfarm",
       url: "http://localhost:3000"
     }
   ]
