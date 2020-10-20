@@ -46,7 +46,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "typescript": "^3.9.7",
-    "unique-random": "^2.1.0"
+    "unique-random": "^2.1.0",
+    "http-proxy-middleware": "1.0.6"
   },
   "scripts": {
     "start": "react-scripts --max_old_space_size=4096 start",
