@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -100,25 +100,53 @@
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(2);
-
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/imodeljs-frontend"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/imodeljs-frontend"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/imodeljs-frontend"])
+      throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-frontend" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-frontend" + " is not yet loaded." )
+  })();
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/ui-core"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"])
+      throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is not yet loaded." )
+  })();
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(4);
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const imodeljs_frontend_1 = __webpack_require__(3);
-const ui_abstract_1 = __webpack_require__(4);
-const imodeljs_markup_1 = __webpack_require__(5);
-const MLButton_1 = __webpack_require__(6);
-const ReactDOM = __webpack_require__(9);
+const imodeljs_frontend_1 = __webpack_require__(1);
+const ui_abstract_1 = __webpack_require__(5);
+const imodeljs_markup_1 = __webpack_require__(6);
+const MLButton_1 = __webpack_require__(7);
+const ReactDOM = __webpack_require__(13);
 const React = __webpack_require__(0);
-__webpack_require__(10);
+__webpack_require__(14);
 class MachineLearningUiItemsProvider {
     constructor(i18n) {
         this.id = "MachineLearningProvider";
@@ -168,21 +196,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-  module.exports = (() => {
-    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
-      throw new Error("Expected globals are missing!");
-    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/imodeljs-frontend"] >= "2.7.0")
-      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/imodeljs-frontend"];
-    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/imodeljs-frontend"])
-      throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-frontend" + " is loaded, but is an incompatible version." )
-    throw new Error("iModel.js Shared Library " + "@bentley/imodeljs-frontend" + " is not yet loaded." )
-  })();
-
-/***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -196,7 +210,7 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
   })();
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -210,15 +224,16 @@ imodeljs_frontend_1.IModelApp.extensionAdmin.register(new MachineLearningExtensi
   })();
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(0);
-const ui_core_1 = __webpack_require__(7);
+const ui_core_1 = __webpack_require__(2);
 const MLClient_1 = __webpack_require__(8);
+const AnimationUI_1 = __webpack_require__(9);
 class MachineLearningPanel extends React.Component {
     componentDidMount() {
         this.setState({ collapsed: true });
@@ -267,6 +282,7 @@ class MachineLearningForm extends React.Component {
     }
     render() {
         return (React.createElement("div", null,
+            React.createElement(AnimationUI_1.AnimationDebugPanel, null),
             React.createElement("hr", null),
             React.createElement("form", { id: "ml-form" },
                 React.createElement("p", { className: "ml-p" },
@@ -327,20 +343,6 @@ exports.MachineLearningForm = MachineLearningForm;
 
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-  module.exports = (() => {
-    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
-      throw new Error("Expected globals are missing!");
-    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/ui-core"] >= "2.7.0")
-      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"];
-    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/ui-core"])
-      throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is loaded, but is an incompatible version." )
-    throw new Error("iModel.js Shared Library " + "@bentley/ui-core" + " is not yet loaded." )
-  })();
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -372,6 +374,181 @@ MLClient.url = "http://localhost:7071/api/triggerml";
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const imodeljs_frontend_1 = __webpack_require__(1);
+const AnimationTimer_1 = __webpack_require__(10);
+const React = __webpack_require__(0);
+const ui_core_1 = __webpack_require__(2);
+;
+class AnimationDebugPanel extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.state = { s: undefined, v: undefined, t: undefined };
+        this.dropListeners = [];
+        this.onSliderChange = (values) => {
+            const t = values[0];
+            console.debug("poop", t);
+            this.timer.setTime(t);
+            this.setState({ t });
+        };
+    }
+    componentDidMount() {
+        console.log("mount");
+        const vp = imodeljs_frontend_1.IModelApp.viewManager.selectedView;
+        if (!vp)
+            this.dropListeners.push(imodeljs_frontend_1.IModelApp.viewManager.onViewOpen.addOnce((viewport) => {
+                this.initViewport(viewport);
+            }));
+        else
+            this.initViewport(vp);
+    }
+    componentWillUnmount() {
+        console.log("unmount");
+        this.dropListeners.forEach((callback) => callback());
+        this.dropListeners.length = 0;
+    }
+    initViewport(vp) {
+        imodeljs_frontend_1.IModelApp.tools.run("Animation", vp);
+        this.timer = new AnimationTimer_1.AnimationTimer(vp);
+        this.dropListeners.push(vp.onViewChanged.addListener((updateVp) => {
+            const script = updateVp.displayStyle.scheduleScript;
+            if (undefined === script || undefined === updateVp.timePoint)
+                return;
+            if (this.state.s === undefined || this.state.s.computeDuration() !== script.computeDuration()) {
+                this.timer.start();
+                this.setState({ s: script, t: updateVp.timePoint });
+            }
+        }));
+        this.setState({ v: vp, s: vp.displayStyle.scheduleScript, t: vp.timePoint });
+        this.timer.start();
+        this.dropListeners.push(this.timer.onAnimationTick.addListener((t) => this.setState({ t })));
+    }
+    render() {
+        const vp = this.state.v, script = this.state.s, time = this.state.t;
+        const isReady = vp && script && time !== undefined && this.timer;
+        return React.createElement("div", null, isReady ?
+            React.createElement(ui_core_1.Slider, { min: script.computeDuration().low, max: script.computeDuration().high, values: [time], step: (script.computeDuration().length()) / 100 })
+            : React.createElement(React.Fragment, null));
+    }
+}
+exports.AnimationDebugPanel = AnimationDebugPanel;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const geometry_core_1 = __webpack_require__(11);
+const bentleyjs_core_1 = __webpack_require__(12);
+class AnimationTimer {
+    constructor(_vp, durationInSeconds = 10) {
+        this._vp = _vp;
+        // public onAnimationTick = new BeEvent<(vp: Viewport) => void>();
+        this.onAnimationTick = new bentleyjs_core_1.BeEvent();
+        this.isPlaying = false;
+        this._totalMillis = 0;
+        this._elapsedMillis = 0;
+        this._lastMillis = Date.now();
+        this._timelineDuration = geometry_core_1.Range1d.createXX(0, 0);
+        this.setDuration(durationInSeconds);
+    }
+    setDuration(durationInSeconds) {
+        this._totalMillis = durationInSeconds * 1000;
+    }
+    updateDuration(timeInSeconds) {
+        const fraction = Math.min(1, this._elapsedMillis / this._totalMillis);
+        this._totalMillis = timeInSeconds * 1000;
+        this._elapsedMillis = fraction * this._totalMillis;
+        this._lastMillis = Date.now();
+        this.update();
+    }
+    start() {
+        if (this.isPlaying)
+            return;
+        const script = this._vp.displayStyle.scheduleScript;
+        if (undefined === script)
+            return;
+        this._timelineDuration = script.computeDuration();
+        this.isPlaying = true;
+        this._lastMillis = Date.now();
+        this.queueAnimationFrame();
+    }
+    pause() {
+        if (!this.isPlaying)
+            return;
+        this.isPlaying = false;
+        this._lastMillis = Date.now();
+        this.update();
+        this.queueAnimationFrame();
+    }
+    update() {
+        const fraction = Math.min(1, this._elapsedMillis / this._totalMillis);
+        // this._slider.value = (fraction * 1000).toString();
+        const point = this._timelineDuration.fractionToPoint(fraction);
+        this._vp.timePoint = point;
+        this.onAnimationTick.raiseEvent(this._vp.timePoint);
+    }
+    setTime(time) {
+        this._elapsedMillis = time - this._timelineDuration.low;
+        this._lastMillis = Date.now();
+        this.update();
+    }
+    onAnimationFrame() {
+        if (!this.isPlaying)
+            return;
+        const now = Date.now();
+        const elapsed = now - this._lastMillis;
+        this._lastMillis = now;
+        this._elapsedMillis += elapsed;
+        this.update();
+        if (this._elapsedMillis >= this._totalMillis)
+            this._elapsedMillis = 0;
+        this.queueAnimationFrame();
+    }
+    queueAnimationFrame() {
+        requestAnimationFrame(() => this.onAnimationFrame());
+    }
+}
+exports.AnimationTimer = AnimationTimer;
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/geometry-core"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/geometry-core"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/geometry-core"])
+      throw new Error("iModel.js Shared Library " + "@bentley/geometry-core" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/geometry-core" + " is not yet loaded." )
+  })();
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+  module.exports = (() => {
+    if (!window.__IMODELJS_INTERNALS_DO_NOT_USE || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS || !window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS)
+      throw new Error("Expected globals are missing!");
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS_VERS["@bentley/bentleyjs-core"] >= "2.7.0")
+      return window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/bentleyjs-core"];
+    if (window.__IMODELJS_INTERNALS_DO_NOT_USE.SHARED_LIBS["@bentley/bentleyjs-core"])
+      throw new Error("iModel.js Shared Library " + "@bentley/bentleyjs-core" + " is loaded, but is an incompatible version." )
+    throw new Error("iModel.js Shared Library " + "@bentley/bentleyjs-core" + " is not yet loaded." )
+  })();
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports) {
 
   module.exports = (() => {
@@ -385,11 +562,11 @@ MLClient.url = "http://localhost:7071/api/triggerml";
   })();
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(11);
-            var content = __webpack_require__(12);
+var api = __webpack_require__(15);
+            var content = __webpack_require__(16);
 
             content = content.__esModule ? content.default : content;
 
@@ -409,7 +586,7 @@ var update = api(content, options);
 module.exports = content.locals || {};
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -684,11 +861,11 @@ module.exports = function (list, options) {
 };
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(13);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(17);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".show-control-pane-button{position:absolute;bottom:10%;left:2%;box-shadow:1px 5px 0px rgba(0,0,0,0.25);z-index:1}.sample-ui{position:absolute;display:block;float:right;background-origin:border-box;background-color:#333;color:white;bottom:10%;left:2%;transition:all 500ms ease;cursor:default;border-radius:5px;border-color:var(--buic-foreground-body);padding:10px;border-style:solid;z-index:1}.control-pane-header{display:flex;flex-direction:row}.control-pane-header .control-pane-minimize{padding:0}.control-pane-header .sample-instructions{display:flex;flex-grow:1}.control-pane-header .sample-instructions>span{flex-grow:1;min-width:100px;width:300px}.control-pane-header .control-pane-close-button{float:right;padding-top:4px}.minimize-button{cursor:pointer;height:16px;width:16px;fill:white;padding:10px 16px 10px 16px}.minimize-button:hover{fill:#fff}#ml-form{display:table}.ml-p{display:table-row}.ml-label{display:table-cell}.ml-input{display:table-cell;margin-left:10px;width:92%}.ml-submit{display:table-cell !important;width:80% !important;margin-top:5px !important}#ml-power-result{vertical-align:middle;height:19px;resize:none}\n", ""]);
@@ -697,7 +874,7 @@ module.exports = exports;
 
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

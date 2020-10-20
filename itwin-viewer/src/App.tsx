@@ -7,6 +7,8 @@ import { ContextRealityModelProps } from "@bentley/imodeljs-common";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
+import { AnimationTool } from "./animation/BladeAnimation";
+// import { AnimationDebugPanel } from "./animation/AnimationUI";
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
@@ -67,6 +69,9 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
+      const i18n = IModelApp.i18n.registerNamespace("WindIotDemo");
+      AnimationTool.register(i18n);
+
       const style = vp.displayStyle.clone();
       const availableModels: ContextRealityModelProps[] = await findAvailableUnattachedRealityModels(imodel.contextId, imodel);
 

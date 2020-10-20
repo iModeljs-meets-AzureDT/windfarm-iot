@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 import MLClient from "../client/MLClient";
+import { AnimationDebugPanel } from "./AnimationUI";
 
 export default class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
 
@@ -70,6 +71,7 @@ export class MachineLearningForm extends React.Component<{}> {
   public render() {
     return (
       <div>
+        <AnimationDebugPanel/>
         <hr></hr>
         <form id="ml-form">
           <p className="ml-p">
