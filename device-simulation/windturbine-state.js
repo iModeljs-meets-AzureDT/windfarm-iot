@@ -703,10 +703,18 @@ function main(context, previousState, previousProperties) {
     state.genSpeed_PM = next[16];
     state.genTorgue_PM = next[17];
 
-    if (properties.converter == "temp-error") state.convTemp = 85.0;
+    if (properties.converter == "temp-error") 
+    {
+        if (state.convTemp < 85) state.convTemp += 2.0;
+        else state.convTemp = 85.0;
+    }
     else state.convTemp = next[2];
 
-    if (properties.gearbox == "temp-error") state.gearboxTemp = 85.0;
+    if (properties.gearbox == "temp-error") 
+    {
+        if (state.gearboxTemp < 85) state.gearboxTemp += 2.0;
+        else state.gearboxTemp = 85.0;
+    }
     else state.gearboxTemp = next[3];
 
     if (properties.generator == "alert") state.power = 0;

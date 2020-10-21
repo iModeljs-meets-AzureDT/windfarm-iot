@@ -31,6 +31,8 @@ This extension adds UI components and functionality to our viewer.
 
 ### **4. device-simulation**
 
+How to set up simulation:
+
 1. Go to ["Azure IoT Device Simulation"](https://windfarmsimulation-m6vf5.azurewebsites.net/devicemodels)
 2. Select "Device Models" menu and click "Add Device Models" 
 3. upload all the json and js files in the Advanced tab.
