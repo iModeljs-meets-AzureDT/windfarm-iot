@@ -1,5 +1,6 @@
 import { Marker, imageElementFromUrl } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
+import { WindfarmExtension } from "../WindfarmExtension";
 
 // SVG example.
 export class PowerMarker extends Marker {
@@ -10,8 +11,32 @@ export class PowerMarker extends Marker {
     }
   }
 
+(window as any).adtEmitter.on('event', (data: any) => {
+  console.log("RECEIVED FROM EXTENSION");
+  console.log(data);
+
+  /*
+  PowerDisplayMarker.power += 1;
+  PowerDisplayMarker.powerDM += 1;
+  PowerDisplayMarker.powerPM += 1;
+  */
+
+  PowerDisplayMarker.id = data.$dtId
+  PowerDisplayMarker.power = data.powerObserved;
+  PowerDisplayMarker.powerDM = data.powerDM;
+  PowerDisplayMarker.powerPM = data.powerPM;
+
+  // Manually call draw func on update.
+  WindfarmExtension.viewport?.invalidateDecorations();
+});
+
 // Canvas example.
 export class PowerDisplayMarker extends Marker {
+
+  public static id: string = "WTG001";
+  public static power: number = 800;
+  public static powerDM: number = 1000;
+  public static powerPM: number = 900;
 
   constructor(location: XYAndZ, size: XAndY) {
     super(location, size);
@@ -54,13 +79,13 @@ export class PowerDisplayMarker extends Marker {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
-    // var rectHeight = 200;
     var rectWidth = 100;
     var rectX = 10;
-    // var rectY = 10;
-    ctx.fillText((window as any).DATA_LINK.$dtId, rectX + (rectWidth / 2), 20);
-    ctx.fillText("Actual Power:" + (window as any).DATA_LINK.powerObserved, rectX + (rectWidth / 2), 35);
-    ctx.fillText("Physical Model: " + (window as any).DATA_LINK.powerPM, rectX + (rectWidth / 2), 50);
-    ctx.fillText("Data Model: " + (window as any).DATA_LINK.powerDM, rectX + (rectWidth / 2), 65);
+
+    // Manually placing positions since fillText doesn't wrap.
+    ctx.fillText(PowerDisplayMarker.id, rectX + (rectWidth / 2), 20);
+    ctx.fillText("Actual Power:" + PowerDisplayMarker.power, rectX + (rectWidth / 2), 35);
+    ctx.fillText("Physical Model: " + PowerDisplayMarker.powerPM, rectX + (rectWidth / 2), 50);
+    ctx.fillText("Data Model: " + PowerDisplayMarker.powerDM, rectX + (rectWidth / 2), 65);
   }
 }

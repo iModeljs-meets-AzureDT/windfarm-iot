@@ -11,6 +11,11 @@ import { UiFramework } from "@bentley/ui-framework";
 // import BoundaryDecorator from "./components/BoundaryDecorator";
 import { PowerDecorator } from "./components/PowerDecorator";
 
+(window as any).adtEmitter.on('event', (data: any) => {
+  console.log("RECEIVED FROM EXTENSION");
+  console.log(data);
+});
+
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
   public static i18n: I18N;

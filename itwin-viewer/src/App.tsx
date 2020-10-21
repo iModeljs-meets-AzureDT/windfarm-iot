@@ -10,6 +10,20 @@ import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
 import { TimeSeries } from "./TimeSeries";
 
+import { EventEmitter } from "events";
+
+(window as any).adtEmitter = new EventEmitter();
+
+setInterval(async () => {
+  const data = await AdtDataLink.fetchDataForNode("WTG001");
+  console.log("EMITTING..");
+  (window as any).adtEmitter.emit('event', data);
+
+  (window as any).DATA_LINK = data;
+  // console.log((window as any).DATA_LINK);
+  // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
+}, 5000);
+
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
     AuthorizationClient.oidcClient
@@ -17,13 +31,6 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  setInterval(async () => {
-    const data = await AdtDataLink.fetchDataForNode("WTG001");
-    (window as any).DATA_LINK = data;
-    console.log((window as any).DATA_LINK);
-    // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
-  }, 5000);
 
   useEffect(() => {
     const initOidc = async () => {
