@@ -11,11 +11,10 @@ export class PowerMarker extends Marker {
     }
   }
 
+// This is outside to prevent a double instantiation.
 (window as any).adtEmitter.on('event', (data: any) => {
-  console.log("RECEIVED FROM EXTENSION");
-  console.log(data);
 
-  /*
+  /* Test if ADT isn't changing.
   PowerDisplayMarker.power += 1;
   PowerDisplayMarker.powerDM += 1;
   PowerDisplayMarker.powerPM += 1;
@@ -74,13 +73,13 @@ export class PowerDisplayMarker extends Marker {
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "#abc";
-    this.roundRect(ctx, 10, 10, 100, 70, 10, true, true);
+    this.roundRect(ctx, 10, 10, 150, 70, 10, true, true);
     ctx.font = "10px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
-    var rectWidth = 100;
-    var rectX = 10;
+    const rectWidth = 150;
+    const rectX = 10;
 
     // Manually placing positions since fillText doesn't wrap.
     ctx.fillText(PowerDisplayMarker.id, rectX + (rectWidth / 2), 20);

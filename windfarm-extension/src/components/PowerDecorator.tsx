@@ -28,6 +28,7 @@ export class PowerDecorator implements Decorator {
       this._markers.push(marker);
       */
 
+      // TODO: Bind to different adt turbines.
       const powerdisplayMarker = new PowerDisplayMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z },
         { x: 100, y: 100 },
@@ -45,3 +46,4 @@ export class PowerDecorator implements Decorator {
 
   }
 }
+  

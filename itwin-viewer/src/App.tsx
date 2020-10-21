@@ -12,15 +12,15 @@ import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
 
+// I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
 
 setInterval(async () => {
   const data = await AdtDataLink.fetchDataForNode("WTG001");
-  console.log("EMITTING..");
+  console.log(data);
+
   (window as any).adtEmitter.emit('event', data);
 
-  (window as any).DATA_LINK = data;
-  // console.log((window as any).DATA_LINK);
   // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
 }, 5000);
 
