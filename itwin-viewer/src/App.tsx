@@ -19,9 +19,11 @@ const App: React.FC = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   setInterval(async () => {
-    console.log(await AdtDataLink.fetchDataForNode("WTG001"));
-    console.log(await TimeSeries.showTsiDataForNode("WTG001"));
-    }, 5000);
+    const data = await AdtDataLink.fetchDataForNode("WTG001");
+    (window as any).DATA_LINK = data;
+    console.log((window as any).DATA_LINK);
+    // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
+  }, 5000);
 
   useEffect(() => {
     const initOidc = async () => {
@@ -71,6 +73,8 @@ const App: React.FC = () => {
   };
 
   const onIModelConnection = async (imodel: RemoteBriefcaseConnection) => {
+    const data = await AdtDataLink.fetchDataForNode("WTG001");
+    (window as any).DATA_LINK = data;
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
