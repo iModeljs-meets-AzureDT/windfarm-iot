@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "3088caf2-e1d2-40fc-bc9f-74c3f35ff4ac",
+		"name": "Doosan Pysical APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://52.157.19.187/api/pysicalmodel",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[8.34,8.26,8.3,8.37,8.42]"
+				},
+				"url": {
+					"raw": "http://52.157.19.187/api/pysicalmodel",
+					"protocol": "http",
+					"host": [
+						"52",
+						"157",
+						"19",
+						"187"
+					],
+					"path": [
+						"api",
+						"pysicalmodel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://52.157.19.187/api/pysicalmodelpredict",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[8.34,8.26,8.3,8.37,8.42]"
+				},
+				"url": {
+					"raw": "http://52.157.19.187/api/pysicalmodelpredict",
+					"protocol": "http",
+					"host": [
+						"52",
+						"157",
+						"19",
+						"187"
+					],
+					"path": [
+						"api",
+						"pysicalmodelpredict"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
