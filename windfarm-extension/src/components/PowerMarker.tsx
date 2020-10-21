@@ -72,7 +72,7 @@ export class PowerDisplayMarker extends Marker {
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "#abc";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
     this.roundRect(ctx, 10, 10, 150, 70, 10, true, true);
     ctx.font = "10px Georgia";
     ctx.textAlign = "center";
