@@ -625,10 +625,6 @@ var state = {
     windSpeed: 6.66,
     power: 870,
     yawPosition: 5.05,
-    winSpeed_PM: 6.66,
-    power_PM: 0,
-    genSpeed_PM: 0.3,
-    genTorgue_PM: -0.486,
     nacelleTemp: 45.0,
     convTemp: 43.6,
     gearboxTemp: 30.0
@@ -698,10 +694,6 @@ function main(context, previousState, previousProperties) {
     state.windSpeed = next[11];
     
     state.yawPosition = next[13];
-    state.winSpeed_PM = next[14];
-    state.power_PM = next[15] * 1000; // Unit matching
-    state.genSpeed_PM = next[16];
-    state.genTorgue_PM = next[17];
 
     if (properties.converter == "temp-error") 
     {
