@@ -11,7 +11,15 @@ export class PowerDecorator implements Decorator {
 
   private async addMarker() {
 
-    const query = "select origin from bis.physicalelement where userlabel = 'ControlUnit'";
+    // Structure, ControlUnit and Blades are used to construct the ZoomToElements.
+    const query = `SELECT control.ecinstanceid as cId, 
+                          structure.ecinstanceid as sId, 
+                          blades.ecinstanceid as bId, 
+                          control.origin 
+                      FROM bis.physicalelement control 
+                      INNER JOIN bis.physicalelement structure ON control.parent.id = structure.parent.id 
+                      INNER JOIN bis.physicalelement blades ON control.parent.id = blades.parent.id 
+                      WHERE control.userlabel = 'ControlUnit' AND structure.userlabel = 'Structure' AND blades.userlabel = 'Blades'`;
 
     const rowIterator = WindfarmExtension.imodel!.query(query);
 
@@ -35,6 +43,9 @@ export class PowerDecorator implements Decorator {
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 100, y: 100 },
         prefix + turbineIndex++,
+        value.cId,
+        value.sId,
+        value.bId,
       );
 
       this._markers.push(powerdisplayMarker);

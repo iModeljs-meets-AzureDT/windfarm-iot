@@ -1,4 +1,4 @@
-import { Marker, imageElementFromUrl } from "@bentley/imodeljs-frontend";
+import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
 
@@ -14,14 +14,20 @@ export class PowerMarker extends Marker {
 // Canvas example.
 export class PowerDisplayMarker extends Marker {
 
-  public id: string = "PLACEHOLDER";
-  private power: number = 800;
-  private powerDM: number = 1000;
-  private powerPM: number = 900;
+  public id: string = "";
+  public cId: string = "";
+  public sId: string = "";
+  public bId: string = "";
+  private power: number = 0;
+  private powerDM: number = 0;
+  private powerPM: number = 0;
 
-  constructor(location: XYAndZ, size: XAndY, id: string) {
+  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     this.id = id;
+    this.cId = cId;
+    this.sId = sId;
+    this.bId = bId;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('event', (data: any) => {
@@ -91,5 +97,10 @@ export class PowerDisplayMarker extends Marker {
     ctx.fillText("Actual Power:" + this.power, rectX + (rectWidth / 2), 35);
     ctx.fillText("Physical Model: " + this.powerPM, rectX + (rectWidth / 2), 50);
     ctx.fillText("Data Model: " + this.powerDM, rectX + (rectWidth / 2), 65);
+  }
+
+  public onMouseButton(_ev: BeButtonEvent): boolean {
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    return true;
   }
 }
