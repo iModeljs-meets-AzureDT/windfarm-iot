@@ -15,6 +15,7 @@ export class PowerDecorator implements Decorator {
 
     const rowIterator = WindfarmExtension.imodel!.query(query);
 
+    let turbineIndex = 1;
     while (true) {
       const { done, value } = await rowIterator.next();
       if (done) break;
@@ -28,10 +29,12 @@ export class PowerDecorator implements Decorator {
       this._markers.push(marker);
       */
 
-      // TODO: Bind to different adt turbines.
+      let prefix = "WTG00";
+      if (turbineIndex >= 10) prefix = "WTG0";
       const powerdisplayMarker = new PowerDisplayMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 100, y: 100 },
+        prefix + turbineIndex++,
       );
 
       this._markers.push(powerdisplayMarker);

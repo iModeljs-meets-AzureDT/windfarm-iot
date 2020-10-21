@@ -15,15 +15,6 @@ import { EventEmitter } from "events";
 // I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
 
-setInterval(async () => {
-  const data = await AdtDataLink.fetchDataForNode("WTG001");
-  console.log(data);
-
-  (window as any).adtEmitter.emit('event', data);
-
-  // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
-}, 5000);
-
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
     AuthorizationClient.oidcClient
@@ -94,6 +85,23 @@ const App: React.FC = () => {
 
       vp.displayStyle = style;
     });
+
+    // Only start the fetching when imodel has connected.
+    setInterval(async () => {
+      for (let turbineIndex = 1; turbineIndex <= 10; ++turbineIndex) {
+        // Small hack to cover 10.
+        let prefix = "WTG00";
+        if (turbineIndex >= 10) prefix = "WTG0";
+        AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
+          console.log(data);
+          (window as any).adtEmitter.emit('event', data);
+        });
+      }
+
+      // hi?
+      // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
+    }, 5000);
+
   }
 
   const extensions: ViewerExtension[] = [
