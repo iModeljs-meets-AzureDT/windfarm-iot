@@ -95,10 +95,9 @@ const App: React.FC = () => {
         AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
           console.log(data);
           (window as any).adtEmitter.emit('event', data);
-        });
+        }).catch(() => {});
       }
 
-      // hi?
       // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
     }, 5000);
 
