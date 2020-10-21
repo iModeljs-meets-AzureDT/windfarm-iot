@@ -20,8 +20,6 @@ namespace MachineLearning
                     {
                         //datetime = info.EventEnqueuedUtcTime.ToString(),
                         SYSDATETIME = info.OriginSysTime,
-                        VA_GenSpe = info.GenSpeed,
-                        VA_GenTorCon = info.GenTorque,
                         VA_PiPosBla1 = info.Blade1PitchPosition,
                         VA_PiPosBla2 = info.Blade2PitchPosition,
                         VA_PiPosBla3 = info.Blade3PitchPosition,
@@ -75,14 +73,12 @@ namespace MachineLearning
                     var requestInfo = new GenSpeedRequestData
                     {
                         SYSDATETIME = info.OriginSysTime,
-                        VA_GenTorCon = info.GenTorque,
                         VA_PiPosBla1 = info.Blade1PitchPosition,
                         VA_PiPosBla2 = info.Blade2PitchPosition,
                         VA_PiPosBla3 = info.Blade3PitchPosition,
                         VA_WiDir_Avg30s = info.WindDir,
                         VA_WiSpe_Avg10s = info.WindSpeed,
                         VA_YawPos = info.YawPosition,
-                        VA_WiTurActPowOut_Avg10s = info.Power
                     };
                     var requestBody = new DMGenSpeedRequestInfo { data = new GenSpeedRequestData[1] };
                     requestBody.data[0] = requestInfo;

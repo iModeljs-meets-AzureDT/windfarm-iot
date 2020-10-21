@@ -8,6 +8,7 @@ import { AdtDataLink } from "./AdtDataLink";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
+import { TimeSeries } from "./TimeSeries";
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
@@ -17,7 +18,10 @@ const App: React.FC = () => {
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
+  setInterval(async () => {
+    console.log(await AdtDataLink.fetchDataForNode("WTG001"));
+    console.log(await TimeSeries.showTsiDataForNode("WTG001"));
+    }, 5000);
 
   useEffect(() => {
     const initOidc = async () => {

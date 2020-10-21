@@ -15,12 +15,7 @@
         public float Power { get; set; }
         public float Power_PM { get; set; }
         public float Power_DM { get; set; }
-
-        public float GenSpeed { get; set; }
-        public float GenSpeed_PM { get; set; }
         public float GenSpeed_DM { get; set; }
-        public float GenTorque { get; set; }
-        public float GenTorque_PM { get; set; }
         //       public float GenTorque_DM { get; set; }
 
         public float PitchAngle1_PM { get; set; }
