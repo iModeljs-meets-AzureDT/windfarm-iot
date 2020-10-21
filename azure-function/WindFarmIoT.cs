@@ -187,7 +187,6 @@ namespace Doosan.Function
 
                 var result = new WTMLInfo {
                     Power_DM = await MlApi.GetPowerAsync(info),
-                    GenSpeed_DM = await MlApi.GetGenSpeedAsync(info)
                 };
 
                 return (ActionResult)new OkObjectResult(result);

@@ -7,7 +7,7 @@
 
     public class DMPowerData
     {
-        public string SYSDATETIME { get; set; }
+        public string SYSTIME { get; set; }
         public float VA_WiSpe_Avg10s { get; set; }
         public float VA_WiDir_Avg30s { get; set; }
         public float VA_PiPosBla1 { get; set; }
