@@ -84,14 +84,6 @@ export class MachineLearningForm extends React.Component<{}> {
             <input type="text" name="pitchAngle3" className="ml-input" defaultValue="1.92"></input> <br />
           </p>
           <p className="ml-p">
-            <label className="ml-label">Generator Speed: </label>
-            <input type="text" name="genSpeed" className="ml-input" defaultValue="1212.28"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Generator Torque: </label>
-            <input type="text" name="genTorque" className="ml-input" defaultValue="6824.49"></input> <br />
-          </p>
-          <p className="ml-p">
             <label className="ml-label">Time: </label>
             <input type="text" name="originSysTime" className="ml-input" defaultValue="7/29/2018 11:43:03"></input> <br />
           </p>
