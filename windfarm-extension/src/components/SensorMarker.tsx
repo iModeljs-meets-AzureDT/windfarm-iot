@@ -1,9 +1,9 @@
-import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
 
 // Canvas example.
-export class PowerMarker extends Marker {
+export class SensorMarker extends Marker {
 
   public id: string = "";
   public cId: string = "";
@@ -24,12 +24,6 @@ export class PowerMarker extends Marker {
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('event', (data: any) => {
-
-      /* Test if ADT isn't changing.
-      PowerDisplayMarker.power += 1;
-      PowerDisplayMarker.powerDM += 1;
-      PowerDisplayMarker.powerPM += 1;
-      */
 
       if (this.id === data.$dtId) {
 
@@ -100,3 +94,4 @@ export class PowerMarker extends Marker {
     return true;
   }
 }
+

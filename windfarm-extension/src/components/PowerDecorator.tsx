@@ -1,12 +1,15 @@
-import { DecorateContext, Marker, Decorator } from "@bentley/imodeljs-frontend";
+import { DecorateContext, Decorator, IModelApp } from "@bentley/imodeljs-frontend";
 import { WindfarmExtension } from "../WindfarmExtension";
-import { PowerDisplayMarker, PowerMarker } from "./PowerMarker";
+import { PowerMarker } from "./PowerMarker";
+import { SensorDecorator } from "./SensorDecorator";
 
 export class PowerDecorator implements Decorator {
-  protected _markers: Marker[] = [];
+  public markers: PowerMarker[] = [];
 
   constructor() {
-    this.addMarker();
+    this.addMarker().then(() => {
+      IModelApp.viewManager.addDecorator(new SensorDecorator(this.markers));
+    });
   }
 
   private async addMarker() {
@@ -29,7 +32,6 @@ export class PowerDecorator implements Decorator {
       const { done, value } = await rowIterator.next();
       if (done) break;
 
-
       /* SVG example..
       const marker = new PowerMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 20 },
@@ -38,7 +40,7 @@ export class PowerDecorator implements Decorator {
       this._markers.push(marker);
       */
 
-      const powerdisplayMarker = new PowerDisplayMarker(
+      const powerdisplayMarker = new PowerMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 100, y: 100 },
         value.tID ? value.tID : "WTG008",
@@ -47,13 +49,13 @@ export class PowerDecorator implements Decorator {
         value.bId,
       );
 
-      this._markers.push(powerdisplayMarker);
+      this.markers.push(powerdisplayMarker);
     }
 
   }
 
   public decorate(context: DecorateContext): void {
-    this._markers.forEach((marker) => {
+    this.markers.forEach((marker) => {
       marker.addDecoration(context);
     });
 
