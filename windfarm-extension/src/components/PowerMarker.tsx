@@ -84,19 +84,20 @@ export class PowerDisplayMarker extends Marker {
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    this.roundRect(ctx, 10, 10, 150, 70, 10, true, true);
+    const yPos = -20;
+    const xPos = -75;
+    const rectWidth = 150;
+    this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
     ctx.font = "10px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
-    const rectWidth = 150;
-    const rectX = 10;
 
     // Manually placing positions since fillText doesn't wrap.
-    ctx.fillText(this.id, rectX + (rectWidth / 2), 20);
-    ctx.fillText("Actual Power:" + this.power, rectX + (rectWidth / 2), 35);
-    ctx.fillText("Physical Model: " + this.powerPM, rectX + (rectWidth / 2), 50);
-    ctx.fillText("Data Model: " + this.powerDM, rectX + (rectWidth / 2), 65);
+    ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
+    ctx.fillText("Actual Power:" + this.power, xPos + (rectWidth / 2), yPos + 30);
+    ctx.fillText("Physical Model: " + this.powerPM, xPos + (rectWidth / 2), yPos + 45);
+    ctx.fillText("Data Model: " + this.powerDM, xPos + (rectWidth / 2), yPos + 60);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
