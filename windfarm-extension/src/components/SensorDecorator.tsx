@@ -11,19 +11,14 @@ export class SensorDecorator implements Decorator {
 
   private async addMarker(powerMarkers: PowerMarker[]) {
     powerMarkers.forEach((powerMarker) => {
-      console.log("ADDING POWER MARKERS.");
-      console.log(powerMarker);
-      // powerMarker.id
-      // this._markers.push(new SensorMarker(powerMarker))
+      this._markers.push(new SensorMarker(powerMarker))
     })
   }
 
-  public decorate(_context: DecorateContext): void {
-    /*
+  public decorate(context: DecorateContext): void {
     this._markers.forEach((marker) => {
       marker.addDecoration(context);
     });
-    */
   }
 }
   

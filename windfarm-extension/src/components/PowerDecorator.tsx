@@ -32,14 +32,6 @@ export class PowerDecorator implements Decorator {
       const { done, value } = await rowIterator.next();
       if (done) break;
 
-      /* SVG example..
-      const marker = new PowerMarker(
-        { x: value.origin.x, y: value.origin.y, z: value.origin.z + 20 },
-        { x: 50, y: 50 }
-      );
-      this._markers.push(marker);
-      */
-
       const powerdisplayMarker = new PowerMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 100, y: 100 },

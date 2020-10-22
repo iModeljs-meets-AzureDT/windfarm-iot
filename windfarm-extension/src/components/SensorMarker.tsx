@@ -1,36 +1,46 @@
 import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
+import { PowerMarker } from "./PowerMarker";
 
 // Canvas example.
 export class SensorMarker extends Marker {
 
   public id: string = "";
   public cId: string = "";
-  public sId: string = "";
   public bId: string = "";
-  public showSensorData: boolean = false;
 
-  private power: number = 0;
-  private powerDM: number = 0;
-  private powerPM: number = 0;
+  private blade1PitchAngle: number = 0;
+  private blade2PitchAngle: number = 0;
+  private blade3PitchAngle: number = 0;
+  private yawPosition: number = 0;
+  private windDirection: number = 0;
+  private windSpeed: number = 0;
+  private temperatureNacell: number = 0;
+  private temperatureGenerator: number = 0;
+  private temperatureGearbox: number = 0;
 
-  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
-    super(location, size);
-    this.id = id;
-    this.cId = cId;
-    this.sId = sId;
-    this.bId = bId;
+  constructor(powerMarker: PowerMarker) {
+    super(powerMarker.worldLocation, powerMarker.size);
+
+    this.id = powerMarker.id;
+    this.cId = powerMarker.cId;
+    this.bId = powerMarker.bId;
 
     // Add a listener for each marker.
-    (window as any).adtEmitter.on('event', (data: any) => {
+    (window as any).adtEmitter.on('sensorevent', (data: any) => {
 
-      if (this.id === data.$dtId) {
+      if (this.id === data.observes) {
 
-        this.id = data.$dtId
-        this.power = data.powerObserved;
-        this.powerDM = data.powerDM;
-        this.powerPM = data.powerPM;
+        this.blade1PitchAngle = data.blade1PitchAngle;
+        this.blade2PitchAngle = data.blade2PitchAngle;
+        this.blade3PitchAngle = data.blade3PitchAngle;
+        this.yawPosition = data.yawPosition;
+        this.windDirection = data.windDirection;
+        this.windSpeed = data.windSpeed;
+        this.temperatureNacell = data.temperatureNacell;
+        this.temperatureGenerator = data.temperatureGenerator;
+        this.temperatureGearbox = data.temperatureGearbox;
 
         // Manually call draw func on update.
         WindfarmExtension.viewport?.invalidateDecorations();
@@ -66,12 +76,11 @@ export class SensorMarker extends Marker {
   }
 
   public drawFunc(ctx: CanvasRenderingContext2D) {
-    if (!(window as any).DATA_LINK) return;
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    const yPos = -20;
+    const yPos = 120;
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
@@ -82,15 +91,15 @@ export class SensorMarker extends Marker {
 
     // Manually placing positions since fillText doesn't wrap.
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("Actual Power:" + this.power, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM, xPos + (rectWidth / 2), yPos + 60);
+    ctx.fillText("Blade1:" + this.blade1PitchAngle, xPos + (rectWidth / 2), yPos + 30);
+    ctx.fillText("Blade2: " + this.blade2PitchAngle, xPos + (rectWidth / 2), yPos + 45);
+    ctx.fillText("Blade3: " + this.blade3PitchAngle, xPos + (rectWidth / 2), yPos + 60);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
-    this.showSensorData = true;
+    // this.showSensorData = true;
     return true;
   }
 }

@@ -23,7 +23,7 @@ export class PowerMarker extends Marker {
     this.bId = bId;
 
     // Add a listener for each marker.
-    (window as any).adtEmitter.on('event', (data: any) => {
+    (window as any).adtEmitter.on('powerevent', (data: any) => {
 
       /* Test if ADT isn't changing.
       PowerDisplayMarker.power += 1;
@@ -72,7 +72,6 @@ export class PowerMarker extends Marker {
   }
 
   public drawFunc(ctx: CanvasRenderingContext2D) {
-    if (!(window as any).DATA_LINK) return;
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
