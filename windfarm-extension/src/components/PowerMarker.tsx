@@ -3,6 +3,7 @@ import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { SensorDecorator } from "./SensorDecorator";
 import { PowerDecorator } from "./PowerDecorator";
+import { WindDecorator } from "./WindDecorator";
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -11,9 +12,10 @@ export class PowerMarker extends Marker {
   public cId: string = "";
   public sId: string = "";
   public bId: string = "";
-  public showSensorIcon: boolean = false;
 
   private sensorData: SensorDecorator;
+  private windData: WindDecorator;
+
   private power: number = 0;
   private powerDM: number = 0;
   private powerPM: number = 0;
@@ -26,6 +28,7 @@ export class PowerMarker extends Marker {
     this.bId = bId;
 
     this.sensorData = new SensorDecorator(this);
+    this.windData = new WindDecorator(this);
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -96,12 +99,12 @@ export class PowerMarker extends Marker {
 
     // Drop all other markers.
     PowerDecorator.markers.forEach(marker => {
-      marker.showSensorIcon = false;
       IModelApp.viewManager.dropDecorator(marker.sensorData);
+      IModelApp.viewManager.dropDecorator(marker.windData);
     });
 
-    this.showSensorIcon = true;
     IModelApp.viewManager.addDecorator(this.sensorData);
+    IModelApp.viewManager.addDecorator(this.windData);
 
     return true;
   }
