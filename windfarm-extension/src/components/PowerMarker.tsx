@@ -4,6 +4,7 @@ import { WindfarmExtension } from "../WindfarmExtension";
 import { SensorDecorator } from "./SensorDecorator";
 import { PowerDecorator } from "./PowerDecorator";
 import { WindDecorator } from "./WindDecorator";
+import { TemperatureDecorator } from "./TemperatureDecorator";
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -13,8 +14,9 @@ export class PowerMarker extends Marker {
   public sId: string = "";
   public bId: string = "";
 
-  private sensorData: SensorDecorator;
-  private windData: WindDecorator;
+  public sensorData: SensorDecorator;
+  public windData: WindDecorator;
+  public temperatureData: TemperatureDecorator;
 
   private power: number = 0;
   private powerDM: number = 0;
@@ -29,6 +31,7 @@ export class PowerMarker extends Marker {
 
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
+    this.temperatureData = new TemperatureDecorator(this);
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -101,10 +104,12 @@ export class PowerMarker extends Marker {
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.sensorData);
       IModelApp.viewManager.dropDecorator(marker.windData);
+      IModelApp.viewManager.dropDecorator(marker.temperatureData);
     });
 
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
+    IModelApp.viewManager.addDecorator(this.temperatureData);
 
     return true;
   }

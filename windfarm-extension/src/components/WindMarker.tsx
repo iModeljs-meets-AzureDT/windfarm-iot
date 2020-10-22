@@ -1,7 +1,8 @@
-import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY, Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
+import { PowerDecorator } from "./PowerDecorator";
 
 // Canvas example.
 export class WindMarker extends Marker {
@@ -12,11 +13,6 @@ export class WindMarker extends Marker {
 
   private windDirection: number = 0;
   private windSpeed: number = 0;
-  /*
-  private temperatureNacell: number = 0;
-  private temperatureGenerator: number = 0;
-  private temperatureGearbox: number = 0;
-  */
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
@@ -77,20 +73,25 @@ export class WindMarker extends Marker {
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "10px Georgia";
+    ctx.font = "11px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("windDirection:" + this.windDirection, xPos + (rectWidth / 2), yPos + 30);
+    ctx.fillText("windDirection: " + this.windDirection, xPos + (rectWidth / 2), yPos + 30);
     ctx.fillText("windSpeed: " + this.windSpeed, xPos + (rectWidth / 2), yPos + 45);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
+
+    PowerDecorator.markers.forEach(marker => {
+      IModelApp.viewManager.dropDecorator(marker.temperatureData);
+      IModelApp.viewManager.dropDecorator(marker.sensorData);
+    });
 
     return true;
   }

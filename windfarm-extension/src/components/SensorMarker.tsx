@@ -14,11 +14,6 @@ export class SensorMarker extends Marker {
   private blade2PitchAngle: number = 0;
   private blade3PitchAngle: number = 0;
   private yawPosition: number = 0;
-  /*
-  private temperatureNacell: number = 0;
-  private temperatureGenerator: number = 0;
-  private temperatureGearbox: number = 0;
-  */
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
@@ -95,9 +90,9 @@ export class SensorMarker extends Marker {
 
     // Manually placing positions since fillText doesn't wrap.
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("Blade1:" + this.blade1PitchAngle, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("Blade2: " + this.blade2PitchAngle, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("Blade3: " + this.blade3PitchAngle, xPos + (rectWidth / 2), yPos + 60);
+    ctx.fillText("Blade1: " + this.blade1PitchAngle, xPos + (rectWidth / 2), yPos + 30);
+    ctx.fillText("Blade2 : " + this.blade2PitchAngle, xPos + (rectWidth / 2), yPos + 45);
+    ctx.fillText("Blade3 : " + this.blade3PitchAngle, xPos + (rectWidth / 2), yPos + 60);
     ctx.fillText("yawPosition: " + this.yawPosition, xPos + (rectWidth / 2), yPos + 75);
   }
 
