@@ -1,5 +1,5 @@
 import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
-import { XYAndZ, XAndY } from "@bentley/geometry-core";
+import { XYAndZ, XAndY, Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 
@@ -19,13 +19,18 @@ export class SensorMarker extends Marker {
   private temperatureNacell: number = 0;
   private temperatureGenerator: number = 0;
   private temperatureGearbox: number = 0;
+  private parentPowerMarker: PowerMarker;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
 
+    // Move it back.
+    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 30);
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
+
+    this.parentPowerMarker = powerMarker;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {
@@ -80,7 +85,7 @@ export class SensorMarker extends Marker {
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    const yPos = 120;
+    const yPos = -20;
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
@@ -97,9 +102,9 @@ export class SensorMarker extends Marker {
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
-    // this.showSensorData = true;
+    WindfarmExtension.viewport?.zoomToElements([this.cId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+
     return true;
   }
 }

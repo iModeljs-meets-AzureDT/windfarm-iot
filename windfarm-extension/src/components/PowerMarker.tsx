@@ -1,6 +1,8 @@
-import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
+import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../WindfarmExtension";
+import { SensorDecorator } from "./SensorDecorator";
+import { PowerDecorator } from "./PowerDecorator";
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -9,8 +11,9 @@ export class PowerMarker extends Marker {
   public cId: string = "";
   public sId: string = "";
   public bId: string = "";
-  public showSensorData: boolean = false;
+  public showSensorIcon: boolean = false;
 
+  private sensorData: SensorDecorator;
   private power: number = 0;
   private powerDM: number = 0;
   private powerPM: number = 0;
@@ -22,14 +25,10 @@ export class PowerMarker extends Marker {
     this.sId = sId;
     this.bId = bId;
 
+    this.sensorData = new SensorDecorator(this);
+
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
-
-      /* Test if ADT isn't changing.
-      PowerDisplayMarker.power += 1;
-      PowerDisplayMarker.powerDM += 1;
-      PowerDisplayMarker.powerPM += 1;
-      */
 
       if (this.id === data.$dtId) {
 
@@ -95,7 +94,15 @@ export class PowerMarker extends Marker {
   public onMouseButton(_ev: BeButtonEvent): boolean {
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
-    this.showSensorData = true;
+    // Drop all other markers.
+    PowerDecorator.markers.forEach(marker => {
+      marker.showSensorIcon = false;
+      IModelApp.viewManager.dropDecorator(marker.sensorData);
+    });
+
+    this.showSensorIcon = true;
+    IModelApp.viewManager.addDecorator(this.sensorData);
+
     return true;
   }
 }

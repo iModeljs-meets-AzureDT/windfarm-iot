@@ -1,15 +1,12 @@
 import { DecorateContext, Decorator, IModelApp } from "@bentley/imodeljs-frontend";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
-import { SensorDecorator } from "./SensorDecorator";
 
 export class PowerDecorator implements Decorator {
-  public markers: PowerMarker[] = [];
+  public static markers: PowerMarker[] = [];
 
   constructor() {
-    this.addMarker().then(() => {
-      IModelApp.viewManager.addDecorator(new SensorDecorator(this.markers));
-    });
+    this.addMarker();
   }
 
   private async addMarker() {
@@ -19,7 +16,7 @@ export class PowerDecorator implements Decorator {
                           control.ecinstanceid as cId, 
                           structure.ecinstanceid as sId, 
                           blades.ecinstanceid as bId, 
-                          control.origin 
+                          control.origin
                       FROM bis.physicalelement control 
                       INNER JOIN bis.physicalelement structure ON control.parent.id = structure.parent.id 
                       INNER JOIN bis.physicalelement blades ON control.parent.id = blades.parent.id 
@@ -41,13 +38,13 @@ export class PowerDecorator implements Decorator {
         value.bId,
       );
 
-      this.markers.push(powerdisplayMarker);
+      PowerDecorator.markers.push(powerdisplayMarker);
     }
 
   }
 
   public decorate(context: DecorateContext): void {
-    this.markers.forEach((marker) => {
+    PowerDecorator.markers.forEach((marker) => {
       marker.addDecoration(context);
     });
 
