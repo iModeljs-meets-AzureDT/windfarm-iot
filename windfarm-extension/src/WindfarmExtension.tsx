@@ -8,7 +8,6 @@ import * as React from "react";
 
 import "./WindFarm.scss";
 import { UiFramework } from "@bentley/ui-framework";
-// import BoundaryDecorator from "./components/BoundaryDecorator";
 import { PowerDecorator } from "./components/PowerDecorator";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
@@ -81,7 +80,6 @@ export class WindfarmExtension extends Extension {
 
       // Add decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
-      // IModelApp.viewManager.addDecorator(new BoundaryDecorator());
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
       ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
