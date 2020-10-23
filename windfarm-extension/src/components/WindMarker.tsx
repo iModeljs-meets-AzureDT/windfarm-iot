@@ -71,17 +71,19 @@ export class WindMarker extends Marker {
     ctx.fillStyle = "rgba(87, 229, 130, 0.64)";
     const yPos = -20;
     const xPos = -75;
-    const rectWidth = 150;
+    const rectWidth = 120;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "11px Georgia";
-    ctx.textAlign = "center";
+    ctx.font = "11px";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
+    ctx.textAlign = "center";
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("windDirection: " + this.windDirection, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("windSpeed: " + this.windSpeed, xPos + (rectWidth / 2), yPos + 45);
+
+    ctx.textAlign = "left";
+    ctx.fillText("Wind Direction: " + Math.abs(this.windDirection).toFixed(2), xPos + 5, yPos + 30);
+    ctx.fillText("Wind Speed: " + Math.abs(this.windSpeed).toFixed(2) + " km/h", xPos + 5, yPos + 45);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {

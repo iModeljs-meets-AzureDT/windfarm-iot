@@ -85,16 +85,18 @@ export class PowerMarker extends Marker {
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "10px Georgia";
-    ctx.textAlign = "center";
+    ctx.font = "10px";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
+    ctx.textAlign = "center";
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("Actual Power:" + this.power, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM, xPos + (rectWidth / 2), yPos + 60);
+
+    ctx.textAlign = "left";
+    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW⋅h", xPos + 5, yPos + 30);
+    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 45);
+    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 60);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {

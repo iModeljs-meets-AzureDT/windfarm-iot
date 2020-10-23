@@ -33,13 +33,6 @@ export class SensorMarker extends Marker {
         this.blade2PitchAngle = data.blade2PitchAngle;
         this.blade3PitchAngle = data.blade3PitchAngle;
         this.yawPosition = data.yawPosition;
-        /*
-        this.windDirection = data.windDirection;
-        this.windSpeed = data.windSpeed;
-        this.temperatureNacell = data.temperatureNacell;
-        this.temperatureGenerator = data.temperatureGenerator;
-        this.temperatureGearbox = data.temperatureGearbox;
-        */
 
         // Manually call draw func on update.
         WindfarmExtension.viewport?.invalidateDecorations();
@@ -74,6 +67,10 @@ export class SensorMarker extends Marker {
     }
   }
 
+  private radiansToDegrees(radians: number) {
+    return radians * (180 / Math.PI);
+  }
+
   public drawFunc(ctx: CanvasRenderingContext2D) {
 
     ctx.lineWidth = 4;
@@ -83,17 +80,19 @@ export class SensorMarker extends Marker {
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 85, 10, true, true);
-    ctx.font = "10px Georgia";
-    ctx.textAlign = "center";
+    ctx.font = "10px";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
+    ctx.textAlign = "center";
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("Blade1: " + this.blade1PitchAngle, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("Blade2 : " + this.blade2PitchAngle, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("Blade3 : " + this.blade3PitchAngle, xPos + (rectWidth / 2), yPos + 60);
-    ctx.fillText("yawPosition: " + this.yawPosition, xPos + (rectWidth / 2), yPos + 75);
+
+    ctx.textAlign = "left";
+    ctx.fillText("Blade 1 Pitch Angle : " + this.radiansToDegrees(this.blade1PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 30);
+    ctx.fillText("Blade 2 Pitch Angle : " + this.radiansToDegrees(this.blade2PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 45);
+    ctx.fillText("Blade 3 Pitch angle : " + this.radiansToDegrees(this.blade3PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 60);
+    ctx.fillText("Yaw Position: " + this.yawPosition.toFixed(2), xPos + 5, yPos + 75);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {

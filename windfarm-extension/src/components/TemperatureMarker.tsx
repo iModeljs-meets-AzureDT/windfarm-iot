@@ -74,18 +74,20 @@ export class TemperatureMarker extends Marker {
     ctx.fillStyle = "rgba(125, 157, 232, 0.67)";
     const yPos = -20;
     const xPos = -75;
-    const rectWidth = 150;
+    const rectWidth = 130;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "10px Georgia";
-    ctx.textAlign = "center";
+    ctx.font = "10px";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
+    ctx.textAlign = "center";
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("tempGearBox: " + this.temperatureGearBox, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("tempGenerator: " + this.temperatureGenerator, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("tempNacelle: " + this.temperatureNacelle, xPos + (rectWidth / 2), yPos + 60);
+
+    ctx.textAlign = "left";
+    ctx.fillText("Temp. Gear Box: " + this.temperatureGearBox.toFixed(2) + "°C", xPos + 5, yPos + 30);
+    ctx.fillText("Temp. Generator: " + this.temperatureGenerator.toFixed(2) + "°C", xPos + 5, yPos + 45);
+    ctx.fillText("Temp. Nacelle: " + this.temperatureNacelle.toFixed(2) + "°C", xPos + 5, yPos + 60);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
