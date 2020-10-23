@@ -1,10 +1,10 @@
-import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
-import { WindfarmExtension } from "../WindfarmExtension";
-import { SensorDecorator } from "./SensorDecorator";
-import { PowerDecorator } from "./PowerDecorator";
-import { WindDecorator } from "./WindDecorator";
-import { TemperatureDecorator } from "./TemperatureDecorator";
+import { WindfarmExtension } from "../../WindfarmExtension";
+import { SensorDecorator } from "../decorators/SensorDecorator";
+import { PowerDecorator } from "../decorators/PowerDecorator";
+import { WindDecorator } from "../decorators/WindDecorator";
+import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 
 // Canvas example.
 export class PowerMarker extends Marker {

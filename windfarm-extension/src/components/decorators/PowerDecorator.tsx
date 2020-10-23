@@ -1,6 +1,6 @@
 import { DecorateContext, Decorator, IModelApp } from "@bentley/imodeljs-frontend";
-import { WindfarmExtension } from "../WindfarmExtension";
-import { PowerMarker } from "./PowerMarker";
+import { WindfarmExtension } from "../../WindfarmExtension";
+import { PowerMarker } from "../markers/PowerMarker";
 
 export class PowerDecorator implements Decorator {
   public static markers: PowerMarker[] = [];

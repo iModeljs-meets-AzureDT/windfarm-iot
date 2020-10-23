@@ -1,6 +1,6 @@
 import { DecorateContext, Decorator } from "@bentley/imodeljs-frontend";
-import { PowerMarker } from "./PowerMarker";
-import { TemperatureMarker } from "./TemperatureMarker";
+import { PowerMarker } from "../markers/PowerMarker";
+import { TemperatureMarker } from "../markers/TemperatureMarker";
 
 export class TemperatureDecorator implements Decorator {
   protected marker: TemperatureMarker;

@@ -1,6 +1,6 @@
 import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
-import { XYAndZ, XAndY, Point3d } from "@bentley/geometry-core";
-import { WindfarmExtension } from "../WindfarmExtension";
+import { Point3d } from "@bentley/geometry-core";
+import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 
 // Canvas example.

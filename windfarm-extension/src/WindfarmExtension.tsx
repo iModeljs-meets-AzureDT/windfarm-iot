@@ -8,8 +8,7 @@ import * as React from "react";
 
 import "./WindFarm.scss";
 import { UiFramework } from "@bentley/ui-framework";
-import { PowerDecorator } from "./components/PowerDecorator";
-import { SensorDecorator } from "./components/SensorDecorator";
+import { PowerDecorator } from "./components/decorators/PowerDecorator";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
