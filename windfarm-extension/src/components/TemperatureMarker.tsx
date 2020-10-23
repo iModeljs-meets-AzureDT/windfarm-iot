@@ -9,6 +9,7 @@ export class TemperatureMarker extends Marker {
   public id: string = "";
   public cId: string = "";
   public bId: string = "";
+  public sId: string = "";
 
   private temperatureNacelle: number = 0;
   private temperatureGenerator: number = 0;
@@ -22,6 +23,7 @@ export class TemperatureMarker extends Marker {
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
+    this.sId = powerMarker.sId;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {
@@ -88,7 +90,7 @@ export class TemperatureMarker extends Marker {
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId], {animateFrustumChange: true, standardViewId: StandardViewId.Back});
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Back});
 
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.windData);
