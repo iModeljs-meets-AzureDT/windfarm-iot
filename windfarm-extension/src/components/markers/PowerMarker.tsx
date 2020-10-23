@@ -1,23 +1,23 @@
-import { Marker, imageElementFromUrl, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
-import { WindfarmExtension } from "../WindfarmExtension";
-
-// SVG example.
-export class PowerMarker extends Marker {
-    constructor(worldLocation: XYAndZ, size: XAndY) {
-      super(worldLocation, size);
-      const image = imageElementFromUrl(`/imjs_extensions/windfarm/map_pin.svg`);
-      this.setImage(image);
-    }
-  }
+import { WindfarmExtension } from "../../WindfarmExtension";
+import { SensorDecorator } from "../decorators/SensorDecorator";
+import { PowerDecorator } from "../decorators/PowerDecorator";
+import { WindDecorator } from "../decorators/WindDecorator";
+import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 
 // Canvas example.
-export class PowerDisplayMarker extends Marker {
+export class PowerMarker extends Marker {
 
   public id: string = "";
   public cId: string = "";
   public sId: string = "";
   public bId: string = "";
+
+  public sensorData: SensorDecorator;
+  public windData: WindDecorator;
+  public temperatureData: TemperatureDecorator;
+
   private power: number = 0;
   private powerDM: number = 0;
   private powerPM: number = 0;
@@ -29,14 +29,12 @@ export class PowerDisplayMarker extends Marker {
     this.sId = sId;
     this.bId = bId;
 
-    // Add a listener for each marker.
-    (window as any).adtEmitter.on('event', (data: any) => {
+    this.sensorData = new SensorDecorator(this);
+    this.windData = new WindDecorator(this);
+    this.temperatureData = new TemperatureDecorator(this);
 
-      /* Test if ADT isn't changing.
-      PowerDisplayMarker.power += 1;
-      PowerDisplayMarker.powerDM += 1;
-      PowerDisplayMarker.powerPM += 1;
-      */
+    // Add a listener for each marker.
+    (window as any).adtEmitter.on('powerevent', (data: any) => {
 
       if (this.id === data.$dtId) {
 
@@ -79,7 +77,6 @@ export class PowerDisplayMarker extends Marker {
   }
 
   public drawFunc(ctx: CanvasRenderingContext2D) {
-    if (!(window as any).DATA_LINK) return;
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
@@ -88,20 +85,34 @@ export class PowerDisplayMarker extends Marker {
     const xPos = -75;
     const rectWidth = 150;
     this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "10px Georgia";
-    ctx.textAlign = "center";
+    ctx.font = "10px";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000000";
 
     // Manually placing positions since fillText doesn't wrap.
+    ctx.textAlign = "center";
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-    ctx.fillText("Actual Power:" + this.power, xPos + (rectWidth / 2), yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM, xPos + (rectWidth / 2), yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM, xPos + (rectWidth / 2), yPos + 60);
+
+    ctx.textAlign = "left";
+    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW⋅h", xPos + 5, yPos + 30);
+    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 45);
+    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 60);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+
+    // Drop all other markers.
+    PowerDecorator.markers.forEach(marker => {
+      IModelApp.viewManager.dropDecorator(marker.sensorData);
+      IModelApp.viewManager.dropDecorator(marker.windData);
+      IModelApp.viewManager.dropDecorator(marker.temperatureData);
+    });
+
+    IModelApp.viewManager.addDecorator(this.sensorData);
+    IModelApp.viewManager.addDecorator(this.windData);
+    IModelApp.viewManager.addDecorator(this.temperatureData);
+
     return true;
   }
 }
