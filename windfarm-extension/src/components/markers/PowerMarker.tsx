@@ -22,6 +22,20 @@ export class PowerMarker extends Marker {
   private powerDM: number = 0;
   private powerPM: number = 0;
 
+  // Our color transitioned.
+  private r: number = 255;
+  private g: number = 83;
+  private b: number = 15;
+
+  // Reduce/Increase this to change duration of color fade.
+  private steps: number = 20;
+  private step: number = 0;
+  private dr: number = (255 - this.r) / this.steps;
+  private dg: number = (255 - this.g) / this.steps;
+  private db: number = (255 - this.b) / this.steps;
+
+  private powerChanged: boolean = false;
+
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     this.id = id;
@@ -39,6 +53,13 @@ export class PowerMarker extends Marker {
       if (this.id === data.$dtId) {
 
         this.id = data.$dtId
+
+        if (this.power !== data.powerObserved ||
+          this.powerDM !== data.powerDM ||
+          this.powerPM !== data.powerPM) {
+            this.powerChanged = true;
+        }
+
         this.power = data.powerObserved;
         this.powerDM = data.powerDM;
         this.powerPM = data.powerPM;
@@ -51,6 +72,7 @@ export class PowerMarker extends Marker {
   }
 
   private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, fill: boolean, stroke: boolean) {
+
     if (typeof stroke == "undefined") {
       stroke = true;
     }
@@ -68,9 +90,12 @@ export class PowerMarker extends Marker {
     ctx.lineTo(x, y + radius);
     ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
+
     if (stroke) {
       ctx.stroke();
     }
+
+    // Slight green blinker.
     if (fill) {
       ctx.fill();
     }
@@ -80,7 +105,23 @@ export class PowerMarker extends Marker {
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+
+    // Color blinking logic.
+    if (this.powerChanged) {
+      ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
+        + Math.round(this.g + this.dg * this.step) + ','
+        + Math.round(this.b + this.db * this.step) + ', 0.5)';
+      
+      ++this.step;
+      
+      if (this.step === this.steps) {
+        this.powerChanged = false;
+        this.step = 0;
+      }
+    } else {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    }
+
     const yPos = -20;
     const xPos = -75;
     const rectWidth = 150;
@@ -97,6 +138,10 @@ export class PowerMarker extends Marker {
     ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW⋅h", xPos + 5, yPos + 30);
     ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 45);
     ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 60);
+
+    if (this.powerChanged) {
+      WindfarmExtension.viewport?.invalidateDecorations();
+    }
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
