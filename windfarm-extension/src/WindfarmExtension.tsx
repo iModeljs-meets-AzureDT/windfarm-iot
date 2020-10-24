@@ -90,7 +90,7 @@ export class WindfarmExtension extends Extension {
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
       ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
-      // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
+      ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
     });
   }
 }

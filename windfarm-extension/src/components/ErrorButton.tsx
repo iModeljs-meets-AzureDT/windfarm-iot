@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
+import { Button, ButtonSize, ButtonType, Toggle } from "@bentley/ui-core";
+import { PowerDecorator } from "./decorators/PowerDecorator";
 
 export default class ErrorPanel extends React.Component<{}, { collapsed: boolean} > {
 
@@ -22,10 +23,10 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
     }
     return (
       <>
-        <div className="sample-ui">
-          <div className="control-pane-header">
+        <div className="sample-error-ui">
+          <div className="error-pane-header">
             <div className="sample-instructions">
-              <span>Input Parameters</span>
+              <span>Disaster Emulator</span>
             </div>
             <svg className="minimize-button control-pane-minimize" onClick={this.switchCollapse.bind(this)}>
               <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
@@ -62,26 +63,59 @@ export class MachineLearningForm extends React.Component<{}> {
     }
   }
 
+  private triggerDisaster(id: string) {
+    PowerDecorator.markers.forEach((marker) => {
+      if (marker.id === id) {
+        marker.toggleError();
+        throw "nothing";
+      }
+    })
+  }
+
   public render() {
     return (
       <div>
         <hr></hr>
         <form id="ml-form">
           <p className="ml-p">
-            <label className="ml-label">Turbine Number</label>
-            <label className="ml-label">Actual Power </label>
-            <label className="ml-label">Physical Model Power </label>
-            <label className="ml-label">Data Model Power </label>
+            <label className="ml-label">Turbine 1</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG001")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 10: </label>
-            <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
-            <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
-            <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
+            <label className="ml-label">Turbine 2</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG002")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <Button className="ml-submit" size={ButtonSize.Large} buttonType={ButtonType.Blue} onClick={this.alertData.bind(this)}>Submit</Button>
-            <div className="ml-label"><label>Predicted Power: </label><textarea readOnly id="ml-power-result"></textarea></div> <br />
+            <label className="ml-label">Turbine 3</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG003")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 4</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG004")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 5</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG005")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 6</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG006")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 7</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG007")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 8</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG008")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 9</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG009")}}></Toggle></label>
+          </p>
+          <p className="ml-p">
+            <label className="ml-label">Turbine 10</label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG010")}}></Toggle></label>
           </p>
         </form>
       </div>

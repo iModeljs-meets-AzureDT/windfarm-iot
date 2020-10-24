@@ -178,7 +178,7 @@ export class PowerMarker extends Marker {
     }
   }
 
-  public triggerError() {
+  public toggleError() {
     const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     if (!this.isError) {
       this.colorReset([255, 10, 10])
@@ -217,8 +217,6 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
-
-    this.triggerError();
 
     return true;
   }
