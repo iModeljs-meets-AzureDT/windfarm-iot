@@ -1,10 +1,11 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
+import { ColorDef } from "@bentley/imodeljs-common";
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -22,10 +23,13 @@ export class PowerMarker extends Marker {
   private powerDM: number = 0;
   private powerPM: number = 0;
 
+  private isError: boolean = false;
+  private isBlinking: boolean = false;
+
   // Our color transitioned.
-  private r: number = 255;
-  private g: number = 83;
-  private b: number = 15;
+  private r: number = 87;
+  private g: number = 229;
+  private b: number = 130;
 
   // Reduce/Increase this to change duration of color fade.
   private steps: number = 20;
@@ -157,6 +161,21 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
+
+    const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
+
+    if (!this.isBlinking) {
+      window.setInterval(() => {
+        if (this.isError) {
+          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+          this.isError = false;
+        } else {
+          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+          this.isError = true;
+        }
+      }, 1500);
+      this.isBlinking = true;
+    }
 
     return true;
   }

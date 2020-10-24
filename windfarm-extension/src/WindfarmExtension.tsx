@@ -9,6 +9,7 @@ import * as React from "react";
 import "./WindFarm.scss";
 import { UiFramework } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
+import ErrorPanel from "./components/ErrorButton";
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
@@ -74,6 +75,12 @@ export class WindfarmExtension extends Extension {
     MLNode.id = "machine-learning-panel";
     document.getElementById("root")?.appendChild(MLNode);
 
+    // We need a location to bind the component to.
+    const ErrorNode = document.createElement("div");
+    ErrorNode.id = "error-panel";
+    document.getElementById("root")?.appendChild(ErrorNode);
+
+
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
@@ -83,6 +90,7 @@ export class WindfarmExtension extends Extension {
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
       ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+      // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
     });
   }
 }

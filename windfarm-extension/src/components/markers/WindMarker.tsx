@@ -68,7 +68,7 @@ export class WindMarker extends Marker {
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "rgba(87, 229, 130, 0.64)";
+    ctx.fillStyle = "rgba(255, 145, 36, 0.5)";
     const yPos = -20;
     const xPos = -75;
     const rectWidth = 120;
