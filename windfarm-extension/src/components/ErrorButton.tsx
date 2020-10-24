@@ -10,7 +10,16 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
 
   private switchCollapse() {
     const collapsed = !this.state.collapsed;
+    if (collapsed) {
+      this.disableDisaster();
+    }
     this.setState({ collapsed });
+  }
+
+  private disableDisaster() {
+    PowerDecorator.markers.forEach((marker) => {
+      marker.disableError();
+    })
   }
 
   public render() {
@@ -67,7 +76,6 @@ export class MachineLearningForm extends React.Component<{}> {
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
         marker.toggleError();
-        throw "nothing";
       }
     })
   }

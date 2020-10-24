@@ -22,6 +22,7 @@ export class PowerMarker extends Marker {
   private power: number = 0;
   private powerDM: number = 0;
   private powerPM: number = 0;
+  private emphasizedElements: EmphasizeElements;
 
   private isError: boolean = false;
   private isBlinking: boolean = false;
@@ -53,6 +54,7 @@ export class PowerMarker extends Marker {
     this.sId = sId;
     this.bId = bId;
 
+    this.emphasizedElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
@@ -179,16 +181,15 @@ export class PowerMarker extends Marker {
   }
 
   public toggleError() {
-    const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     if (!this.isError) {
       this.colorReset([255, 10, 10])
 
       this.powerBlinker = setInterval(() => {
         if (this.isBlinking) {
-          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
           this.isBlinking = false;
         } else {
-          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
           this.isBlinking = true;
         }
       }, 1500);
@@ -198,10 +199,18 @@ export class PowerMarker extends Marker {
       this.colorReset();
       this.isError = false;
       clearInterval(this.powerBlinker);
-      emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
       this.isError = false;
     }
 
+  }
+
+  public disableError() {
+      this.colorReset();
+      this.isError = false;
+      clearInterval(this.powerBlinker);
+      this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.isError = false;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
