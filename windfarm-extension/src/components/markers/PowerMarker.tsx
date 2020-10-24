@@ -26,7 +26,7 @@ export class PowerMarker extends Marker {
   private isError: boolean = false;
   private isBlinking: boolean = false;
 
-  // Our color transitioned.
+  // Our default color transitioned.
   private r: number = 87;
   private g: number = 229;
   private b: number = 130;
@@ -44,6 +44,7 @@ export class PowerMarker extends Marker {
   private db: number = Math.abs(this.desiredBlue - this.b) / this.steps;
 
   private powerChanged: boolean = false;
+  private powerBlinker: any;
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
@@ -78,6 +79,22 @@ export class PowerMarker extends Marker {
       }
     });
 
+  }
+
+  private colorReset(desiredColor?: number[]) {
+    if (desiredColor) {
+      this.desiredRed = desiredColor[0];
+      this.desiredGreen = desiredColor[1];
+      this.desiredBlue = desiredColor[2];
+    } else {
+      this.desiredRed = 255;
+      this.desiredGreen = 255;
+      this.desiredBlue = 255;
+    }
+
+    this.dr = Math.abs(this.desiredRed - this.r) / this.steps;
+    this.dg = Math.abs(this.desiredGreen - this.g) / this.steps;
+    this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
   }
 
   private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, fill: boolean, stroke: boolean) {
@@ -161,6 +178,32 @@ export class PowerMarker extends Marker {
     }
   }
 
+  public triggerError() {
+    const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
+    if (!this.isBlinking) {
+      this.colorReset([255, 10, 10])
+
+      this.powerBlinker = setInterval(() => {
+        if (this.isError) {
+          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+          this.isError = false;
+        } else {
+          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+          this.isError = true;
+        }
+      }, 1500);
+      this.isBlinking = true;
+    } else if (this.isBlinking) {
+
+      this.colorReset();
+      this.isBlinking = false;
+      clearInterval(this.powerBlinker);
+      emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.isBlinking = false;
+    }
+
+  }
+
   public onMouseButton(_ev: BeButtonEvent): boolean {
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
@@ -175,30 +218,7 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
 
-    const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
-
-    if (!this.isBlinking) {
-
-      // Update colors.
-      this.desiredRed = 255;
-      this.desiredGreen = 10;
-      this.desiredBlue = 10;
-
-      this.dr = Math.abs(this.desiredRed - this.r) / this.steps;
-      this.dg = Math.abs(this.desiredGreen - this.g) / this.steps;
-      this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
-
-      window.setInterval(() => {
-        if (this.isError) {
-          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
-          this.isError = false;
-        } else {
-          emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-          this.isError = true;
-        }
-      }, 1500);
-      this.isBlinking = true;
-    }
+    this.triggerError();
 
     return true;
   }
