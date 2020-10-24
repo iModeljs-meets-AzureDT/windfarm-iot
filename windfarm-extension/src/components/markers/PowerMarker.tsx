@@ -34,9 +34,14 @@ export class PowerMarker extends Marker {
   // Reduce/Increase this to change duration of color fade.
   private steps: number = 20;
   private step: number = 0;
-  private dr: number = (255 - this.r) / this.steps;
-  private dg: number = (255 - this.g) / this.steps;
-  private db: number = (255 - this.b) / this.steps;
+
+  private desiredRed = 255;
+  private desiredBlue = 255;
+  private desiredGreen = 255;
+
+  private dr: number = Math.abs(this.desiredRed - this.r) / this.steps;
+  private dg: number = Math.abs(this.desiredGreen - this.g) / this.steps;
+  private db: number = Math.abs(this.desiredBlue - this.b) / this.steps;
 
   private powerChanged: boolean = false;
 
@@ -115,6 +120,14 @@ export class PowerMarker extends Marker {
       ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
         + Math.round(this.g + this.dg * this.step) + ','
         + Math.round(this.b + this.db * this.step) + ', 0.5)';
+
+      if (this.isBlinking) {
+        // Reverse the additions/subtractions here depending on the color
+        // difference of update color and error color.
+        ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
+          + Math.round(this.g - this.dg * this.step) + ','
+          + Math.round(this.b - this.db * this.step) + ', 0.5)';
+      }
       
       ++this.step;
       
@@ -123,7 +136,7 @@ export class PowerMarker extends Marker {
         this.step = 0;
       }
     } else {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.fillStyle = "rgba(" + this.desiredRed + ", " + this.desiredGreen + "," + this.desiredBlue + ", 0.5)";
     }
 
     const yPos = -20;
@@ -165,6 +178,16 @@ export class PowerMarker extends Marker {
     const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
 
     if (!this.isBlinking) {
+
+      // Update colors.
+      this.desiredRed = 255;
+      this.desiredGreen = 10;
+      this.desiredBlue = 10;
+
+      this.dr = Math.abs(this.desiredRed - this.r) / this.steps;
+      this.dg = Math.abs(this.desiredGreen - this.g) / this.steps;
+      this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
+
       window.setInterval(() => {
         if (this.isError) {
           emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
