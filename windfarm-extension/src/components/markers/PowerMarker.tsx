@@ -138,7 +138,7 @@ export class PowerMarker extends Marker {
         + Math.round(this.g + this.dg * this.step) + ','
         + Math.round(this.b + this.db * this.step) + ', 0.5)';
 
-      if (this.isBlinking) {
+      if (this.isError) {
         // Reverse the additions/subtractions here depending on the color
         // difference of update color and error color.
         ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
@@ -180,26 +180,26 @@ export class PowerMarker extends Marker {
 
   public triggerError() {
     const emphasizeElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
-    if (!this.isBlinking) {
+    if (!this.isError) {
       this.colorReset([255, 10, 10])
 
       this.powerBlinker = setInterval(() => {
-        if (this.isError) {
+        if (this.isBlinking) {
           emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
-          this.isError = false;
+          this.isBlinking = false;
         } else {
           emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-          this.isError = true;
+          this.isBlinking = true;
         }
       }, 1500);
-      this.isBlinking = true;
-    } else if (this.isBlinking) {
+      this.isError = true;
+    } else if (this.isError) {
 
       this.colorReset();
-      this.isBlinking = false;
+      this.isError = false;
       clearInterval(this.powerBlinker);
       emphasizeElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-      this.isBlinking = false;
+      this.isError = false;
     }
 
   }
