@@ -71,8 +71,6 @@ const App: React.FC = () => {
   };
 
   const onIModelConnection = async (imodel: RemoteBriefcaseConnection) => {
-    const data = await AdtDataLink.fetchDataForNode("WTG001");
-    (window as any).DATA_LINK = data;
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
@@ -92,9 +90,18 @@ const App: React.FC = () => {
         // Small hack to cover 10.
         let prefix = "WTG00";
         if (turbineIndex >= 10) prefix = "WTG0";
+
+        // powerEvent
         AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
           console.log(data);
-          (window as any).adtEmitter.emit('event', data);
+          (window as any).adtEmitter.emit('powerevent', data);
+        }).catch(() => {});
+
+        const suffix = "-S";
+        // sensorEvent
+        AdtDataLink.fetchDataForNode(prefix + turbineIndex + suffix).then((data) => {
+          console.log(data);
+          (window as any).adtEmitter.emit('sensorevent', data);
         }).catch(() => {});
       }
 

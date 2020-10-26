@@ -43,8 +43,6 @@ namespace MachineLearning
                         // Gap
                         info.PowerGap_DM = Math.Abs(info.Power - info.Power_DM);
 
-                        Console.WriteLine($"Power_DM: {info.Power_DM}");
-
                         return info.Power_DM;
                     }
                     else

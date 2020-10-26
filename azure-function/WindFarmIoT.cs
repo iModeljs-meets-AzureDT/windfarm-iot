@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Azure.DigitalTwins.Core.Serialization;
-
+using PhysicsModel;
 namespace Doosan.Function
 {
 
@@ -30,16 +30,20 @@ namespace Doosan.Function
         public float generator;
     }
 
+    struct PowerValues {
+        public float powerObserved;
+        public float powerPM;
+        public float powerDM;
+    }
+
     public static class WindFarmIoT
     {
         private static DigitalTwinsClient client;
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
-        private const bool flush = false;
 
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
-            if (flush) return;
             if (client == null) Authenticate(log);
             var exceptions = new List<Exception>();
             foreach (EventData eventData in events) {
@@ -77,12 +81,13 @@ namespace Doosan.Function
         }
 
         private static async Task processSensorData(string deviceId, JObject sensorData) {
+            
+            // extract sensor data
             var info = new WTInfo {
                 Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
                 Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
                 Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
                 OriginSysTime = (string)sensorData.GetValue("originSysTime"),
-                Power = (float)sensorData.GetValue("power_PM"),
                 WindDir = (float)sensorData.GetValue("windDirection"),
                 WindSpeed = (float)sensorData.GetValue("windSpeed"),
                 YawPosition = (float)sensorData.GetValue("yawPosition")
@@ -93,15 +98,21 @@ namespace Doosan.Function
                 generator = (float)sensorData.GetValue("convTemp"),
             };
 
+            // update sensor data on ADT
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
             if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
             client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info, tempValues));
 
-            float powerDM = 1000;
-            float powerPM = (float)sensorData.GetValue("power_PM");
-            float powerObserved = (float)sensorData.GetValue("power");
-            client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerObserved, powerPM, powerDM));
+            // update turbine data on ADT
+            float[] windSpeeds = {info.WindSpeed};
+            float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
+            var powerValues = new PowerValues() {
+                powerObserved = (float)sensorData.GetValue("power"),
+                powerDM = await MlApi.GetPowerAsync(info),
+                powerPM = powerPmResult.Length > 0 ? powerPmResult[0] : 0,
+            };
+            client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
         }
 
         private static async Task<DtIds> fetchDtIds(string query) {
@@ -138,12 +149,12 @@ namespace Doosan.Function
             return uou.Serialize();
         }
 
-        private static string generatePatchForTurbine(float powerObserved, float powerPM, float powerDM) {
+        private static string generatePatchForTurbine(PowerValues powerValues) {
             UpdateOperationsUtility uou = new UpdateOperationsUtility();
 
-            uou.AppendReplaceOp("/powerObserved", powerObserved);
-            uou.AppendReplaceOp("/powerPM", powerPM);
-            uou.AppendReplaceOp("/powerDM", powerDM);
+            uou.AppendReplaceOp("/powerObserved", powerValues.powerObserved);
+            uou.AppendReplaceOp("/powerPM", powerValues.powerPM);
+            uou.AppendReplaceOp("/powerDM", powerValues.powerDM);
 
             return uou.Serialize();
         }

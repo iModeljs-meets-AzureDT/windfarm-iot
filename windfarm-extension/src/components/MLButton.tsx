@@ -76,11 +76,11 @@ export class MachineLearningForm extends React.Component<{}> {
             <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
           </p>
           <p className="ml-p">
-            <label className="ml-label">Blade 1 Pitch Angle: </label>
+            <label className="ml-label">Blade 2 Pitch Angle: </label>
             <input type="text" name="pitchAngle2" className="ml-input" defaultValue="2.02"></input> <br />
           </p>
           <p className="ml-p">
-            <label className="ml-label">Blade 2 Pitch Angle: </label>
+            <label className="ml-label">Blade 3 Pitch Angle: </label>
             <input type="text" name="pitchAngle3" className="ml-input" defaultValue="1.92"></input> <br />
           </p>
           <p className="ml-p">

@@ -1,9 +1,9 @@
-import { DecorateContext, Marker, Decorator } from "@bentley/imodeljs-frontend";
-import { WindfarmExtension } from "../WindfarmExtension";
-import { PowerDisplayMarker, PowerMarker } from "./PowerMarker";
+import { DecorateContext, Decorator, IModelApp } from "@bentley/imodeljs-frontend";
+import { WindfarmExtension } from "../../WindfarmExtension";
+import { PowerMarker } from "../markers/PowerMarker";
 
 export class PowerDecorator implements Decorator {
-  protected _markers: Marker[] = [];
+  public static markers: PowerMarker[] = [];
 
   constructor() {
     this.addMarker();
@@ -16,7 +16,7 @@ export class PowerDecorator implements Decorator {
                           control.ecinstanceid as cId, 
                           structure.ecinstanceid as sId, 
                           blades.ecinstanceid as bId, 
-                          control.origin 
+                          control.origin
                       FROM bis.physicalelement control 
                       INNER JOIN bis.physicalelement structure ON control.parent.id = structure.parent.id 
                       INNER JOIN bis.physicalelement blades ON control.parent.id = blades.parent.id 
@@ -29,16 +29,7 @@ export class PowerDecorator implements Decorator {
       const { done, value } = await rowIterator.next();
       if (done) break;
 
-
-      /* SVG example..
-      const marker = new PowerMarker(
-        { x: value.origin.x, y: value.origin.y, z: value.origin.z + 20 },
-        { x: 50, y: 50 }
-      );
-      this._markers.push(marker);
-      */
-
-      const powerdisplayMarker = new PowerDisplayMarker(
+      const powerdisplayMarker = new PowerMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 100, y: 100 },
         value.tID ? value.tID : "WTG008",
@@ -47,13 +38,13 @@ export class PowerDecorator implements Decorator {
         value.bId,
       );
 
-      this._markers.push(powerdisplayMarker);
+      PowerDecorator.markers.push(powerdisplayMarker);
     }
 
   }
 
   public decorate(context: DecorateContext): void {
-    this._markers.forEach((marker) => {
+    PowerDecorator.markers.forEach((marker) => {
       marker.addDecoration(context);
     });
 
