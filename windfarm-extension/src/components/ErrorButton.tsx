@@ -11,12 +11,12 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
   private switchCollapse() {
     const collapsed = !this.state.collapsed;
     if (collapsed) {
-      this.disableDisaster();
+      this.disableErrorSimulation();
     }
     this.setState({ collapsed });
   }
 
-  private disableDisaster() {
+  private disableErrorSimulation() {
     PowerDecorator.markers.forEach((marker) => {
       marker.disableError();
     })
@@ -35,7 +35,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
         <div className="sample-error-ui">
           <div className="error-pane-header">
             <div className="sample-instructions">
-              <span>Disaster Emulator</span>
+              <span>Error Simulation</span>
             </div>
             <svg className="minimize-button control-pane-minimize" onClick={this.switchCollapse.bind(this)}>
               <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
@@ -52,27 +52,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
 
 export class MachineLearningForm extends React.Component<{}> {
 
-  private async alertData(e: any) {
-    e.preventDefault();
-
-    const messageBody: any = {};
-
-    try {
-    [...document.getElementsByClassName("ml-input")].forEach((mlInput) => {
-      let inputElement = mlInput as HTMLInputElement;
-      if (inputElement.name === "originSysTime") {
-        messageBody[inputElement.name] = inputElement.value;
-      } else {
-        messageBody[inputElement.name] = parseFloat(inputElement.value);
-      }
-    })
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  private triggerDisaster(id: string) {
+  private triggerError(id: string) {
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
         marker.toggleError();
@@ -87,43 +67,43 @@ export class MachineLearningForm extends React.Component<{}> {
         <form id="ml-form">
           <p className="ml-p">
             <label className="ml-label">Turbine 1</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG001")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG001")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 2</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG002")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG002")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 3</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG003")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG003")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 4</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG004")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG004")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 5</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG005")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG005")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 6</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG006")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG006")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 7</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG007")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG007")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 8</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG008")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG008")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 9</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG009")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG009")}}></Toggle></label>
           </p>
           <p className="ml-p">
             <label className="ml-label">Turbine 10</label>
-            <label className="ml-label"><Toggle onChange={() => { this.triggerDisaster("WTG010")}}></Toggle></label>
+            <label className="ml-label"><Toggle onChange={() => { this.triggerError("WTG010")}}></Toggle></label>
           </p>
         </form>
       </div>

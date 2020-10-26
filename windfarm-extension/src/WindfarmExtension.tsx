@@ -7,16 +7,19 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 
 import "./WindFarm.scss";
-import { UiFramework } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
+
+(window as any).DEBUG_MODE = false;
 
 export class MachineLearningUiItemsProvider implements UiItemsProvider {
   public readonly id = "MachineLearningProvider";
   public static i18n: I18N;
+  private DEBUG_MODE_TOGGLE: boolean;
   
   public constructor(i18n: I18N) {
     MachineLearningUiItemsProvider.i18n = i18n;
+    this.DEBUG_MODE_TOGGLE = false;
   }
 
   public provideToolbarButtonItems(_stageId: string, stageUsage: string, toolbarUsage: ToolbarUsage, toolbarOrientation: ToolbarOrientation): CommonToolbarItem[] {
@@ -41,7 +44,16 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
         "icon-window",
         "Machine Learning Backstage",
         () => {
-          UiFramework.backstageManager.toggle();
+          if (!this.DEBUG_MODE_TOGGLE) {
+            ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+            ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
+            (window as any).DEBUG_MODE = true;
+          } else {
+            ReactDOM.unmountComponentAtNode(document.getElementById("machine-learning-panel")!);
+            ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
+            (window as any).DEBUG_MODE = false;
+          }
+          this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
         }
       )
     ]
@@ -89,8 +101,9 @@ export class WindfarmExtension extends Extension {
       IModelApp.viewManager.addDecorator(new PowerDecorator());
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
-      ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
-      ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
+      // These are now handled by debug button.
+      // ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+      // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
     });
   }
 }
