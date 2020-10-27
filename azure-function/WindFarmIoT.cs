@@ -108,13 +108,12 @@ namespace Doosan.Function
             if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
             client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.MLInputs[0], tempValues));
 
-            // update turbine data on ADT
-            float[] windSpeeds = {info.MLInputs[0].WindSpeed};
-            float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
+            // update turbine data on ADT. We return index 0 since only a single
+            // value should only be processed.
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
                 powerDM = (float)(await MlApi.GetPowerAsync(info.MLInputs)).result[0],
-                powerPM = powerPmResult.Length > 0 ? powerPmResult[0] : 0,
+                powerPM = (float)(await PmAPI.GetPowerAsync(info.MLInputs))[0]
             };
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
         }
@@ -163,8 +162,8 @@ namespace Doosan.Function
             return uou.Serialize();
         }
 
-        [FunctionName("TriggerML")]
-        public static async Task<IActionResult> HttpTriggerML(
+        [FunctionName("TriggerPrediction")]
+        public static async Task<IActionResult> HttpTriggerPrediction(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
             HttpRequest req, ILogger log)
         {
@@ -197,12 +196,12 @@ namespace Doosan.Function
                 }
                 */
 
-                // Console.WriteLine(requestBody);
-
                 WTPowerResultSet results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
 
-                // These get processed sequentially so a key isn't required.
+                // These get processed sequentially so a key isn't required. We
+                // assume the request has sequential data.
                 DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.MLInputs);
+                float[] PowerPMSet = await PmAPI.GetPowerAsync(data.MLInputs);
 
                 int iterator = 0;
                 foreach (WTInfo powerInfo in data.MLInputs)
@@ -210,9 +209,11 @@ namespace Doosan.Function
                     results.powerResults.Add(new WTPowerResult
                     {
                         OriginSysTime = powerInfo.OriginSysTime,
-                        Power_DM = (float)PowerDMSet.result[iterator++]
+                        Power_DM = (float)PowerDMSet.result[iterator],
+                        Power_PM = (float)PowerPMSet[iterator]
                     });
 
+                    ++iterator;
                 }
 
                 return (ActionResult)new OkObjectResult(results);
