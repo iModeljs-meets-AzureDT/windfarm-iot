@@ -41,6 +41,7 @@ namespace Doosan.Function
         private static DigitalTwinsClient client;
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
 
+/*
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
@@ -66,6 +67,7 @@ namespace Doosan.Function
                 }
             }
         }
+        */
 
         private static void Authenticate(ILogger log)
         {
@@ -83,15 +85,16 @@ namespace Doosan.Function
         private static async Task processSensorData(string deviceId, JObject sensorData) {
             
             // extract sensor data
-            var info = new WTInfo {
-                Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
-                Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
-                Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
-                OriginSysTime = (string)sensorData.GetValue("originSysTime"),
-                WindDir = (float)sensorData.GetValue("windDirection"),
-                WindSpeed = (float)sensorData.GetValue("windSpeed"),
-                YawPosition = (float)sensorData.GetValue("yawPosition")
-            };
+            var info = new WTPowerRequestInfo {};
+            info.MLInputs.Add(new WTInfo {
+                    Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
+                    Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
+                    Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
+                    OriginSysTime = (string)sensorData.GetValue("originSysTime"),
+                    WindDir = (float)sensorData.GetValue("windDirection"),
+                    WindSpeed = (float)sensorData.GetValue("windSpeed"),
+                    YawPosition = (float)sensorData.GetValue("yawPosition")
+            });
             var tempValues = new TemperatureValues() {
                 nacelle = (float)sensorData.GetValue("nacelleTemp"),
                 gearBox = (float)sensorData.GetValue("gearboxTemp"),
@@ -102,10 +105,10 @@ namespace Doosan.Function
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
             if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
-            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info, tempValues));
+            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.MLInputs[0], tempValues));
 
             // update turbine data on ADT
-            float[] windSpeeds = {info.WindSpeed};
+            float[] windSpeeds = {info.MLInputs[0].WindSpeed};
             float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
@@ -168,23 +171,34 @@ namespace Doosan.Function
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             try {
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                Console.WriteLine(requestBody);
+                WTPowerRequestInfo data = JsonConvert.DeserializeObject<WTPowerRequestInfo>(requestBody);
 
                 /*
                 Example request body:
                 {     
-                    "pitchAngle1": 1.99,
-                    "pitchAngle2": 2.02,
-                    "pitchAngle3": 1.92,
-                    "genSpeed": 1212.28,
-                    "genTorque": 6824.49,
-                    "originSysTime": "7/29/2018 11:43:00",
-                    "windDirection": -8.6,
-                    "windSpeed": 6.66,
-                    "yawPosition": 5.05
+                    "MLInputs": [{
+                        "Blade1PitchPosition": 1.99,
+                        "Blade2PitchPosition": 2.02,
+                        "Blade3PitchPosition": 1.92,
+                        "OriginSysTime": "7/29/2018 11:43:00",
+                        "WindDir": -8.6,
+                        "WindSpeed": 6.66,
+                        "YawPosition": 5.05
+                    },{
+                        "Blade1PitchPosition": 3.1,
+                        "Blade2PitchPosition": 2.1,
+                        "Blade3PitchPosition": 1.2,
+                        "OriginSysTime": "7/29/2018 11:43:01",
+                        "WindDir": -8.6,
+                        "WindSpeed": 6.66,
+                        "YawPosition": 5.05
+                    }]
                 }
                 */
 
+
+/*
                 var info = new WTInfo
                 {
                     Blade1PitchPosition = data.pitchAngle1,
@@ -195,9 +209,10 @@ namespace Doosan.Function
                     WindSpeed = data.windSpeed,
                     YawPosition = data.yawPosition
                 };
+                */
 
                 var result = new WTMLInfo {
-                    Power_DM = await MlApi.GetPowerAsync(info),
+                    Power_DM = await MlApi.GetPowerAsync(data),
                 };
 
                 return (ActionResult)new OkObjectResult(result);

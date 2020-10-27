@@ -1,5 +1,12 @@
-﻿namespace MachineLearning
+﻿ using System.Collections.Generic;
+
+namespace MachineLearning
 {
+
+    public class WTPowerRequestInfo
+    {
+        public IList<WTInfo> MLInputs { get; set; }
+    }
     public class WTInfo
     {
         public string OriginSysTime { get; set; }
