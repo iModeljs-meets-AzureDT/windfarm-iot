@@ -85,7 +85,7 @@ namespace Doosan.Function
         private static async Task processSensorData(string deviceId, JObject sensorData) {
             
             // extract sensor data
-            var info = new WTPowerRequestInfo {};
+            var info = new WTPowerRequestInfo { MLInputs = new List<WTInfo>() };
             info.MLInputs.Add(new WTInfo {
                     Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
                     Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
@@ -113,7 +113,7 @@ namespace Doosan.Function
             float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
-                powerDM = (float)(await MlApi.GetPowerAsync(info)).result[0],
+                powerDM = (float)(await MlApi.GetPowerAsync(info.MLInputs)).result[0],
                 powerPM = powerPmResult.Length > 0 ? powerPmResult[0] : 0,
             };
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
@@ -172,7 +172,6 @@ namespace Doosan.Function
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             try {
-                Console.WriteLine(requestBody);
                 WTPowerRequestInfo data = JsonConvert.DeserializeObject<WTPowerRequestInfo>(requestBody);
 
                 /*
@@ -198,9 +197,25 @@ namespace Doosan.Function
                 }
                 */
 
-                DMResultInfo result = await MlApi.GetPowerAsync(data);
+                // Console.WriteLine(requestBody);
 
-                return (ActionResult)new OkObjectResult(result);
+                WTPowerResultSet results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
+
+                // These get processed sequentially so a key isn't required.
+                DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.MLInputs);
+
+                int iterator = 0;
+                foreach (WTInfo powerInfo in data.MLInputs)
+                {
+                    results.powerResults.Add(new WTPowerResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PowerDMSet.result[iterator++]
+                    });
+
+                }
+
+                return (ActionResult)new OkObjectResult(results);
             }
             catch (Exception e)
             {

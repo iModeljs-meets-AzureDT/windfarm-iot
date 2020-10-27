@@ -3,12 +3,13 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MachineLearning
 {
     class MlApi
     {
-        public static async Task<DMResultInfo> GetPowerAsync(WTPowerRequestInfo info)
+        public static async Task<DMResultInfo> GetPowerAsync(List<WTInfo> info)
         {
             try
             {
@@ -17,9 +18,9 @@ namespace MachineLearning
                     client.BaseAddress = new Uri("http://3f48dc9f-8b7c-41d8-9b00-00245bc05c9b.westus.azurecontainer.io/");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    DMPowerRequestInfo requestBody = new DMPowerRequestInfo { data = new DMPowerData[info.MLInputs.Count] };
+                    DMPowerRequestInfo requestBody = new DMPowerRequestInfo { data = new DMPowerData[info.Count] };
                     int iterator = 0;
-                    foreach (WTInfo MLInput in info.MLInputs)
+                    foreach (WTInfo MLInput in info)
                     {
                         var request = new DMPowerData
                         {
@@ -62,7 +63,7 @@ namespace MachineLearning
             }
             catch (Exception ex)
             {
-                info.MLInputs[0].Power_DM = 0.0f;
+                info[0].Power_DM = 0.0f;
                 Console.Error.WriteLine($"GetDataPowerAsync Error: {ex.ToString()}.");
                 throw ex;
             }

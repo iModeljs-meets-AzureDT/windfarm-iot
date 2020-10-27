@@ -5,7 +5,7 @@ namespace MachineLearning
 
     public class WTPowerRequestInfo
     {
-        public IList<WTInfo> MLInputs { get; set; }
+        public List<WTInfo> MLInputs { get; set; }
     }
     public class WTInfo
     {
@@ -21,5 +21,17 @@ namespace MachineLearning
         public float Power_DM { get; set; }
         public float PowerGap_PM { get; set; }
         public float PowerGap_DM { get; set; }
+    }
+
+    public class WTPowerResultSet
+    {
+        public List<WTPowerResult> powerResults { get; set; }
+    }
+
+    public class WTPowerResult
+    {
+        public string OriginSysTime { get; set; }
+        public float Power_PM { get; set; }
+        public float Power_DM { get; set; }
     }
 }
