@@ -2,7 +2,7 @@ import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMes
 import { I18N } from "@bentley/imodeljs-i18n";
 import { CommonToolbarItem, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
-import MachineLearningPanel from "./components/MLButton";
+import PowerPredictionPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 
@@ -12,13 +12,13 @@ import ErrorPanel from "./components/ErrorButton";
 
 (window as any).DEBUG_MODE = false;
 
-export class MachineLearningUiItemsProvider implements UiItemsProvider {
-  public readonly id = "MachineLearningProvider";
+export class WindfarmUiItemsProvider implements UiItemsProvider {
+  public readonly id = "WindfarmProvider";
   public static i18n: I18N;
   private DEBUG_MODE_TOGGLE: boolean;
   
   public constructor(i18n: I18N) {
-    MachineLearningUiItemsProvider.i18n = i18n;
+    WindfarmUiItemsProvider.i18n = i18n;
     this.DEBUG_MODE_TOGGLE = false;
   }
 
@@ -30,26 +30,26 @@ export class MachineLearningUiItemsProvider implements UiItemsProvider {
 
     return [
       ToolbarItemUtilities.createActionButton(
-        "machinelearningextension-button-notify",
+        "windfarm-extension-button-notify",
         200,
         "icon-lightbulb",
-        "Machine Learning",
+        "Opened IModel",
         () => {
           IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "The opened imodel is " + WindfarmExtension.imodel!.name));
         }
       ),
       ToolbarItemUtilities.createActionButton(
-        "machinelearningextension-button-backstage",
+        "windfarm-debug-button",
         205,
         "icon-window",
-        "Machine Learning Backstage",
+        "Toggle Debug Mode",
         () => {
           if (!this.DEBUG_MODE_TOGGLE) {
-            ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+            ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
             ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
             (window as any).DEBUG_MODE = true;
           } else {
-            ReactDOM.unmountComponentAtNode(document.getElementById("machine-learning-panel")!);
+            ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
             ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
             (window as any).DEBUG_MODE = false;
           }
@@ -75,7 +75,7 @@ export class WindfarmExtension extends Extension {
 
     await MarkupApp.initialize();
 
-    UiItemsManager.register(new MachineLearningUiItemsProvider(this.i18n));
+    UiItemsManager.register(new WindfarmUiItemsProvider(this.i18n));
     // Add your initialization code here
   }
 
@@ -84,7 +84,7 @@ export class WindfarmExtension extends Extension {
 
     // We need a location to bind the component to.
     const MLNode = document.createElement("div");
-    MLNode.id = "machine-learning-panel";
+    MLNode.id = "power-prediction-panel";
     document.getElementById("root")?.appendChild(MLNode);
 
     // We need a location to bind the component to.
@@ -99,11 +99,6 @@ export class WindfarmExtension extends Extension {
 
       // Add decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
-
-      // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
-      // These are now handled by debug button.
-      // ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
-      // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
     });
   }
 }

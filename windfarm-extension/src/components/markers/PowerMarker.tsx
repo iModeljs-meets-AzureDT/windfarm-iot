@@ -180,10 +180,9 @@ export class PowerMarker extends Marker {
     }
   }
 
-  public toggleError() {
-    if (!this.isError) {
+  public enableError() {
       this.colorReset([255, 10, 10])
-
+      this.isError = true;
       this.powerBlinker = setInterval(() => {
         if (this.isBlinking) {
           this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
@@ -193,16 +192,6 @@ export class PowerMarker extends Marker {
           this.isBlinking = true;
         }
       }, 1500);
-      this.isError = true;
-    } else if (this.isError) {
-
-      this.colorReset();
-      this.isError = false;
-      clearInterval(this.powerBlinker);
-      this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-      this.isError = false;
-    }
-
   }
 
   public disableError() {
@@ -210,7 +199,6 @@ export class PowerMarker extends Marker {
       this.isError = false;
       clearInterval(this.powerBlinker);
       this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-      this.isError = false;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
