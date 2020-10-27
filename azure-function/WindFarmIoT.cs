@@ -95,6 +95,7 @@ namespace Doosan.Function
                     WindSpeed = (float)sensorData.GetValue("windSpeed"),
                     YawPosition = (float)sensorData.GetValue("yawPosition")
             });
+
             var tempValues = new TemperatureValues() {
                 nacelle = (float)sensorData.GetValue("nacelleTemp"),
                 gearBox = (float)sensorData.GetValue("gearboxTemp"),
@@ -112,7 +113,7 @@ namespace Doosan.Function
             float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
-                powerDM = await MlApi.GetPowerAsync(info),
+                powerDM = (float)(await MlApi.GetPowerAsync(info)).result[0],
                 powerPM = powerPmResult.Length > 0 ? powerPmResult[0] : 0,
             };
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
@@ -197,23 +198,7 @@ namespace Doosan.Function
                 }
                 */
 
-
-/*
-                var info = new WTInfo
-                {
-                    Blade1PitchPosition = data.pitchAngle1,
-                    Blade2PitchPosition = data.pitchAngle2,
-                    Blade3PitchPosition = data.pitchAngle3,
-                    OriginSysTime = data.originSysTime,
-                    WindDir = data.windDirection,
-                    WindSpeed = data.windSpeed,
-                    YawPosition = data.yawPosition
-                };
-                */
-
-                var result = new WTMLInfo {
-                    Power_DM = await MlApi.GetPowerAsync(data),
-                };
+                DMResultInfo result = await MlApi.GetPowerAsync(data);
 
                 return (ActionResult)new OkObjectResult(result);
             }

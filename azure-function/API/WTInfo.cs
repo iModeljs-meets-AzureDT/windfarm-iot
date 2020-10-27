@@ -22,9 +22,4 @@ namespace MachineLearning
         public float PowerGap_PM { get; set; }
         public float PowerGap_DM { get; set; }
     }
-
-    public class WTMLInfo
-    {
-        public float Power_DM { get; set; }
-    }
 }
