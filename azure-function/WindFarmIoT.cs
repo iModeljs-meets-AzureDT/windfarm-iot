@@ -83,8 +83,8 @@ namespace Doosan.Function
         private static async Task processSensorData(string deviceId, JObject sensorData) {
             
             // extract sensor data
-            var info = new WTPowerRequestInfo { MLInputs = new List<WTInfo>() };
-            info.MLInputs.Add(new WTInfo {
+            var info = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
+            info.PowerInputs.Add(new WTInfo {
                     Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
                     Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
                     Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
@@ -104,14 +104,14 @@ namespace Doosan.Function
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
             if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
-            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.MLInputs[0], tempValues));
+            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.PowerInputs[0], tempValues));
 
             // update turbine data on ADT. We return index 0 since only a single
             // value should only be processed.
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
-                powerDM = (float)(await MlApi.GetPowerAsync(info.MLInputs)).result[0],
-                powerPM = (float)(await PmAPI.GetPowerAsync(info.MLInputs))[0]
+                powerDM = (float)(await MlApi.GetPowerAsync(info.PowerInputs)).result[0],
+                powerPM = (float)(await PmAPI.GetPowerAsync(info.PowerInputs))[0]
             };
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
         }
@@ -174,7 +174,7 @@ namespace Doosan.Function
                 /*
                 Example request body:
                 {     
-                    "MLInputs": [{
+                    "PowerInputs": [{
                         "Blade1PitchPosition": 1.99,
                         "Blade2PitchPosition": 2.02,
                         "Blade3PitchPosition": 1.92,
@@ -198,11 +198,11 @@ namespace Doosan.Function
 
                 // These get processed sequentially so a key isn't required. We
                 // assume the request has sequential data.
-                DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.MLInputs);
-                float[] PowerPMSet = await PmAPI.GetPowerAsync(data.MLInputs);
+                DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.PowerInputs);
+                float[] PowerPMSet = await PmAPI.GetPowerAsync(data.PowerInputs);
 
                 int iterator = 0;
-                foreach (WTInfo powerInfo in data.MLInputs)
+                foreach (WTInfo powerInfo in data.PowerInputs)
                 {
                     results.powerResults.Add(new WTPowerResult
                     {

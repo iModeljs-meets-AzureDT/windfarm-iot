@@ -5,7 +5,7 @@ namespace MachineLearning
 
     public class WTPowerRequestInfo
     {
-        public List<WTInfo> MLInputs { get; set; }
+        public List<WTInfo> PowerInputs { get; set; }
     }
     public class WTInfo
     {
