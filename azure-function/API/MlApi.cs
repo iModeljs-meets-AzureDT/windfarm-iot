@@ -34,10 +34,10 @@ namespace MachineLearning
                         requestBody.data[iterator++] = request;
                     }
 
-                    var response = await client.PostAsJsonAsync("score", requestBody);
+                    HttpResponseMessage response = await client.PostAsJsonAsync("score", requestBody);
                     if (response.IsSuccessStatusCode)
                     {
-                        var result = await response.Content.ReadAsStringAsync();
+                        string result = await response.Content.ReadAsStringAsync();
                         result = result.Replace("\\\"", "");
                         result = result.Substring(1);
                         result = result.Substring(0, result.Length - 1);
