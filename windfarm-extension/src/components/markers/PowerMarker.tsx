@@ -171,9 +171,9 @@ export class PowerMarker extends Marker {
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
 
     ctx.textAlign = "left";
-    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW⋅h", xPos + 5, yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 60);
+    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW", xPos + 5, yPos + 30);
+    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW", xPos + 5, yPos + 45);
+    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW", xPos + 5, yPos + 60);
 
     if (this.powerChanged) {
       WindfarmExtension.viewport?.invalidateDecorations();
