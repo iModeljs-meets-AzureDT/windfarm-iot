@@ -134,7 +134,7 @@ export class PowerMarker extends Marker {
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
 
-    // Color blinking logic.
+    // Color blinking logic will only apply if DEBUG_MODE is true.
     if (this.powerChanged && (window as any).DEBUG_MODE === true) {
       ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
         + Math.round(this.g + this.dg * this.step) + ','

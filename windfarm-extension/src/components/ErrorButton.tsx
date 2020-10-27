@@ -16,6 +16,10 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
     this.setState({ collapsed });
   }
 
+  public componentWillUnmount() {
+    this.disableErrorSimulation();
+  }
+
   private disableErrorSimulation() {
     PowerDecorator.markers.forEach((marker) => {
       marker.disableError();
