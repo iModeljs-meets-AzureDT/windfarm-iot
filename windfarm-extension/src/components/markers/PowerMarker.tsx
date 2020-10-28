@@ -36,6 +36,7 @@ export class PowerMarker extends Marker {
   private steps: number = 20;
   private step: number = 0;
 
+  // Color to transition to. (Default white for normal state).
   private desiredRed = 255;
   private desiredBlue = 255;
   private desiredGreen = 255;
@@ -66,9 +67,6 @@ export class PowerMarker extends Marker {
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
-    // Color the structure yellow.
-    this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
-
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -198,9 +196,11 @@ export class PowerMarker extends Marker {
         if (this.isBlinking) {
           this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
           this.isBlinking = false;
+          this.emphasizedElements.wantEmphasis = true;
         } else {
           this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
           this.isBlinking = true;
+          this.emphasizedElements.wantEmphasis = false;
         }
       }, 1500);
   }
@@ -211,7 +211,7 @@ export class PowerMarker extends Marker {
       clearInterval(this.powerBlinker);
       // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
       this.emphasizedElements?.overrideElements([this.cId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-      this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
+      this.emphasizedElements.wantEmphasis = false;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
