@@ -1,10 +1,11 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
+import { ColorDef } from "@bentley/imodeljs-common";
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -21,31 +22,53 @@ export class PowerMarker extends Marker {
   private power: number = 0;
   private powerDM: number = 0;
   private powerPM: number = 0;
+  private emphasizedElements: EmphasizeElements;
 
-  // Our color transitioned.
-  private r: number = 255;
-  private g: number = 83;
-  private b: number = 15;
+  private isError: boolean = false;
+  private isBlinking: boolean = false;
+
+  // Our default color transitioned.
+  private r: number = 87;
+  private g: number = 229;
+  private b: number = 130;
 
   // Reduce/Increase this to change duration of color fade.
   private steps: number = 20;
   private step: number = 0;
-  private dr: number = (255 - this.r) / this.steps;
-  private dg: number = (255 - this.g) / this.steps;
-  private db: number = (255 - this.b) / this.steps;
+
+  private desiredRed = 255;
+  private desiredBlue = 255;
+  private desiredGreen = 255;
+
+  private dr: number = Math.abs(this.desiredRed - this.r) / this.steps;
+  private dg: number = Math.abs(this.desiredGreen - this.g) / this.steps;
+  private db: number = Math.abs(this.desiredBlue - this.b) / this.steps;
 
   private powerChanged: boolean = false;
+  private powerBlinker: any;
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     this.id = id;
-    this.cId = cId;
-    this.sId = sId;
-    this.bId = bId;
 
+    // These are mixed up for WTG008
+    if (this.id === "WTG008") {
+      this.cId = bId;
+      this.sId = cId;
+      this.bId = sId;
+    } else {
+      this.cId = cId;
+      this.sId = sId;
+      this.bId = bId;
+    }
+
+    this.emphasizedElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
+    // Color the structure yellow.
+    this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
+
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -69,6 +92,22 @@ export class PowerMarker extends Marker {
       }
     });
 
+  }
+
+  private colorReset(desiredColor?: number[]) {
+    if (desiredColor) {
+      this.desiredRed = desiredColor[0];
+      this.desiredGreen = desiredColor[1];
+      this.desiredBlue = desiredColor[2];
+    } else {
+      this.desiredRed = 255;
+      this.desiredGreen = 255;
+      this.desiredBlue = 255;
+    }
+
+    this.dr = Math.abs(this.desiredRed - this.r) / this.steps;
+    this.dg = Math.abs(this.desiredGreen - this.g) / this.steps;
+    this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
   }
 
   private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, fill: boolean, stroke: boolean) {
@@ -106,11 +145,19 @@ export class PowerMarker extends Marker {
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
 
-    // Color blinking logic.
-    if (this.powerChanged) {
+    // Color blinking logic will only apply if DEBUG_MODE is true.
+    if (this.powerChanged && (window as any).DEBUG_MODE === true) {
       ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
         + Math.round(this.g + this.dg * this.step) + ','
         + Math.round(this.b + this.db * this.step) + ', 0.5)';
+
+      if (this.isError) {
+        // Reverse the additions/subtractions here depending on the color
+        // difference of update color and error color.
+        ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
+          + Math.round(this.g - this.dg * this.step) + ','
+          + Math.round(this.b - this.db * this.step) + ', 0.5)';
+      }
       
       ++this.step;
       
@@ -119,7 +166,7 @@ export class PowerMarker extends Marker {
         this.step = 0;
       }
     } else {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.fillStyle = "rgba(" + this.desiredRed + ", " + this.desiredGreen + "," + this.desiredBlue + ", 0.5)";
     }
 
     const yPos = -20;
@@ -135,13 +182,36 @@ export class PowerMarker extends Marker {
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
 
     ctx.textAlign = "left";
-    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW⋅h", xPos + 5, yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW⋅h", xPos + 5, yPos + 60);
+    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW", xPos + 5, yPos + 30);
+    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW", xPos + 5, yPos + 45);
+    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW", xPos + 5, yPos + 60);
 
     if (this.powerChanged) {
       WindfarmExtension.viewport?.invalidateDecorations();
     }
+  }
+
+  public enableError() {
+      this.colorReset([255, 10, 10])
+      this.isError = true;
+      this.powerBlinker = setInterval(() => {
+        if (this.isBlinking) {
+          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+          this.isBlinking = false;
+        } else {
+          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+          this.isBlinking = true;
+        }
+      }, 1500);
+  }
+
+  public disableError() {
+      this.colorReset();
+      this.isError = false;
+      clearInterval(this.powerBlinker);
+      // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
+      this.emphasizedElements?.overrideElements([this.cId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {

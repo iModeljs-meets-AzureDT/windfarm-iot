@@ -68,7 +68,7 @@ export class WindMarker extends Marker {
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "rgba(87, 229, 130, 0.64)";
+    ctx.fillStyle = "rgba(255, 145, 36, 0.5)";
     const yPos = -20;
     const xPos = -75;
     const rectWidth = 120;
@@ -82,7 +82,7 @@ export class WindMarker extends Marker {
     ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
 
     ctx.textAlign = "left";
-    ctx.fillText("Wind Direction: " + Math.abs(this.windDirection).toFixed(2), xPos + 5, yPos + 30);
+    ctx.fillText("Wind Direction: " + this.windDirection.toFixed(2) + "°", xPos + 5, yPos + 30);
     ctx.fillText("Wind Speed: " + Math.abs(this.windSpeed).toFixed(2) + " km/h", xPos + 5, yPos + 45);
   }
 

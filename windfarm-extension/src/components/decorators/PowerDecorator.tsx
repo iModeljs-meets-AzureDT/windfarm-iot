@@ -29,8 +29,9 @@ export class PowerDecorator implements Decorator {
       const { done, value } = await rowIterator.next();
       if (done) break;
 
+      // Special cases for WTG008...
       const powerdisplayMarker = new PowerMarker(
-        { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
+        value.tID ? { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 } : { x: value.origin.x, y: value.origin.y, z: value.origin.z + 90 },
         { x: 100, y: 100 },
         value.tID ? value.tID : "WTG008",
         value.cId,
