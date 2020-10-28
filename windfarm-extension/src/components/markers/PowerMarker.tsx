@@ -50,14 +50,25 @@ export class PowerMarker extends Marker {
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     this.id = id;
-    this.cId = cId;
-    this.sId = sId;
-    this.bId = bId;
+
+    // These are mixed up for WTG008
+    if (this.id === "WTG008") {
+      this.cId = bId;
+      this.sId = cId;
+      this.bId = sId;
+    } else {
+      this.cId = cId;
+      this.sId = sId;
+      this.bId = bId;
+    }
 
     this.emphasizedElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
+    // Color the structure yellow.
+    this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
+
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -198,7 +209,9 @@ export class PowerMarker extends Marker {
       this.colorReset();
       this.isError = false;
       clearInterval(this.powerBlinker);
-      this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
+      this.emphasizedElements?.overrideElements([this.cId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.emphasizedElements?.overrideElements([this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(255, 237, 102)"));
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
