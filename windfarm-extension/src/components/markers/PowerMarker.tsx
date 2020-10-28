@@ -194,13 +194,13 @@ export class PowerMarker extends Marker {
       this.isError = true;
       this.powerBlinker = setInterval(() => {
         if (this.isBlinking) {
+          this.emphasizedElements.wantEmphasis = true;
           this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
           this.isBlinking = false;
-          this.emphasizedElements.wantEmphasis = true;
         } else {
+          this.emphasizedElements.wantEmphasis = false;
           this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
           this.isBlinking = true;
-          this.emphasizedElements.wantEmphasis = false;
         }
       }, 1500);
   }
@@ -210,7 +210,7 @@ export class PowerMarker extends Marker {
       this.isError = false;
       clearInterval(this.powerBlinker);
       // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
-      this.emphasizedElements?.overrideElements([this.cId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+      this.emphasizedElements?.overrideElements([this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
       this.emphasizedElements.wantEmphasis = false;
   }
 
