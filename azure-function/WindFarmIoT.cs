@@ -175,12 +175,14 @@ namespace Doosan.Function
 
             try {
 
-                /* WIP: Make request to predictiondata endpoint. The endpoint is broken.
+                // WIP: Make request to predictiondata endpoint. The endpoint is broken.
+                /*
                 using (var client = new HttpClient()) {
                     client.BaseAddress = new Uri("http://52.157.19.187/api/predictiondata");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                    Console.WriteLine(response);
                 }
                 */
 
@@ -244,7 +246,8 @@ namespace Doosan.Function
 
                         // No need for time calculation here assuming interpolationSteps will remain at 6.
                         DateTime d1 = DateTime.Parse((string)predictionData[i].forecastDateTime);
-                        DateTime interpolatedDate = d1.AddMinutes(j * 30);
+                        // DateTime interpolatedDate = d1.AddMinutes(j * 30);
+                        DateTime interpolatedDate = d1;
 
                         float yawPositionCurrent = predictionData[i].yawposition;
                         float interpolatedYaw = yawPositionCurrent;
@@ -258,6 +261,13 @@ namespace Doosan.Function
                         // No data to interpolate to on last data point.
                         if (i != predictionData.Count - 1)
                         {
+                            // Date has a unique interpolation.
+                            DateTime d2 = DateTime.Parse((string)predictionData[i + 1].forecastDateTime);
+                            TimeSpan timeDiff = (d2 - d1);
+                            var timeStepDifference = timeDiff / (interpolationSteps);
+                            var minutesElapsed = timeStepDifference * j;
+                            interpolatedDate = d1.AddMinutes(minutesElapsed.TotalMinutes);
+
                             int next = i + 1;
                             float yawPositionNext = predictionData[next].yawposition;
                             interpolatedYaw = interpolateData(yawPositionCurrent, yawPositionNext, j);
@@ -312,7 +322,7 @@ namespace Doosan.Function
 
         private static float interpolateData(float currentValue, float nextValue, int step) {
             float valueDifference = Math.Abs(nextValue - currentValue);
-            float stepDifference = valueDifference / (interpolationSteps + 1);
+            float stepDifference = valueDifference / (interpolationSteps);
 
             if (currentValue < nextValue)
             {
