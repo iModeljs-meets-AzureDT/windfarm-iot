@@ -213,11 +213,20 @@ namespace Doosan.Function
 
                     using (HttpClient client = new HttpClient())
                     {
-
                         HttpResponseMessage response = await client.GetAsync("http://52.157.19.187/api/predictiondata");
 
                         if (response.IsSuccessStatusCode)
                         {
+
+                            IDictionary<string, string> urlParams = req.GetQueryParameterDictionary();
+                            int steps = interpolationSteps;
+                            if (urlParams.ContainsKey("steps")) {
+                                // Let's keep steps to a low number to avoid too much data.
+                                if (steps <= 50) {
+                                    steps = Int32.Parse(urlParams["steps"]);
+                                }
+                            }
+
                             string result = await response.Content.ReadAsStringAsync();
 
                             // Example data in case the prediction data endpoint is dead
@@ -242,12 +251,11 @@ namespace Doosan.Function
                             for (int i = 0; i < forecastData.Count; ++i)
                             {
                                 // Interpolation occurs here, we add interpolationSteps* additional points to each data point.
-                                for (int j = 0; j < interpolationSteps; ++j)
+                                for (int j = 0; j < steps; ++j)
                                 {
 
                                     // No need for time calculation here assuming interpolationSteps will remain at 6.
                                     DateTime d1 = DateTime.Parse((string)forecastData[i].forecastDateTime);
-                                    // DateTime interpolatedDate = d1.AddMinutes(j * 30);
                                     DateTime interpolatedDate = d1;
 
                                     float yawPositionCurrent = forecastData[i].yawposition;
@@ -265,19 +273,19 @@ namespace Doosan.Function
                                         // Date has a unique interpolation.
                                         DateTime d2 = DateTime.Parse((string)forecastData[i + 1].forecastDateTime);
                                         TimeSpan timeDiff = (d2 - d1);
-                                        var timeStepDifference = timeDiff / (interpolationSteps);
+                                        var timeStepDifference = timeDiff / (steps);
                                         var minutesElapsed = timeStepDifference * j;
                                         interpolatedDate = d1.AddMinutes(minutesElapsed.TotalMinutes);
 
                                         int next = i + 1;
                                         float yawPositionNext = forecastData[next].yawposition;
-                                        interpolatedYaw = interpolateData(yawPositionCurrent, yawPositionNext, j);
+                                        interpolatedYaw = interpolateData(yawPositionCurrent, yawPositionNext, j, steps);
 
                                         float windSpeedNext = forecastData[next].windspeed;
-                                        interpolatedWindSpeed = interpolateData(windSpeedCurrent, windSpeedNext, j);
+                                        interpolatedWindSpeed = interpolateData(windSpeedCurrent, windSpeedNext, j, steps);
 
                                         float windDirectionNext = forecastData[next].winddirection;
-                                        interpolatedWindDirection = interpolateData(windDirectionCurrent, windDirectionNext, j);
+                                        interpolatedWindDirection = interpolateData(windDirectionCurrent, windDirectionNext, j, steps);
 
                                     }
 
@@ -295,9 +303,18 @@ namespace Doosan.Function
                                 }
                             }
 
-                            WTPowerResultSet predictedPowerResults = await getPredictedPower(predictionInput);
+                            WTPowerResultSet predictedPowerResults;
 
-                            return (ActionResult)new OkObjectResult(predictedPowerResults);
+                            if (urlParams.ContainsKey("alldata"))
+                            {
+                                predictedPowerResults = await getPredictedPower(predictionInput, true);
+                                return (ActionResult)new OkObjectResult(predictedPowerResults.powerForecastResults);
+                            }
+                            else
+                            {
+                                predictedPowerResults = await getPredictedPower(predictionInput);
+                                return (ActionResult)new OkObjectResult(predictedPowerResults.powerResults);
+                            }
                         }
                         else
                         {
@@ -312,22 +329,44 @@ namespace Doosan.Function
             }
         }
 
-        private static async Task<WTPowerResultSet> getPredictedPower(WTPowerRequestInfo predictionInputs)
+        private static async Task<WTPowerResultSet> getPredictedPower(WTPowerRequestInfo predictionInputs, Boolean allInfo = false)
         {
             DMResultInfo PredictionPowerDMSet = await MlApi.GetPowerAsync(predictionInputs.PowerInputs);
             float[] PredictionPowerPMSet = await PmAPI.GetPowerAsync(predictionInputs.PowerInputs);
 
-            WTPowerResultSet results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
-
+            WTPowerResultSet results;
             int iterator = 0;
+
+            if (allInfo) {
+                results = new WTPowerResultSet { powerForecastResults = new List<WTPowerForecastResult>() };
+            } else {
+                results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
+            }
+
             foreach (WTInfo powerInfo in predictionInputs.PowerInputs)
             {
-                results.powerResults.Add(new WTPowerResult
+                if (allInfo)
                 {
-                    OriginSysTime = powerInfo.OriginSysTime,
-                    Power_DM = (float)PredictionPowerDMSet.result[iterator],
-                    Power_PM = (float)PredictionPowerPMSet[iterator]
-                });
+                    results.powerForecastResults.Add(new WTPowerForecastResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PredictionPowerDMSet.result[iterator],
+                        Power_PM = (float)PredictionPowerPMSet[iterator],
+                        WindDir = powerInfo.WindDir,
+                        WindSpeed = powerInfo.WindSpeed,
+                        YawPosition = powerInfo.YawPosition
+                    });
+                }
+                else
+                {
+                    results.powerResults.Add(new WTPowerResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PredictionPowerDMSet.result[iterator],
+                        Power_PM = (float)PredictionPowerPMSet[iterator],
+                    });
+                }
+
 
                 ++iterator;
             }
@@ -335,9 +374,9 @@ namespace Doosan.Function
             return results;
         }
 
-        private static float interpolateData(float currentValue, float nextValue, int step) {
+        private static float interpolateData(float currentValue, float nextValue, int step, int totalSteps) {
             float valueDifference = Math.Abs(nextValue - currentValue);
-            float stepDifference = valueDifference / (interpolationSteps);
+            float stepDifference = valueDifference / (totalSteps);
 
             if (currentValue < nextValue)
             {
