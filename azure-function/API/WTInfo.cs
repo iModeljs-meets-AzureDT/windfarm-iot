@@ -26,6 +26,8 @@ namespace MachineLearning
     public class WTPowerResultSet
     {
         public List<WTPowerResult> powerResults { get; set; }
+
+        public List<WTPowerForecastResult> powerForecastResults { get; set; }
     }
 
     public class WTPowerResult
@@ -33,5 +35,15 @@ namespace MachineLearning
         public string OriginSysTime { get; set; }
         public float Power_PM { get; set; }
         public float Power_DM { get; set; }
+    }
+
+    public class WTPowerForecastResult
+    {
+        public string OriginSysTime { get; set; }
+        public float Power_PM { get; set; }
+        public float Power_DM { get; set; }
+        public float? WindSpeed { get; set; }
+        public float? WindDir { get; set; }
+        public float? YawPosition { get; set; }
     }
 }
