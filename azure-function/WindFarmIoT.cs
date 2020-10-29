@@ -16,6 +16,9 @@ using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Azure.DigitalTwins.Core.Serialization;
 using PhysicsModel;
+
+using System.Net.Http;
+using System.Net.Http.Headers;
 namespace Doosan.Function
 {
 
@@ -170,9 +173,16 @@ namespace Doosan.Function
         {
             log.LogInformation("Machine Learning HTTP trigger function processed a request.");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
             try {
+
+                /* WIP: Make request to predictiondata endpoint. The endpoint is broken.
+                using (var client = new HttpClient()) {
+                    client.BaseAddress = new Uri("http://52.157.19.187/api/predictiondata");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                }
+                */
 
                 /*
                 Example request body:
@@ -196,30 +206,6 @@ namespace Doosan.Function
                     }]
                 }
                 */
-
-                /*
-                                WTPowerRequestInfo data = JsonConvert.DeserializeObject<WTPowerRequestInfo>(requestBody);
-                                WTPowerResultSet results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
-
-                                // These get processed sequentially so a key isn't required. We
-                                // assume the request has sequential data.
-                                DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.PowerInputs);
-                                float[] PowerPMSet = await PmAPI.GetPowerAsync(data.PowerInputs);
-
-                                int iterator = 0;
-                                foreach (WTInfo powerInfo in data.PowerInputs)
-                                {
-                                    results.powerResults.Add(new WTPowerResult
-                                    {
-                                        OriginSysTime = powerInfo.OriginSysTime,
-                                        Power_DM = (float)PowerDMSet.result[iterator],
-                                        Power_PM = (float)PowerPMSet[iterator]
-                                    });
-
-                                    ++iterator;
-                                }
-                                */
-
 
                 /* Sample incoming prediction data.
                 [
@@ -253,7 +239,7 @@ namespace Doosan.Function
 
                 for (int i = 0; i < predictionData.Count; ++i)
                 {
-                    // Interpolation occurs here, we add 5 additional points to each data point.
+                    // Interpolation occurs here, we add interpolationSteps* additional points to each data point.
                     for (int j = 0; j < interpolationSteps; ++j) {
 
                         // No need for time calculation here assuming interpolationSteps will remain at 6.
@@ -282,7 +268,6 @@ namespace Doosan.Function
                             float windDirectionNext = predictionData[next].winddirection;
                             interpolatedWindDirection = interpolateData(windDirectionCurrent, windDirectionNext, j);
                         }
-
 
                         // No need to interpolate blade angles since they remain constant.
                         predictionInput.PowerInputs.Add(new WTInfo
