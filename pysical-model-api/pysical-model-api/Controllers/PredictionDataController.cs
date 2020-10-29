@@ -34,28 +34,22 @@ namespace pysical_model_api.Controllers
             var windforecast = await GetWeatherData();
 
             var predictionData = new List<PredictionData>();
-            var forecast = windforecast.ToList();
-            for(var i=0; i < forecast.Count() ; i++)
+
+            foreach(var forecast in windforecast)
             {
-                var startDatetime = forecast[i].forecastDateTime;
-                DateTime endDateTime;
-                if (i == forecast.Count()-1) endDateTime = forecast[0].forecastDateTime.AddDays(1);
-                else endDateTime = forecast[i + 1].forecastDateTime;
-                for (var fd = startDatetime; fd < endDateTime; fd = fd.AddSeconds(1))
+                var data = new PredictionData
                 {
-                    var data = new PredictionData
-                    {
-                        forecastDateTime = fd,
-                        windspeed = Interpolate(startDatetime, forecast[i].windspeed, endDateTime, (i+1 < forecast.Count() ? forecast[i+1].windspeed : forecast[i].windspeed), fd),
-                        winddirection = ChangeWindDir(forecast[i].winddir),
-                        yawposition = GetYawPositionByWindDirection(forecast[i].winddir),
-                        bladepitch1 = 2.0,
-                        bladepitch2 = 2.0,
-                        bladepitch3 = 2.0
-                    };
-                    predictionData.Add(data);
-                }
+                    forecastDateTime = forecast.forecastDateTime,
+                    windspeed = forecast.windspeed,
+                    winddirection = ChangeWindDir(forecast.winddir),
+                    yawposition = GetYawPositionByWindDirection(forecast.winddir),
+                    bladepitch1 = 2.0,
+                    bladepitch2 = 2.0,
+                    bladepitch3 = 2.0
+                };
+                predictionData.Add(data);
             }
+
             return predictionData;
         }
 
