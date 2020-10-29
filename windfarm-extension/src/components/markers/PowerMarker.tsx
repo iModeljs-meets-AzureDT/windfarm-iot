@@ -1,11 +1,20 @@
 import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY } from "@bentley/geometry-core";
-import { WindfarmExtension } from "../../WindfarmExtension";
+import { WindfarmExtension, WindfarmUiItemsProvider } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
+import { ErrorDecorator } from "../decorators/ErrorDecorator";
+
+interface powerDifference {
+  id: string;
+  percentageDMDiff: number;
+  percentagePMDiff: number;
+  timestamp: string;
+  isError: boolean;
+}
 
 // Canvas example.
 export class PowerMarker extends Marker {
@@ -78,18 +87,44 @@ export class PowerMarker extends Marker {
         if (this.power !== data.powerObserved ||
           this.powerDM !== data.powerDM ||
           this.powerPM !== data.powerPM) {
-            this.powerChanged = true;
+          this.powerChanged = true;
         }
 
         this.power = data.powerObserved;
         this.powerDM = data.powerDM;
         this.powerPM = data.powerPM;
 
+        const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
+
+        if (powerError.isError) {
+          this.enableError();
+        } else {
+          this.disableError();
+        }
+
         // Manually call draw func on update.
         WindfarmExtension.viewport?.invalidateDecorations();
       }
     });
 
+  }
+
+  private calculateDifference(powerObserved: number, powerPM: number, powerDM: number, timestamp: string): powerDifference {
+    // If percentage difference between powerObserved and (powerPM OR powerDM)
+    // >= 50%, return true if error
+    const diffPowerPM = 100 * (Math.abs(powerObserved - powerPM) / ((powerObserved + powerPM) / 2))
+    const diffPowerDM = 100 * (Math.abs(powerObserved - powerDM) / ((powerObserved + powerDM) / 2))
+
+    // We'll only test powerDM right now since powerPM is broken.
+    const diff: powerDifference = {
+      id: this.id,
+      percentagePMDiff: diffPowerPM,
+      percentageDMDiff: diffPowerDM,
+      timestamp: timestamp,
+      isError: (diffPowerDM >= 50 || diffPowerPM >= 50) ? true : false
+    };
+
+    return diff;
   }
 
   private colorReset(desiredColor?: number[]) {
@@ -156,9 +191,9 @@ export class PowerMarker extends Marker {
           + Math.round(this.g - this.dg * this.step) + ','
           + Math.round(this.b - this.db * this.step) + ', 0.5)';
       }
-      
+
       ++this.step;
-      
+
       if (this.step === this.steps) {
         this.powerChanged = false;
         this.step = 0;
@@ -184,38 +219,42 @@ export class PowerMarker extends Marker {
     ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW", xPos + 5, yPos + 45);
     ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW", xPos + 5, yPos + 60);
 
+    // this.errorElement.marker.updatePosition(xPos + 50, yPos + 60);
+
     if (this.powerChanged) {
       WindfarmExtension.viewport?.invalidateDecorations();
     }
   }
 
   public enableError() {
-      this.colorReset([255, 10, 10])
-      this.isError = true;
-      this.powerBlinker = setInterval(() => {
-        if (this.isBlinking) {
-          this.emphasizedElements.wantEmphasis = true;
-          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
-          this.isBlinking = false;
-        } else {
-          this.emphasizedElements.wantEmphasis = false;
-          this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-          this.isBlinking = true;
-        }
-      }, 1500);
+    if (this.isError === true) return;
+    this.colorReset([255, 10, 10])
+    this.isError = true;
+    this.powerBlinker = setInterval(() => {
+      if (this.isBlinking) {
+        // this.emphasizedElements.wantEmphasis = true;
+        this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+        this.isBlinking = false;
+      } else {
+        // this.emphasizedElements.wantEmphasis = false;
+        this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+        this.isBlinking = true;
+      }
+    }, 1500);
   }
 
   public disableError() {
-      this.colorReset();
-      this.isError = false;
-      clearInterval(this.powerBlinker);
-      // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
-      this.emphasizedElements?.overrideElements([this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-      this.emphasizedElements.wantEmphasis = false;
+    if (this.isError === false) return;
+    this.colorReset();
+    this.isError = false;
+    clearInterval(this.powerBlinker);
+    // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
+    this.emphasizedElements?.overrideElements([this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+    // this.emphasizedElements.wantEmphasis = false;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
 
     // Drop all other markers.
     PowerDecorator.markers.forEach(marker => {
