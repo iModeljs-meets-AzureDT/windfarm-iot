@@ -92,7 +92,7 @@ export class SensorMarker extends Marker {
     ctx.fillText("Blade 1 Pitch Angle : " + this.radiansToDegrees(this.blade1PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 30);
     ctx.fillText("Blade 2 Pitch Angle : " + this.radiansToDegrees(this.blade2PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 45);
     ctx.fillText("Blade 3 Pitch angle : " + this.radiansToDegrees(this.blade3PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 60);
-    ctx.fillText("Yaw Position: " + this.yawPosition.toFixed(2), xPos + 5, yPos + 75);
+    ctx.fillText("Yaw Position: " + this.yawPosition.toFixed(2) + "°", xPos + 5, yPos + 75);
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {

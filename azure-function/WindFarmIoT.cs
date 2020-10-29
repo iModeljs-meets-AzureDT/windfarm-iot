@@ -83,15 +83,17 @@ namespace Doosan.Function
         private static async Task processSensorData(string deviceId, JObject sensorData) {
             
             // extract sensor data
-            var info = new WTInfo {
-                Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
-                Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
-                Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
-                OriginSysTime = (string)sensorData.GetValue("originSysTime"),
-                WindDir = (float)sensorData.GetValue("windDirection"),
-                WindSpeed = (float)sensorData.GetValue("windSpeed"),
-                YawPosition = (float)sensorData.GetValue("yawPosition")
-            };
+            var info = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
+            info.PowerInputs.Add(new WTInfo {
+                    Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
+                    Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
+                    Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
+                    OriginSysTime = (string)sensorData.GetValue("originSysTime"),
+                    WindDir = (float)sensorData.GetValue("windDirection"),
+                    WindSpeed = (float)sensorData.GetValue("windSpeed"),
+                    YawPosition = (float)sensorData.GetValue("yawPosition")
+            });
+
             var tempValues = new TemperatureValues() {
                 nacelle = (float)sensorData.GetValue("nacelleTemp"),
                 gearBox = (float)sensorData.GetValue("gearboxTemp"),
@@ -102,15 +104,14 @@ namespace Doosan.Function
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
             if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
-            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info, tempValues));
+            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.PowerInputs[0], tempValues));
 
-            // update turbine data on ADT
-            float[] windSpeeds = {info.WindSpeed};
-            float[] powerPmResult = await PmAPI.GetPowerAsync(windSpeeds);
+            // update turbine data on ADT. We return index 0 since only a single
+            // value should only be processed.
             var powerValues = new PowerValues() {
                 powerObserved = (float)sensorData.GetValue("power"),
-                powerDM = await MlApi.GetPowerAsync(info),
-                powerPM = powerPmResult.Length > 0 ? powerPmResult[0] : 0,
+                powerDM = (float)(await MlApi.GetPowerAsync(info.PowerInputs)).result[0],
+                powerPM = (float)(await PmAPI.GetPowerAsync(info.PowerInputs))[0]
             };
             client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
         }
@@ -159,8 +160,8 @@ namespace Doosan.Function
             return uou.Serialize();
         }
 
-        [FunctionName("TriggerML")]
-        public static async Task<IActionResult> HttpTriggerML(
+        [FunctionName("TriggerPrediction")]
+        public static async Task<IActionResult> HttpTriggerPrediction(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
             HttpRequest req, ILogger log)
         {
@@ -168,39 +169,52 @@ namespace Doosan.Function
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             try {
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                WTPowerRequestInfo data = JsonConvert.DeserializeObject<WTPowerRequestInfo>(requestBody);
 
                 /*
                 Example request body:
                 {     
-                    "pitchAngle1": 1.99,
-                    "pitchAngle2": 2.02,
-                    "pitchAngle3": 1.92,
-                    "genSpeed": 1212.28,
-                    "genTorque": 6824.49,
-                    "originSysTime": "7/29/2018 11:43:00",
-                    "windDirection": -8.6,
-                    "windSpeed": 6.66,
-                    "yawPosition": 5.05
+                    "PowerInputs": [{
+                        "Blade1PitchPosition": 1.99,
+                        "Blade2PitchPosition": 2.02,
+                        "Blade3PitchPosition": 1.92,
+                        "OriginSysTime": "7/29/2018 11:43:00",
+                        "WindDir": -8.6,
+                        "WindSpeed": 6.66,
+                        "YawPosition": 5.05
+                    },{
+                        "Blade1PitchPosition": 3.1,
+                        "Blade2PitchPosition": 2.1,
+                        "Blade3PitchPosition": 1.2,
+                        "OriginSysTime": "7/29/2018 11:43:01",
+                        "WindDir": -8.6,
+                        "WindSpeed": 6.66,
+                        "YawPosition": 5.05
+                    }]
                 }
                 */
 
-                var info = new WTInfo
+                WTPowerResultSet results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
+
+                // These get processed sequentially so a key isn't required. We
+                // assume the request has sequential data.
+                DMResultInfo PowerDMSet = await MlApi.GetPowerAsync(data.PowerInputs);
+                float[] PowerPMSet = await PmAPI.GetPowerAsync(data.PowerInputs);
+
+                int iterator = 0;
+                foreach (WTInfo powerInfo in data.PowerInputs)
                 {
-                    Blade1PitchPosition = data.pitchAngle1,
-                    Blade2PitchPosition = data.pitchAngle2,
-                    Blade3PitchPosition = data.pitchAngle3,
-                    OriginSysTime = data.originSysTime,
-                    WindDir = data.windDirection,
-                    WindSpeed = data.windSpeed,
-                    YawPosition = data.yawPosition
-                };
+                    results.powerResults.Add(new WTPowerResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PowerDMSet.result[iterator],
+                        Power_PM = (float)PowerPMSet[iterator]
+                    });
 
-                var result = new WTMLInfo {
-                    Power_DM = await MlApi.GetPowerAsync(info),
-                };
+                    ++iterator;
+                }
 
-                return (ActionResult)new OkObjectResult(result);
+                return (ActionResult)new OkObjectResult(results);
             }
             catch (Exception e)
             {

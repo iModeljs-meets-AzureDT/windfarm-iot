@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 import MLClient from "../client/MLClient";
 
-export default class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
+export default class PowerPredictionPanel extends React.Component<{}, { collapsed: boolean} > {
 
   public componentDidMount() {
     this.setState({ collapsed: true });
@@ -34,14 +34,14 @@ export default class MachineLearningPanel extends React.Component<{}, { collapse
             </svg>
           </div>
 
-          <MachineLearningForm></MachineLearningForm>
+          <PowerPredictionForm></PowerPredictionForm>
         </div>
       </>
     );
   }
 }
 
-export class MachineLearningForm extends React.Component<{}> {
+export class PowerPredictionForm extends React.Component<{}> {
 
   private async alertData(e: any) {
     e.preventDefault();

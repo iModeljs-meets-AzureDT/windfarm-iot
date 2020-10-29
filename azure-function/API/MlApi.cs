@@ -3,12 +3,13 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MachineLearning
 {
     class MlApi
     {
-        public static async Task<float> GetPowerAsync(WTInfo info)
+        public static async Task<DMResultInfo> GetPowerAsync(List<WTInfo> info)
         {
             try
             {
@@ -16,34 +17,43 @@ namespace MachineLearning
                 {
                     client.BaseAddress = new Uri("http://3f48dc9f-8b7c-41d8-9b00-00245bc05c9b.westus.azurecontainer.io/");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var requestInfo = new DMPowerData
+
+                    DMPowerRequestInfo requestBody = new DMPowerRequestInfo { data = new DMPowerData[info.Count] };
+                    int iterator = 0;
+                    foreach (WTInfo MLInput in info)
                     {
-                        SYSTIME = info.OriginSysTime,
-                        VA_PiPosBla1 = info.Blade1PitchPosition,
-                        VA_PiPosBla2 = info.Blade2PitchPosition,
-                        VA_PiPosBla3 = info.Blade3PitchPosition,
-                        VA_WiDir_Avg30s = info.WindDir,
-                        VA_WiSpe_Avg10s = info.WindSpeed,
-                        VA_YawPos = info.YawPosition
-                    };
+                        var request = new DMPowerData
+                        {
+                            SYSTIME = MLInput.OriginSysTime,
+                            VA_PiPosBla1 = MLInput.Blade1PitchPosition,
+                            VA_PiPosBla2 = MLInput.Blade2PitchPosition,
+                            VA_PiPosBla3 = MLInput.Blade3PitchPosition,
+                            VA_WiDir_Avg30s = MLInput.WindDir,
+                            VA_WiSpe_Avg10s = MLInput.WindSpeed,
+                            VA_YawPos = MLInput.YawPosition
+                        };
+                        requestBody.data[iterator++] = request;
+                    }
 
-                    var requestBody = new DMPowerRequestInfo { data = new DMPowerData[1] };
-                    requestBody.data[0] = requestInfo;
-
-                    var response = await client.PostAsJsonAsync("score", requestBody);
+                    HttpResponseMessage response = await client.PostAsJsonAsync("score", requestBody);
                     if (response.IsSuccessStatusCode)
                     {
-                        var result = await response.Content.ReadAsStringAsync();
+                        string result = await response.Content.ReadAsStringAsync();
                         result = result.Replace("\\\"", "");
                         result = result.Substring(1);
                         result = result.Substring(0, result.Length - 1);
-                        var dmResult = JsonConvert.DeserializeObject<DMResultInfo>(result);
 
-                        info.Power_DM = (dmResult.result.Length > 0 ? float.Parse(dmResult.result[0].ToString()) : 0.0f);
+                        DMResultInfo dmResult = JsonConvert.DeserializeObject<DMResultInfo>(result);
+
+                        return dmResult;
+
+                        /* This is unnecessary ? We can calculate the power gap client side.
+                        info.PowerInputs[0].Power_DM = (dmResult.result.Length > 0 ? float.Parse(dmResult.result[0].ToString()) : 0.0f);
                         // Gap
-                        info.PowerGap_DM = Math.Abs(info.Power - info.Power_DM);
+                        info.PowerInputs[0].PowerGap_DM = Math.Abs(info.PowerInputs[0].Power - info.PowerInputs[0].Power_DM);
 
-                        return info.Power_DM;
+                        return info.PowerInputs[0].Power_DM;
+                        */
                     }
                     else
                     {
@@ -53,7 +63,7 @@ namespace MachineLearning
             }
             catch (Exception ex)
             {
-                info.Power_DM = 0.0f;
+                info[0].Power_DM = 0.0f;
                 Console.Error.WriteLine($"GetDataPowerAsync Error: {ex.ToString()}.");
                 throw ex;
             }
