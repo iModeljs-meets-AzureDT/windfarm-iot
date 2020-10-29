@@ -245,16 +245,13 @@ namespace Doosan.Function
 
                             dynamic forecastData = JsonConvert.DeserializeObject(result);
 
-                            // We need interpolation here, for 48 points that's every 30 minutes.
                             WTPowerRequestInfo predictionInput = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
 
                             for (int i = 0; i < forecastData.Count; ++i)
                             {
-                                // Interpolation occurs here, we add interpolationSteps* additional points to each data point.
+                                // Interpolation occurs here, we add *interpolationSteps* additional points between each data point.
                                 for (int j = 0; j < steps; ++j)
                                 {
-
-                                    // No need for time calculation here assuming interpolationSteps will remain at 6.
                                     DateTime d1 = DateTime.Parse((string)forecastData[i].forecastDateTime);
                                     DateTime interpolatedDate = d1;
 
