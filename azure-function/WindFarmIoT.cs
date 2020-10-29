@@ -222,7 +222,7 @@ namespace Doosan.Function
                             int steps = interpolationSteps;
                             if (urlParams.ContainsKey("steps")) {
                                 // Let's keep steps to a low number to avoid too much data.
-                                if (steps <= 50) {
+                                if (steps > 0 && steps <= 50) {
                                     steps = Int32.Parse(urlParams["steps"]);
                                 }
                             }
