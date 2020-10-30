@@ -1,6 +1,6 @@
 import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMessagePriority, ScreenViewport } from "@bentley/imodeljs-frontend"
 import { I18N } from "@bentley/imodeljs-i18n";
-import { CommonToolbarItem, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
+import { AbstractWidgetProps, BackstageItem, BackstageItemsManager, CommonToolbarItem, StagePanelLocation, StagePanelSection, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsApplication, UiItemsApplicationAction, UiItemsArbiter, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
 import PowerPredictionPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
@@ -9,6 +9,8 @@ import * as React from "react";
 import "./WindFarm.scss";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
+import { FillCentered } from "@bentley/ui-core";
+import { ErrorUiItemsProvider, ErrorUiItemsApplication, ErrorUiItemsApplicationAllow } from "./components/markers/ErrorMarker";
 
 (window as any).DEBUG_MODE = false;
 
@@ -61,7 +63,6 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
 
 }
 
-
 export class WindfarmExtension extends Extension {
   // Override the _defaultNs to setup a namespace.
   protected _defaultNs = "windfarm";
@@ -76,11 +77,20 @@ export class WindfarmExtension extends Extension {
     await MarkupApp.initialize();
 
     UiItemsManager.register(new WindfarmUiItemsProvider(this.i18n));
+
+    // UiItemsManager.register(new ErrorUiItemsProvider());
+
+    // UiItemsArbiter.uiItemsApplication = new ErrorUiItemsApplication();
+
+    // UiItemsArbiter.clearApplication();
+    // UiItemsArbiter.uiItemsApplication = new ErrorUiItemsApplicationAllow();
+
     // Add your initialization code here
   }
 
   /** Invoked each time this extension is loaded. */
   public async onExecute(): Promise<void> {
+    // UiItemsManager.register(new ErrorUiItemsProvider());
 
     // We need a location to bind the component to.
     const MLNode = document.createElement("div");
@@ -100,6 +110,8 @@ export class WindfarmExtension extends Extension {
       // Add decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
     });
+
+    UiItemsManager.register(new ErrorUiItemsProvider());
   }
 }
 

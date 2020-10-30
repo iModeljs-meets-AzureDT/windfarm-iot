@@ -93,14 +93,12 @@ const App: React.FC = () => {
 
         // powerEvent
         AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
-          console.log(data);
           (window as any).adtEmitter.emit('powerevent', data);
         }).catch(() => {});
 
         const suffix = "-S";
         // sensorEvent
         AdtDataLink.fetchDataForNode(prefix + turbineIndex + suffix).then((data) => {
-          console.log(data);
           (window as any).adtEmitter.emit('sensorevent', data);
         }).catch(() => {});
       }

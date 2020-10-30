@@ -22,7 +22,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
 
   private disableErrorSimulation() {
     PowerDecorator.markers.forEach((marker) => {
-      marker.disableError();
+      marker.errorSimulation = false;
     })
   }
 
@@ -61,9 +61,9 @@ export class ErrorPanelForm extends React.Component<{}> {
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
         if (toggled) {
-          marker.enableError();
+          marker.errorSimulation = true;
         } else {
-          marker.disableError();
+          marker.errorSimulation = false;
         }
       }
     })
