@@ -6,7 +6,7 @@ import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
-import { ErrorDecorator } from "../decorators/ErrorDecorator";
+// import { ErrorDecorator } from "../decorators/ErrorDecorator";
 
 interface powerDifference {
   id: string;
@@ -34,6 +34,7 @@ export class PowerMarker extends Marker {
   private emphasizedElements: EmphasizeElements;
 
   private isError: boolean = false;
+  public errorSimulation: boolean = false;
   private isBlinking: boolean = false;
 
   // Our default color transitioned.
@@ -96,7 +97,7 @@ export class PowerMarker extends Marker {
 
         const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
 
-        if (powerError.isError) {
+        if (powerError.isError || this.errorSimulation === true) {
           this.enableError();
         } else {
           this.disableError();
