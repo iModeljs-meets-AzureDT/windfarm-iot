@@ -101,6 +101,7 @@ export class WindfarmExtension extends Extension {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
 
+      FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       // Add decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
     });
