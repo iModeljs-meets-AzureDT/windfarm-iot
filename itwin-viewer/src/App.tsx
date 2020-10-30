@@ -5,10 +5,10 @@ import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
+import 'tsiclient/tsiclient.css';
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
-import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
 
@@ -22,7 +22,7 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
+  
   useEffect(() => {
     const initOidc = async () => {
       if (!AuthorizationClient.oidcClient) {

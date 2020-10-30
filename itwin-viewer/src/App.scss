@@ -2,6 +2,23 @@
   height: 93.5vh !important;
 }
 
+.tsi-stackedButton, .tsi-ellipsisButton{
+  opacity: 0 !important;
+}
+.tsi-legend{
+  justify-content: flex-start !important;
+  margin-left: 48px !important;
+  margin-top: -10px !important;
+}
+.tsi-seriesName{
+   opacity: .8 !important;
+   max-width: 200px !important;
+}
+.tsi-lineChartSVG{
+  margin-top: -50px;
+  height: 200px;
+}
+
 .show-control-pane-button {
   position: absolute;
   bottom: 10%;

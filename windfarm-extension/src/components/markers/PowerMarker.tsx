@@ -7,6 +7,7 @@ import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
 // import { ErrorDecorator } from "../decorators/ErrorDecorator";
+import { TimeSeries } from "../../client/TimeSeries";
 
 interface powerDifference {
   id: string;
@@ -267,6 +268,9 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
+
+    TimeSeries.loadTsiDataForNode(this.id);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }
