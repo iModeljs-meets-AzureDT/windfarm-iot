@@ -9,8 +9,8 @@ import * as React from "react";
 import "./WindFarm.scss";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
-import { FillCentered } from "@bentley/ui-core";
-import { ErrorUiItemsProvider, ErrorUiItemsApplication, ErrorUiItemsApplicationAllow } from "./components/markers/ErrorMarker";
+import { ErrorUiItemsProvider } from "./components/markers/ErrorMarker";
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 (window as any).DEBUG_MODE = false;
 
@@ -60,7 +60,6 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
       )
     ]
   }
-
 }
 
 export class WindfarmExtension extends Extension {
@@ -76,14 +75,9 @@ export class WindfarmExtension extends Extension {
 
     await MarkupApp.initialize();
 
+    // Register UI Providers.
     UiItemsManager.register(new WindfarmUiItemsProvider(this.i18n));
-
-    // UiItemsManager.register(new ErrorUiItemsProvider());
-
-    // UiItemsArbiter.uiItemsApplication = new ErrorUiItemsApplication();
-
-    // UiItemsArbiter.clearApplication();
-    // UiItemsArbiter.uiItemsApplication = new ErrorUiItemsApplicationAllow();
+    UiItemsManager.register(new ErrorUiItemsProvider());
 
     // Add your initialization code here
   }
@@ -111,7 +105,6 @@ export class WindfarmExtension extends Extension {
       IModelApp.viewManager.addDecorator(new PowerDecorator());
     });
 
-    UiItemsManager.register(new ErrorUiItemsProvider());
   }
 }
 
