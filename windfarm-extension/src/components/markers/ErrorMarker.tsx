@@ -37,14 +37,15 @@ export class ErrorMarker extends Marker {
 function ErrorList({turbinePower}: any) {
   const [power, setPower] = useState({id: turbinePower.id, observedPower: turbinePower.power, physicalPower: turbinePower.powerPM, datamodelPower: turbinePower.powerDM });
 
-  function onPowerEvent(data: any) {
-    if (power.id === data.$dtId) {
-      setPower({ id: turbinePower.id, observedPower: data.powerObserved, physicalPower: data.powerPM, datamodelPower: data.powerDM })
-    }
-  }
-  (window as any).adtEmitter.on("powerevent", onPowerEvent);
-
   React.useEffect(() => {
+    function onPowerEvent(data: any) {
+      if (power.id === data.$dtId) {
+        setPower({ id: turbinePower.id, observedPower: data.powerObserved, physicalPower: data.powerPM, datamodelPower: data.powerDM })
+      }
+    }
+
+    (window as any).adtEmitter.on("powerevent", onPowerEvent);
+
     return function cleanup() {
       console.log("we called cleanup");
       (window as any).adtEmitter.removeListener("powerevent", onPowerEvent);
@@ -52,7 +53,7 @@ function ErrorList({turbinePower}: any) {
   })
 
   return (
-    <div>
+    <div style={{zIndex: 100}}>
       <p>Turbine: {power.id} </p>
       <p>Observed Power: {power.observedPower}</p>
       <p>Physical Model power: {power.physicalPower}</p>
@@ -64,7 +65,7 @@ function ErrorList({turbinePower}: any) {
 function ErrorListComponent() {
 
   return (
-    <div id="error-component">
+    <div id="error-component" style={{zIndex: 100}}>
     </div>
   )
 }
