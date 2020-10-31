@@ -11,7 +11,7 @@
   bottom: 10%;
   right: 2%;
   box-shadow: 1px 5px 0px rgba(0, 0, 0, 0.25);
-  z-index: 1;
+  z-index: 0;
 }
 
 .sample-ui {
@@ -145,4 +145,33 @@
   resize: none;
 }
 
+li {
+  list-style: none;
+  background: #d1703c;
+  color: #fff;
+  height: 0;
+  line-height: 2em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+}
 
+li.show {
+  height: 2em;
+  margin: 2px 0;
+  width: 100%;
+}
+
+.slide-fade li {
+  transition: all 0.4s ease-out;
+  opacity: 0;
+}
+
+.slide-fade li.show {
+  opacity: 1;
+}
+
+#list {
+  padding: 2px !important;
+}
