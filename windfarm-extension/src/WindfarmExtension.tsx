@@ -96,7 +96,6 @@ export class WindfarmExtension extends Extension {
     ErrorNode.id = "error-panel";
     document.getElementById("root")?.appendChild(ErrorNode);
 
-
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;

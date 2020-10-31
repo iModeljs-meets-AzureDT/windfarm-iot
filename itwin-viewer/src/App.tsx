@@ -14,6 +14,7 @@ import { EventEmitter } from "events";
 
 // I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
+(window as any).adtEmitter.setMaxListeners(50);
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(

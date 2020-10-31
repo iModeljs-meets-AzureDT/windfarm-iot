@@ -29,9 +29,9 @@ export class PowerMarker extends Marker {
   public temperatureData: TemperatureDecorator;
   public errorElement: ErrorDecorator;
 
-  private power: number = 0;
-  private powerDM: number = 0;
-  private powerPM: number = 0;
+  public power: number = 0;
+  public powerDM: number = 0;
+  public powerPM: number = 0;
   private emphasizedElements: EmphasizeElements;
 
   private isError: boolean = false;
