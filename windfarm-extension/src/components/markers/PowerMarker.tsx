@@ -8,10 +8,13 @@ import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
 import { ErrorDecorator } from "../decorators/ErrorDecorator";
 
-interface powerDifference {
+export interface PowerDifference {
   id: string;
   percentageDMDiff: number;
   percentagePMDiff: number;
+  powerObserved?: number;
+  powerDM?: number;
+  powerPM?: number;
   timestamp: string;
   isError: boolean;
 }
@@ -28,6 +31,8 @@ export class PowerMarker extends Marker {
   public windData: WindDecorator;
   public temperatureData: TemperatureDecorator;
   public errorElement: ErrorDecorator;
+
+  public errorList: PowerDifference[] = [];
 
   public power: number = 0;
   public powerDM: number = 0;
@@ -102,6 +107,7 @@ export class PowerMarker extends Marker {
         const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
 
         if (powerError.isError || this.errorSimulation === true) {
+          this.errorList.unshift(powerError);
           this.enableError();
         } else {
           this.disableError();
@@ -114,17 +120,20 @@ export class PowerMarker extends Marker {
 
   }
 
-  private calculateDifference(powerObserved: number, powerPM: number, powerDM: number, timestamp: string): powerDifference {
+  private calculateDifference(powerObserved: number, powerPM: number, powerDM: number, timestamp: string): PowerDifference {
     // If percentage difference between powerObserved and (powerPM OR powerDM)
     // >= 50%, return true if error
     const diffPowerPM = 100 * (Math.abs(powerObserved - powerPM) / ((powerObserved + powerPM) / 2))
     const diffPowerDM = 100 * (Math.abs(powerObserved - powerDM) / ((powerObserved + powerDM) / 2))
 
     // We'll only test powerDM right now since powerPM is broken.
-    const diff: powerDifference = {
+    const diff: PowerDifference = {
       id: this.id,
       percentagePMDiff: diffPowerPM,
       percentageDMDiff: diffPowerDM,
+      powerObserved,
+      powerDM,
+      powerPM,
       timestamp: timestamp,
       isError: (diffPowerDM >= 50 || diffPowerPM >= 50) ? true : false
     };
