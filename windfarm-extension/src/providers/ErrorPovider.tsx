@@ -24,16 +24,18 @@ export function ErrorList({ turbinePower }: any) {
     }
   })
 
-  const items = errors.map((error, i) => (
+  const items = errors.map((error, i) => {
+    return (
     <CSSTransition
-      key={i}
+      key={errors.length - 1 - i}
       classNames="error"
       timeout={{enter: 500, exit: 300}}
       >
 
       <li className="show">{error.powerObserved}</li>
     </CSSTransition>
-  ));
+  )
+  });
 
   return (
     <div>
