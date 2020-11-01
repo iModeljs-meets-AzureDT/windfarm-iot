@@ -9,7 +9,7 @@ import * as React from "react";
 import "./WindFarm.scss";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
-import { ErrorUiItemsProvider } from "./components/markers/ErrorMarker";
+import { ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 (window as any).DEBUG_MODE = false;
