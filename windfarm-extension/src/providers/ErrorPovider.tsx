@@ -2,6 +2,7 @@ import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, UiItemsProv
 import * as React from "react";
 import { useState } from "react";
 import { PowerMarker } from "../components/markers/PowerMarker";
+import { CSSTransition, TransitionGroup } from "react-transition-group"
 
 // Error Component
 export function ErrorList({ turbinePower }: any) {
@@ -11,7 +12,6 @@ export function ErrorList({ turbinePower }: any) {
   React.useEffect(() => {
     function onPowerEvent(data: any) {
       if (power.id === data.$dtId) {
-        // console.log((turbinePower as PowerMarker).errorList);
         setPower({ id: turbinePower.id, observedPower: data.powerObserved, physicalPower: data.powerPM, datamodelPower: data.powerDM })
         setError(turbinePower.errorList);
       }
@@ -24,18 +24,16 @@ export function ErrorList({ turbinePower }: any) {
     }
   })
 
-  // TODO: Should use react-transition-group instead.
-  const addToList = () => {
-    const list = document.getElementById('list');
-    const newLI = document.createElement('li');
-    newLI.innerHTML = 'A new item';
-    newLI.className = newLI.className;
-    list!.insertBefore(newLI, list!.firstChild);
-    setTimeout(function () {
-      newLI.className = newLI.className + "show";
-    }, 10);
-  }
+  const items = errors.map((error, i) => (
+    <CSSTransition
+      key={i}
+      classNames="error"
+      timeout={{enter: 500, exit: 300}}
+      >
 
+      <li className="show">{error.powerObserved}</li>
+    </CSSTransition>
+  ));
 
   return (
     <div>
@@ -45,13 +43,12 @@ export function ErrorList({ turbinePower }: any) {
         <p>Physical Model power: {power.physicalPower.toFixed(2)}</p>
         <p>Data Model power: {power.datamodelPower.toFixed(2)}</p>
       </div>
-      <div className="slide-fade">
+      <div>
         <ul id="list">
-          {errors.map((error, i) => 
-            (<li key={i} className="show">{error.powerObserved}</li>)
-          )}
+          <TransitionGroup>
+            {items}
+          </TransitionGroup>
         </ul>
-        <button id="add-to-list" onClick={addToList}>Add a list item</button>
       </div>
     </div>
   )
@@ -60,7 +57,7 @@ export function ErrorList({ turbinePower }: any) {
 function ErrorListComponent() {
 
   return (
-    <div id="error-component" style={{ zIndex: 100 }}>
+    <div id="error-component">
     </div>
   )
 }

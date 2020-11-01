@@ -163,15 +163,24 @@ li.show {
   width: 100%;
 }
 
-.slide-fade li {
-  transition: all 0.4s ease-out;
-  opacity: 0;
+#list {
+  padding: 2px !important;
 }
 
-.slide-fade li.show {
+.error-enter {
+  opacity: 0.01;
+}
+
+.error-enter.error-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.error-exit {
   opacity: 1;
 }
 
-#list {
-  padding: 2px !important;
+.error-leave.error-exit-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
