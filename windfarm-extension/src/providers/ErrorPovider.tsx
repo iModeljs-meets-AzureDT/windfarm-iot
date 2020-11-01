@@ -3,7 +3,11 @@ import * as React from "react";
 import { useState } from "react";
 import { PowerMarker } from "../components/markers/PowerMarker";
 import { CSSTransition, TransitionGroup } from "react-transition-group"
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
+function deactivateWidget() {
+  FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
+}
 // Error Component
 export function ErrorList({ turbinePower }: any) {
   const [power, setPower] = useState({ id: turbinePower.id, observedPower: turbinePower.power, physicalPower: turbinePower.powerPM, datamodelPower: turbinePower.powerDM });
@@ -25,6 +29,9 @@ export function ErrorList({ turbinePower }: any) {
   })
 
   const items = errors.map((error, i) => {
+    // Reverse key to have transition occur at index 0.
+    const date = error.timestamp.split("T")[0]
+    const time = error.timestamp.split("T")[1].split(".")[0]
     return (
     <CSSTransition
       key={errors.length - 1 - i}
@@ -32,20 +39,40 @@ export function ErrorList({ turbinePower }: any) {
       timeout={{enter: 500, exit: 300}}
       >
 
-      <li className="show">{error.powerObserved}</li>
+      <li className="show">
+        <table style={{borderCollapse: "collapse"}} cellSpacing="0" cellPadding="0">
+          <tr>
+            <td>
+              <u>{date}</u> <br></br> {time}
+            </td>
+            <td>
+              <ul>
+                  <li> OB: {error.powerObserved?.toFixed(2)} </li>
+                  <li> DM: {error.powerDM?.toFixed(2)} </li>
+                  <li> PM: {error.powerPM?.toFixed(2)} </li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+      </li>
     </CSSTransition>
   )
   });
 
   return (
     <div>
-      <div>
-        <p>Turbine: {power.id} </p>
-        <p>Observed Power: {power.observedPower.toFixed(2)}</p>
-        <p>Physical Model power: {power.physicalPower.toFixed(2)}</p>
-        <p>Data Model power: {power.datamodelPower.toFixed(2)}</p>
+      <svg className="minimize-error-panel" onClick={deactivateWidget}>
+        <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
+        <title>Minimize</title>
+      </svg>
+      <div className="rcorners">
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Turbine: {power.id}</u></h3> <br />
+        Observed: {power.observedPower.toFixed(2)} <br />
+        Physical: {power.physicalPower.toFixed(2)} <br />
+        Data Model: {power.datamodelPower.toFixed(2)} <br />
       </div>
       <div>
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Warnings:</u></h3> <br />
         <ul id="list">
           <TransitionGroup>
             {items}
