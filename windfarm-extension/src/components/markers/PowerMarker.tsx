@@ -139,7 +139,7 @@ export class PowerMarker extends Marker {
           // Open new error panel aggregate.
           if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
             ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
-            ReactDOM.render(<AggregateErrorList powerMarker={PowerMarker.aggregateErrorList}></AggregateErrorList>, document.getElementById("error-component"));
+            ReactDOM.render(<AggregateErrorList aggregatedErrorList={PowerMarker.aggregateErrorList}></AggregateErrorList>, document.getElementById("error-component"));
             FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
           }
 
