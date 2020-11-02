@@ -19,7 +19,7 @@ const App: React.FC = () => {
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
+  // setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
 
   useEffect(() => {
     const initOidc = async () => {

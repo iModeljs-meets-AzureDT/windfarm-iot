@@ -60,7 +60,7 @@ export class  AnimationDebugPanel extends React.Component<{}, PanelState> {
 
   public initViewport(vp: Viewport): void {
     IModelApp.tools.run("Animation", vp);
-    this.timer = new AnimationTimer(vp);
+    this.timer = new AnimationTimer(vp, 6);
     this.dropListeners.push(vp.onViewChanged.addListener((updateVp) => {
       const script = updateVp.displayStyle.scheduleScript;
       if (undefined === script || undefined === updateVp.timePoint)
