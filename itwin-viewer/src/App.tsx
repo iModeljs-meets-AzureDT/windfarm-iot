@@ -8,17 +8,14 @@ import { AdtDataLink } from "./AdtDataLink";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
-<<<<<<< HEAD
 import { AnimationTool } from "./animation/BladeAnimation";
 // import { AnimationDebugPanel } from "./animation/AnimationUI";
-=======
 import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
 
 // I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
->>>>>>> imodeljs-2.7.3
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
@@ -28,11 +25,8 @@ const App: React.FC = () => {
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-<<<<<<< HEAD
   // setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
 
-=======
->>>>>>> imodeljs-2.7.3
   useEffect(() => {
     const initOidc = async () => {
       if (!AuthorizationClient.oidcClient) {
