@@ -1,9 +1,7 @@
 import { Marker, BeButtonEvent, StandardViewId, imageElementFromUrl } from "@bentley/imodeljs-frontend";
 import { Point2d, Point3d, XAndY, XYAndZ } from "@bentley/geometry-core";
 import { PowerMarker } from "./PowerMarker";
-import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, StageUsage, UiItemsApplication, UiItemsApplicationAction, UiItemsArbiter, UiItemsManager, UiItemsProvider, WidgetState } from "@bentley/ui-abstract";
 import * as React from "react";
-import { useState } from "react";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import * as ReactDOM from "react-dom";
 import { DetailedErrorList } from "../../providers/ErrorPovider";

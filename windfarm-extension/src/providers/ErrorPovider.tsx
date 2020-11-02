@@ -5,13 +5,21 @@ import { useState } from "react";
 import { ErrorType, PowerMarker } from "../components/markers/PowerMarker";
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
+import { PowerDecorator } from "../components/decorators/PowerDecorator";
+import { WindfarmExtension } from "../WindfarmExtension";
+import { StandardViewId } from "@bentley/imodeljs-frontend";
 
 function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
 }
 
-export function AggregateErrorList({aggregatedErrorList} : any) {
-  const [errorList, setErrorList] = useState(aggregatedErrorList as ErrorType[]);
+function displayAggregate() {
+  ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+  ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
+}
+
+export function AggregateErrorList() {
+  const [errorList, setErrorList] = useState([...PowerMarker.aggregateErrorList]);
 
   React.useEffect(() => {
     function onUpdateErrorList() {
@@ -27,14 +35,17 @@ export function AggregateErrorList({aggregatedErrorList} : any) {
 
   const errors = errorList.map((error: ErrorType, i: any) => {
 
-    /*
-    function onErrorClick() {
-      ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
-      ReactDOM.render(<DetailedErrorList turbinePower={this.powerMarker}></DetailedErrorList>, document.getElementById("error-component"));
+    function onErrorClick(markerId: string) {
+      PowerDecorator.markers.forEach((marker) => {
+        if (markerId === marker.id) {
+          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+          ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+          ReactDOM.render(<DetailedErrorList turbinePower={marker}></DetailedErrorList>, document.getElementById("error-component"));
+          return;
+        }
+      })
     }
-    */
 
-    console.log(error);
     return (
       <CSSTransition
         key={errorList.length - 1 - i}
@@ -42,7 +53,7 @@ export function AggregateErrorList({aggregatedErrorList} : any) {
         timeout={{ enter: 500, exit: 300 }}
       >
 
-        <li className="show">
+        <li className="show-error" onClick={() => onErrorClick(error.id)}>
           <div>Turbine: {error.id} <br></br>
           Type: {error.errorType}
           </div>
@@ -126,6 +137,7 @@ export function DetailedErrorList({ turbinePower }: any) {
         <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
         <title>Minimize</title>
       </svg>
+      <button style={{float: "right", marginTop: "10px"}} onClick={displayAggregate}>Back</button>
       <div className="rcorners">
         <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Turbine: {power.id}</u></h3> <br />
         Observed: {power.observedPower.toFixed(2)} <br />

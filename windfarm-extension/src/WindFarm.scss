@@ -158,8 +158,24 @@ li.show {
   height: 3.2em;
   margin: 2px 0;
   width: 100%;
+  cursor: pointer;
 }
 
+li.show-error {
+  list-style: none;
+  color: black;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.2em;
+  margin: 2px 0;
+  width: 87%;
+  cursor: pointer;
+  border: 2px solid red;
+}
 
 #list {
   padding: 2px !important;
