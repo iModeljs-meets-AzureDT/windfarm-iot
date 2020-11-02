@@ -13,9 +13,10 @@ function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
 }
 
-function displayAggregate() {
+export function displayAggregate() {
   ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
   ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
+  FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
 }
 
 export function AggregateErrorList() {

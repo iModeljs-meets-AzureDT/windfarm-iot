@@ -9,7 +9,7 @@ import * as React from "react";
 import "./WindFarm.scss";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
-import { ErrorUiItemsProvider } from "./providers/ErrorPovider";
+import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 (window as any).DEBUG_MODE = false;
@@ -37,7 +37,7 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "icon-lightbulb",
         "Opened IModel",
         () => {
-          IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "The opened imodel is " + WindfarmExtension.imodel!.name));
+          displayAggregate();
         }
       ),
       ToolbarItemUtilities.createActionButton(

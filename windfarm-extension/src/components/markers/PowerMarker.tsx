@@ -101,9 +101,9 @@ export class PowerMarker extends Marker {
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
-    this.errorElement = new ErrorDecorator(this);
 
-    IModelApp.viewManager.addDecorator(this.errorElement);
+    this.errorElement = new ErrorDecorator(this);
+    // IModelApp.viewManager.addDecorator(this.errorElement);
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
