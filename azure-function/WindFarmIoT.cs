@@ -15,7 +15,10 @@ using Newtonsoft.Json;
 using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Azure.DigitalTwins.Core.Serialization;
+using PhysicsModel;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
 namespace Doosan.Function
 {
 
@@ -24,10 +27,23 @@ namespace Doosan.Function
         public string turbineObserved;
     }
 
+    struct TemperatureValues {
+        public float nacelle;
+        public float gearBox;
+        public float generator;
+    }
+
+    struct PowerValues {
+        public float powerObserved;
+        public float powerPM;
+        public float powerDM;
+    }
+
     public static class WindFarmIoT
     {
         private static DigitalTwinsClient client;
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
+        private const int interpolationSteps = 6;
 
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
@@ -69,28 +85,39 @@ namespace Doosan.Function
         }
 
         private static async Task processSensorData(string deviceId, JObject sensorData) {
-            var info = new WTInfo
-            {
-                Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
-                Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
-                Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
-                GenSpeed = (float)sensorData.GetValue("genSpeed"),
-                GenTorque = (float)sensorData.GetValue("genTorque"),
-                OriginSysTime = (string)sensorData.GetValue("originSysTime"),
-                Power = (float)sensorData.GetValue("power_PM"),
-                WindDir = (float)sensorData.GetValue("windDirection"),
-                WindSpeed = (float)sensorData.GetValue("windSpeed"),
-                YawPosition = (float)sensorData.GetValue("yawPosition")
+            
+            // extract sensor data
+            var info = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
+            info.PowerInputs.Add(new WTInfo {
+                    Blade1PitchPosition = (float)sensorData.GetValue("pitchAngle1"),
+                    Blade2PitchPosition = (float)sensorData.GetValue("pitchAngle2"),
+                    Blade3PitchPosition = (float)sensorData.GetValue("pitchAngle3"),
+                    OriginSysTime = (string)sensorData.GetValue("originSysTime"),
+                    WindDir = (float)sensorData.GetValue("windDirection"),
+                    WindSpeed = (float)sensorData.GetValue("windSpeed"),
+                    YawPosition = (float)sensorData.GetValue("yawPosition")
+            });
+
+            var tempValues = new TemperatureValues() {
+                nacelle = (float)sensorData.GetValue("nacelleTemp"),
+                gearBox = (float)sensorData.GetValue("gearboxTemp"),
+                generator = (float)sensorData.GetValue("convTemp"),
             };
 
+            // update sensor data on ADT
             string query = $"SELECT * FROM DigitalTwins T WHERE IS_OF_MODEL(T, 'dtmi:adt:chb:Sensor;1') AND T.deviceId = '{deviceId}'";
             DtIds dtIds = await fetchDtIds(query);
-            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info));
+            if (dtIds.sensor == null || dtIds.turbineObserved == null) return;
+            client.UpdateDigitalTwin(dtIds.sensor, generatePatchForSensor(info.PowerInputs[0], tempValues));
 
-            float powerDM = await MlApi.GetPowerAsync(info);
-            float powerPM = (float)sensorData.GetValue("power_PM");
-            float powerObserved = (float)sensorData.GetValue("power");
-            client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerObserved, powerPM, powerDM));
+            // update turbine data on ADT. We return index 0 since only a single
+            // value should only be processed.
+            var powerValues = new PowerValues() {
+                powerObserved = (float)sensorData.GetValue("power"),
+                powerDM = (float)(await MlApi.GetPowerAsync(info.PowerInputs)).result[0],
+                powerPM = (float)(await PmAPI.GetPowerAsync(info.PowerInputs))[0]
+            };
+            client.UpdateDigitalTwin(dtIds.turbineObserved, generatePatchForTurbine(powerValues));
         }
 
         private static async Task<DtIds> fetchDtIds(string query) {
@@ -111,7 +138,7 @@ namespace Doosan.Function
             return dtIds;
         }
 
-        private static string generatePatchForSensor(WTInfo info) {
+        private static string generatePatchForSensor(WTInfo info, TemperatureValues tempValues) {
             UpdateOperationsUtility uou = new UpdateOperationsUtility();
 
             uou.AppendReplaceOp("/blade1PitchAngle", info.Blade1PitchPosition);
@@ -120,72 +147,239 @@ namespace Doosan.Function
             uou.AppendReplaceOp("/yawPosition", info.YawPosition);
             uou.AppendReplaceOp("/windDirection", info.WindDir);
             uou.AppendReplaceOp("/windSpeed", info.WindSpeed);
-            uou.AppendReplaceOp("/temperatureNacelle", 50);
-            uou.AppendReplaceOp("/temperatureGenerator", 50);
-            uou.AppendReplaceOp("/temperatureGearBox", 50);
+            uou.AppendReplaceOp("/temperatureNacelle", tempValues.nacelle);
+            uou.AppendReplaceOp("/temperatureGenerator", tempValues.generator);
+            uou.AppendReplaceOp("/temperatureGearBox", tempValues.gearBox);
 
             return uou.Serialize();
         }
 
-        private static string generatePatchForTurbine(float powerObserved, float powerPM, float powerDM) {
+        private static string generatePatchForTurbine(PowerValues powerValues) {
             UpdateOperationsUtility uou = new UpdateOperationsUtility();
 
-            uou.AppendReplaceOp("/powerObserved", powerObserved);
-            uou.AppendReplaceOp("/powerPM", powerPM);
-            uou.AppendReplaceOp("/powerDM", powerDM);
+            uou.AppendReplaceOp("/powerObserved", powerValues.powerObserved);
+            uou.AppendReplaceOp("/powerPM", powerValues.powerPM);
+            uou.AppendReplaceOp("/powerDM", powerValues.powerDM);
 
             return uou.Serialize();
         }
 
-        [FunctionName("TriggerML")]
-        public static async Task<IActionResult> HttpTriggerML(
+        [FunctionName("TriggerPrediction")]
+        public static async Task<IActionResult> HttpTriggerPrediction(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
             HttpRequest req, ILogger log)
         {
-            log.LogInformation("Machine Learning HTTP trigger function processed a request.");
+            log.LogInformation("Power Prediction HTTP trigger function processed a request.");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            try {
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
+            try
+            {
 
-                /*
-                Example request body:
-                {     
-                    "pitchAngle1": 1.99,
-                    "pitchAngle2": 2.02,
-                    "pitchAngle3": 1.92,
-                    "genSpeed": 1212.28,
-                    "genTorque": 6824.49,
-                    "originSysTime": "7/29/2018 11:43:00",
-                    "windDirection": -8.6,
-                    "windSpeed": 6.66,
-                    "yawPosition": 5.05
-                }
-                */
-
-                var info = new WTInfo
+                // We'll check if there's a body first - prioritize manual prediction
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                if (requestBody.Length > 0)
                 {
-                    Blade1PitchPosition = data.pitchAngle1,
-                    Blade2PitchPosition = data.pitchAngle2,
-                    Blade3PitchPosition = data.pitchAngle3,
-                    GenSpeed = data.genSpeed,
-                    GenTorque = data.genTorque,
-                    OriginSysTime = data.originSysTime,
-                    WindDir = data.windDirection,
-                    WindSpeed = data.windSpeed,
-                    YawPosition = data.yawPosition
-                };
+                    // Example request body:
 
-                var result = new WTMLInfo {
-                    Power_DM = await MlApi.GetPowerAsync(info),
-                    GenSpeed_DM = await MlApi.GetGenSpeedAsync(info)
-                };
+                    /*
+                    {     
+                        "PowerInputs": [{
+                            "Blade1PitchPosition": 1.99,
+                            "Blade2PitchPosition": 2.02,
+                            "Blade3PitchPosition": 1.92,
+                            "OriginSysTime": "7/29/2018 11:43:00",
+                            "WindDir": -8.6,
+                            "WindSpeed": 6.66,
+                            "YawPosition": 5.05
+                        },{
+                            "Blade1PitchPosition": 3.1,
+                            "Blade2PitchPosition": 2.1,
+                            "Blade3PitchPosition": 1.2,
+                            "OriginSysTime": "7/29/2018 11:43:01",
+                            "WindDir": -8.6,
+                            "WindSpeed": 6.66,
+                            "YawPosition": 5.05
+                        }]
+                    }
+                    */
+                    WTPowerRequestInfo data = JsonConvert.DeserializeObject<WTPowerRequestInfo>(requestBody);
+                    WTPowerResultSet manualPowerResults = await getPredictedPower(data);
+                    return (ActionResult)new OkObjectResult(manualPowerResults);
+                }
+                // If no body is present, assume prediction for next day.
+                else
+                {
 
-                return (ActionResult)new OkObjectResult(result);
+                    using (HttpClient client = new HttpClient())
+                    {
+                        HttpResponseMessage response = await client.GetAsync("http://52.157.19.187/api/predictiondata");
+
+                        if (response.IsSuccessStatusCode)
+                        {
+
+                            IDictionary<string, string> urlParams = req.GetQueryParameterDictionary();
+                            int steps = interpolationSteps;
+                            if (urlParams.ContainsKey("steps")) {
+                                // Let's keep steps to a low number to avoid too much data.
+                                if (steps > 0 && steps <= 50) {
+                                    steps = Int32.Parse(urlParams["steps"]);
+                                }
+                            }
+
+                            string result = await response.Content.ReadAsStringAsync();
+
+                            // Example data in case the prediction data endpoint is dead
+                            /*
+                            string predictionRequest = @"[
+                                {""forecastDateTime"":""2020-10-29T00:00:00"",""windspeed"":5.9,""winddirection"":-1,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T03:00:00"",""windspeed"":6.8,""winddirection"":3,""yawposition"":-109.37,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T06:00:00"",""windspeed"":6.3,""winddirection"":5,""yawposition"":-104.41,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T09:00:00"",""windspeed"":5.9,""winddirection"":5,""yawposition"":-104.41,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T12:00:00"",""windspeed"":6.9,""winddirection"":2,""yawposition"":-109.37,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T15:00:00"",""windspeed"":7.1,""winddirection"":-4,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T18:00:00"",""windspeed"":6.8,""winddirection"":-4,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
+                                {""forecastDateTime"":""2020-10-29T21:00:00"",""windspeed"":6.8,""winddirection"":-3,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2}
+                            ]";
+                            */
+
+                            dynamic forecastData = JsonConvert.DeserializeObject(result);
+
+                            WTPowerRequestInfo predictionInput = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
+
+                            for (int i = 0; i < forecastData.Count; ++i)
+                            {
+                                // Interpolation occurs here, we add *interpolationSteps* additional points between each data point.
+                                for (int j = 0; j < steps; ++j)
+                                {
+                                    DateTime d1 = DateTime.Parse((string)forecastData[i].forecastDateTime);
+                                    DateTime interpolatedDate = d1;
+
+                                    float yawPositionCurrent = forecastData[i].yawposition;
+                                    float interpolatedYaw = yawPositionCurrent;
+
+                                    float windSpeedCurrent = forecastData[i].windspeed;
+                                    float interpolatedWindSpeed = windSpeedCurrent;
+
+                                    float windDirectionCurrent = forecastData[i].winddirection;
+                                    float interpolatedWindDirection = windDirectionCurrent;
+
+                                    // No data to interpolate to on last data point.
+                                    if (i != forecastData.Count - 1)
+                                    {
+                                        // Date has a unique interpolation.
+                                        DateTime d2 = DateTime.Parse((string)forecastData[i + 1].forecastDateTime);
+                                        TimeSpan timeDiff = (d2 - d1);
+                                        var timeStepDifference = timeDiff / (steps);
+                                        var minutesElapsed = timeStepDifference * j;
+                                        interpolatedDate = d1.AddMinutes(minutesElapsed.TotalMinutes);
+
+                                        int next = i + 1;
+                                        float yawPositionNext = forecastData[next].yawposition;
+                                        interpolatedYaw = interpolateData(yawPositionCurrent, yawPositionNext, j, steps);
+
+                                        float windSpeedNext = forecastData[next].windspeed;
+                                        interpolatedWindSpeed = interpolateData(windSpeedCurrent, windSpeedNext, j, steps);
+
+                                        float windDirectionNext = forecastData[next].winddirection;
+                                        interpolatedWindDirection = interpolateData(windDirectionCurrent, windDirectionNext, j, steps);
+
+                                    }
+
+                                    // No need to interpolate blade angles since they remain constant.
+                                    predictionInput.PowerInputs.Add(new WTInfo
+                                    {
+                                        Blade1PitchPosition = forecastData[i].bladepitch1,
+                                        Blade2PitchPosition = forecastData[i].bladepitch2,
+                                        Blade3PitchPosition = forecastData[i].bladepitch3,
+                                        OriginSysTime = interpolatedDate.ToString(),
+                                        WindDir = interpolatedWindDirection,
+                                        WindSpeed = interpolatedWindSpeed,
+                                        YawPosition = interpolatedYaw
+                                    });
+                                }
+                            }
+
+                            WTPowerResultSet predictedPowerResults;
+
+                            if (urlParams.ContainsKey("alldata"))
+                            {
+                                predictedPowerResults = await getPredictedPower(predictionInput, true);
+                                return (ActionResult)new OkObjectResult(predictedPowerResults.powerForecastResults);
+                            }
+                            else
+                            {
+                                predictedPowerResults = await getPredictedPower(predictionInput);
+                                return (ActionResult)new OkObjectResult(predictedPowerResults.powerResults);
+                            }
+                        }
+                        else
+                        {
+                            return new BadRequestObjectResult(response.Content);
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
                 return new BadRequestObjectResult(e.ToString());
+            }
+        }
+
+        private static async Task<WTPowerResultSet> getPredictedPower(WTPowerRequestInfo predictionInputs, Boolean allInfo = false)
+        {
+            DMResultInfo PredictionPowerDMSet = await MlApi.GetPowerAsync(predictionInputs.PowerInputs);
+            float[] PredictionPowerPMSet = await PmAPI.GetPowerAsync(predictionInputs.PowerInputs);
+
+            WTPowerResultSet results;
+            int iterator = 0;
+
+            if (allInfo) {
+                results = new WTPowerResultSet { powerForecastResults = new List<WTPowerForecastResult>() };
+            } else {
+                results = new WTPowerResultSet { powerResults = new List<WTPowerResult>() };
+            }
+
+            foreach (WTInfo powerInfo in predictionInputs.PowerInputs)
+            {
+                if (allInfo)
+                {
+                    results.powerForecastResults.Add(new WTPowerForecastResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PredictionPowerDMSet.result[iterator],
+                        Power_PM = (float)PredictionPowerPMSet[iterator],
+                        WindDir = powerInfo.WindDir,
+                        WindSpeed = powerInfo.WindSpeed,
+                        YawPosition = powerInfo.YawPosition
+                    });
+                }
+                else
+                {
+                    results.powerResults.Add(new WTPowerResult
+                    {
+                        OriginSysTime = powerInfo.OriginSysTime,
+                        Power_DM = (float)PredictionPowerDMSet.result[iterator],
+                        Power_PM = (float)PredictionPowerPMSet[iterator],
+                    });
+                }
+
+
+                ++iterator;
+            }
+
+            return results;
+        }
+
+        private static float interpolateData(float currentValue, float nextValue, int step, int totalSteps) {
+            float valueDifference = Math.Abs(nextValue - currentValue);
+            float stepDifference = valueDifference / (totalSteps);
+
+            if (currentValue < nextValue)
+            {
+                return currentValue + (stepDifference * step);
+            }
+            else
+            {
+                return currentValue - (stepDifference * step);
             }
         }
 

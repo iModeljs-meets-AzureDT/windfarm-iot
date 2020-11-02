@@ -625,10 +625,6 @@ var state = {
     windSpeed: 6.66,
     power: 870,
     yawPosition: 5.05,
-    winSpeed_PM: 6.66,
-    power_PM: 0,
-    genSpeed_PM: 0.3,
-    genTorgue_PM: -0.486,
     nacelleTemp: 45.0,
     convTemp: 43.6,
     gearboxTemp: 30.0
@@ -698,17 +694,30 @@ function main(context, previousState, previousProperties) {
     state.windSpeed = next[11];
     
     state.yawPosition = next[13];
-    state.winSpeed_PM = next[14];
-    state.power_PM = next[15] * 1000; // Unit matching
-    state.genSpeed_PM = next[16];
-    state.genTorgue_PM = next[17];
 
-    if (properties.converter == "temp-error") state.convTemp = 85.0;
-    else state.convTemp = next[2];
+    if (properties.converter == "temp-error") 
+    {
+        if (state.convTemp < 85) state.convTemp += 2.0;
+        else state.convTemp = 85.0;
+    }
+    else 
+    {
+        if (state.convTemp > next[2]) state.convTemp -= 2.0;
+        else state.convTemp = next[2];
+    }
+    
 
-    if (properties.gearbox == "temp-error") state.gearboxTemp = 85.0;
-    else state.gearboxTemp = next[3];
-
+    if (properties.gearbox == "temp-error") 
+    {
+        if (state.gearboxTemp < 85) state.gearboxTemp += 2.0;
+        else state.gearboxTemp = 85.0;
+    }
+    else 
+    {
+        if (state.gearboxTemp > next[3]) state.gearboxTemp -= 2.0;
+        else state.gearboxTemp = next[3];
+    }
+    
     if (properties.generator == "alert") state.power = 0;
     else if (properties.gearbox == "alert") state.power = (next[12] * 0.3).toFixed(2);
     else state.power = next[12];
