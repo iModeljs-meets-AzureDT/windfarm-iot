@@ -1,7 +1,5 @@
-import { Matrix3d, Point3d, Transform } from "@bentley/geometry-core"; 
-import { } from "@bently"
 import { RenderSchedule } from "@bentley/imodeljs-common";
-import { IModelApp, NotifyMessageDetails, OutputMessagePriority, OutputMessageType, RenderScheduleState, Tool, Viewport, ViewState3d } from "@bentley/imodeljs-frontend";
+import { IModelApp, NotifyMessageDetails, OutputMessagePriority, OutputMessageType, RenderScheduleState, Tool, Viewport } from "@bentley/imodeljs-frontend";
 // import { AnimationTimer } from "./AnimationTimer";
 import timelineFile from "./blades.timeline.json";
 
@@ -58,8 +56,6 @@ export class AnimationTool extends Tool {
       vp.timePoint = script?.computeDuration().low;
       vp.displayStyle.scheduleScript = script;
     });
-
-    (vp.view as ViewState3d).getDisplayStyle3d().backgroundMapSettings
 
     // script?.modelTimelines.forEach()
 

@@ -9,7 +9,6 @@ import { AdtDataLink } from "./AdtDataLink";
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
 import { AnimationTool } from "./animation/BladeAnimation";
-// import { AnimationDebugPanel } from "./animation/AnimationUI";
 import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
