@@ -7,6 +7,11 @@ import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
 import { ErrorDecorator } from "../decorators/ErrorDecorator";
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
+import { AggregateErrorList } from "../../providers/ErrorPovider";
+
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 export interface PowerDifference {
   id: string;
@@ -17,6 +22,12 @@ export interface PowerDifference {
   powerPM?: number;
   timestamp: string;
   isError: boolean;
+}
+
+export interface ErrorType {
+  id: string;
+  errorType: string;
+  timestamp: string;
 }
 
 // Canvas example.
@@ -32,7 +43,13 @@ export class PowerMarker extends Marker {
   public temperatureData: TemperatureDecorator;
   public errorElement: ErrorDecorator;
 
+  // For detailed timestamps/power readings for specified error.
+  // Aggregate error list
+  public static aggregateErrorList: ErrorType[] = [];
+
+  // Internal error list
   public errorList: PowerDifference[] = [];
+  public isPowerError: boolean = false;
 
   public power: number = 0;
   public powerDM: number = 0;
@@ -66,6 +83,7 @@ export class PowerMarker extends Marker {
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
+    PowerMarker.aggregateErrorList = [];
     this.id = id;
 
     // These are mixed up for WTG008
@@ -109,7 +127,25 @@ export class PowerMarker extends Marker {
         if (powerError.isError || this.errorSimulation === true) {
           this.errorList.unshift(powerError);
           this.enableError();
+
+          this.isPowerError = true;
+
+          PowerMarker.aggregateErrorList.unshift({
+            id: this.id,
+            errorType: "Power Error",
+            timestamp: data.$metadata.powerObserved.lastUpdateTime
+          });
+
+          // Open new error panel aggregate.
+          if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
+            ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+            ReactDOM.render(<AggregateErrorList powerMarker={PowerMarker.aggregateErrorList}></AggregateErrorList>, document.getElementById("error-component"));
+            FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
+          }
+
         } else {
+
+          this.isPowerError = false;
           this.disableError();
         }
 

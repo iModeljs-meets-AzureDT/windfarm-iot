@@ -1,15 +1,76 @@
 import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, UiItemsProvider } from "@bentley/ui-abstract";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { useState } from "react";
-import { PowerMarker } from "../components/markers/PowerMarker";
+import { ErrorType, PowerMarker } from "../components/markers/PowerMarker";
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
 }
+
+export function AggregateErrorList({aggregatedErrorList} : any) {
+  const [errorList, setErrorList] = useState(aggregatedErrorList as ErrorType[]);
+
+  React.useEffect(() => {
+    function onUpdateErrorList() {
+      setErrorList([...PowerMarker.aggregateErrorList]);
+    }
+
+    (window as any).adtEmitter.on("powerevent", onUpdateErrorList);
+
+    return function cleanup() {
+      (window as any).adtEmitter.removeListener("powerevent", onUpdateErrorList);
+    }
+  })
+
+  const errors = errorList.map((error: ErrorType, i: any) => {
+
+    /*
+    function onErrorClick() {
+      ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+      ReactDOM.render(<DetailedErrorList turbinePower={this.powerMarker}></DetailedErrorList>, document.getElementById("error-component"));
+    }
+    */
+
+    console.log(error);
+    return (
+      <CSSTransition
+        key={errorList.length - 1 - i}
+        classNames="error"
+        timeout={{ enter: 500, exit: 300 }}
+      >
+
+        <li className="show">
+          <div>Turbine: {error.id} <br></br>
+          Type: {error.errorType}
+          </div>
+        </li>
+      </CSSTransition>
+    )
+  });
+
+  return (
+    <div>
+      <svg className="minimize-error-panel" onClick={deactivateWidget}>
+        <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
+        <title>Minimize</title>
+      </svg>
+      <div>
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Errors:</u></h3> <br />
+        <ul id="list">
+          <TransitionGroup>
+            {errors}
+          </TransitionGroup>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 // Error Component
-export function ErrorList({ turbinePower }: any) {
+export function DetailedErrorList({ turbinePower }: any) {
   const [power, setPower] = useState({ id: turbinePower.id, observedPower: turbinePower.power, physicalPower: turbinePower.powerPM, datamodelPower: turbinePower.powerDM });
   const [errors, setError] = useState((turbinePower as PowerMarker).errorList);
 
