@@ -8,6 +8,12 @@ import { AdtDataLink } from "./AdtDataLink";
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
+import { TimeSeries } from "./TimeSeries";
+
+import { EventEmitter } from "events";
+
+// I use a global emitter here to communicate to the extension.
+(window as any).adtEmitter = new EventEmitter();
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
@@ -16,8 +22,6 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
 
   useEffect(() => {
     const initOidc = async () => {
@@ -70,6 +74,8 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
+      if (vp.displayStyle.scheduleScript !== undefined)
+        vp.timePoint = vp.displayStyle.scheduleScript.computeDuration().low;
       const style = vp.displayStyle.clone();
       const availableModels: ContextRealityModelProps[] = await findAvailableUnattachedRealityModels(imodel.contextId, imodel);
 
@@ -79,6 +85,31 @@ const App: React.FC = () => {
 
       vp.displayStyle = style;
     });
+
+    // Only start the fetching when imodel has connected.
+    setInterval(async () => {
+      for (let turbineIndex = 1; turbineIndex <= 10; ++turbineIndex) {
+        // Small hack to cover 10.
+        let prefix = "WTG00";
+        if (turbineIndex >= 10) prefix = "WTG0";
+
+        // powerEvent
+        AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
+          console.log(data);
+          (window as any).adtEmitter.emit('powerevent', data);
+        }).catch(() => {});
+
+        const suffix = "-S";
+        // sensorEvent
+        AdtDataLink.fetchDataForNode(prefix + turbineIndex + suffix).then((data) => {
+          console.log(data);
+          (window as any).adtEmitter.emit('sensorevent', data);
+        }).catch(() => {});
+      }
+
+      // console.log(await TimeSeries.showTsiDataForNode("WTG001"));
+    }, 5000);
+
   }
 
   const extensions: ViewerExtension[] = [

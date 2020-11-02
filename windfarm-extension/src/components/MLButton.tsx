@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 import MLClient from "../client/MLClient";
 
-export default class MachineLearningPanel extends React.Component<{}, { collapsed: boolean} > {
+export default class PowerPredictionPanel extends React.Component<{}, { collapsed: boolean} > {
 
   public componentDidMount() {
     this.setState({ collapsed: true });
@@ -34,14 +34,14 @@ export default class MachineLearningPanel extends React.Component<{}, { collapse
             </svg>
           </div>
 
-          <MachineLearningForm></MachineLearningForm>
+          <PowerPredictionForm></PowerPredictionForm>
         </div>
       </>
     );
   }
 }
 
-export class MachineLearningForm extends React.Component<{}> {
+export class PowerPredictionForm extends React.Component<{}> {
 
   private async alertData(e: any) {
     e.preventDefault();
@@ -76,20 +76,12 @@ export class MachineLearningForm extends React.Component<{}> {
             <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
           </p>
           <p className="ml-p">
-            <label className="ml-label">Blade 1 Pitch Angle: </label>
+            <label className="ml-label">Blade 2 Pitch Angle: </label>
             <input type="text" name="pitchAngle2" className="ml-input" defaultValue="2.02"></input> <br />
           </p>
           <p className="ml-p">
-            <label className="ml-label">Blade 2 Pitch Angle: </label>
+            <label className="ml-label">Blade 3 Pitch Angle: </label>
             <input type="text" name="pitchAngle3" className="ml-input" defaultValue="1.92"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Generator Speed: </label>
-            <input type="text" name="genSpeed" className="ml-input" defaultValue="1212.28"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Generator Torque: </label>
-            <input type="text" name="genTorque" className="ml-input" defaultValue="6824.49"></input> <br />
           </p>
           <p className="ml-p">
             <label className="ml-label">Time: </label>
