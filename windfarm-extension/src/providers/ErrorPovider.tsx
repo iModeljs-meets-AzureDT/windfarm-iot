@@ -54,11 +54,20 @@ export function AggregateErrorList() {
         timeout={{ enter: 500, exit: 300 }}
       >
 
-        <li className="show-error" onClick={() => onErrorClick(error.id)}>
-          <div>Turbine: {error.id} <br></br>
+        {error.isCurrent ?
+          <li className="show-error" onClick={() => onErrorClick(error.id)}>
+            <div>Turbine: {error.id} <br></br>
           Type: {error.errorType}
-          </div>
-        </li>
+            </div>
+          </li>
+          :
+
+          <li className="show-non-error" onClick={() => onErrorClick(error.id)}>
+            <div>Turbine: {error.id} <br></br>
+          Type: {error.errorType}
+            </div>
+          </li>
+        }
       </CSSTransition>
     )
   });

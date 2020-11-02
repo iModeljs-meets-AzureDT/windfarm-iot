@@ -28,6 +28,7 @@ export interface ErrorType {
   id: string;
   errorType: string;
   timestamp: string;
+  isCurrent: boolean;
 }
 
 // Canvas example.
@@ -130,11 +131,25 @@ export class PowerMarker extends Marker {
 
           this.isPowerError = true;
 
-          PowerMarker.aggregateErrorList.unshift({
-            id: this.id,
-            errorType: "Power Error",
-            timestamp: data.$metadata.powerObserved.lastUpdateTime
-          });
+          let foundCurrentEntry = false;
+          for (let i = 0; i <  PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id) {
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
+                foundCurrentEntry = true;
+                break;
+              }
+              break;
+            }
+          }
+
+          if (!foundCurrentEntry) {
+            PowerMarker.aggregateErrorList.unshift({
+              id: this.id,
+              errorType: "Power Error",
+              timestamp: data.$metadata.powerObserved.lastUpdateTime,
+              isCurrent: true
+            });
+          }
 
           // Open new error panel aggregate.
           if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
@@ -144,6 +159,17 @@ export class PowerMarker extends Marker {
           }
 
         } else {
+
+          for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id) {
+              // We reset the marker if no longer a power error.
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
+                PowerMarker.aggregateErrorList[i].isCurrent = false;
+                break;
+              }
+              break;
+            }
+          }
 
           this.isPowerError = false;
           this.disableError();
