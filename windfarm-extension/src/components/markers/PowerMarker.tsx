@@ -147,6 +147,7 @@ export class PowerMarker extends Marker {
           }
 
           if (!foundCurrentEntry) {
+
             PowerMarker.aggregateErrorList.unshift({
               id: this.id,
               errorType: this.errorType,

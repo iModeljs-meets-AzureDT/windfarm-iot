@@ -10,6 +10,9 @@ import { WindfarmExtension } from "../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import { TemperatureMarker } from "../components/markers/TemperatureMarker";
 
+// The lists continue to grow but we shouldn't pollute the DOM.
+const MAX_ELEMENTS = 12;
+
 function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
 }
@@ -37,7 +40,7 @@ export function AggregateErrorList() {
     }
   })
 
-  const errors = errorList.map((error: ErrorType, i: any) => {
+  const errors = errorList.slice(0, MAX_ELEMENTS).map((error: ErrorType, i: any) => {
 
     function onErrorClick(markerId: string, errorType: string) {
 
@@ -135,7 +138,7 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
     }
   })
 
-  const items = errors.map((error, i) => {
+  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]
@@ -210,7 +213,7 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
     }
   })
 
-  const items = errors.map((error, i) => {
+  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]

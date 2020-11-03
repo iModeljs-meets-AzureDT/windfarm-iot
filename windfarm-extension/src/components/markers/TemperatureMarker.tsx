@@ -78,6 +78,7 @@ export class TemperatureMarker extends Marker {
           }
 
           if (!foundCurrentEntry) {
+
             PowerMarker.aggregateErrorList.unshift({
               id: this.id,
               errorType: this.errorType,
