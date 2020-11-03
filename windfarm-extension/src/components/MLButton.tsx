@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 import MLClient from "../client/MLClient";
+import { TimeSeries } from "../client/TimeSeries";
 
 export default class PowerPredictionPanel extends React.Component<{}, { collapsed: boolean} > {
 
@@ -44,6 +45,7 @@ export default class PowerPredictionPanel extends React.Component<{}, { collapse
 export class PowerPredictionForm extends React.Component<{}> {
 
   private async alertData(e: any) {
+
     e.preventDefault();
 
     const messageBody: any = {};
@@ -58,8 +60,9 @@ export class PowerPredictionForm extends React.Component<{}> {
       }
     })
 
-    const response = await MLClient.getPredictedMLPower(JSON.stringify(messageBody));
-    (document.getElementById("ml-power-result") as HTMLTextAreaElement).value = response["power_DM"];
+    const response = await MLClient.getPredictedMLPower();
+    TimeSeries.showTsiForPredictedData(response);
+
 
     } catch (error) {
       console.error(error);
@@ -72,36 +75,7 @@ export class PowerPredictionForm extends React.Component<{}> {
         <hr></hr>
         <form id="ml-form">
           <p className="ml-p">
-            <label className="ml-label">Blade 1 Pitch Angle: </label>
-            <input type="text" name="pitchAngle1" className="ml-input" defaultValue="1.99"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Blade 2 Pitch Angle: </label>
-            <input type="text" name="pitchAngle2" className="ml-input" defaultValue="2.02"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Blade 3 Pitch Angle: </label>
-            <input type="text" name="pitchAngle3" className="ml-input" defaultValue="1.92"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Time: </label>
-            <input type="text" name="originSysTime" className="ml-input" defaultValue="7/29/2018 11:43:03"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Wind Direction: </label>
-            <input type="text" name="windDirection" className="ml-input" defaultValue="-8.6"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Wind Speed: </label>
-            <input type="text" name="windSpeed" className="ml-input" defaultValue="6.66"></input> <br />
-          </p>
-          <p className="ml-p">
-            <label className="ml-label">Yaw Position: </label>
-            <input type="text" name="yawPosition" className="ml-input" defaultValue="5.05"></input> <br />
-          </p>
-          <p className="ml-p">
             <Button className="ml-submit" size={ButtonSize.Large} buttonType={ButtonType.Blue} onClick={this.alertData.bind(this)}>Submit</Button>
-            <div className="ml-label"><label>Predicted Power: </label><textarea readOnly id="ml-power-result"></textarea></div> <br />
           </p>
         </form>
       </div>
