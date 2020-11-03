@@ -43,6 +43,8 @@ export class PowerMarker extends Marker {
   public windData: WindDecorator;
   public temperatureData: TemperatureDecorator;
   public errorElement: ErrorDecorator;
+  public timestamp: string = "";
+  public timeChanged: boolean = false;
 
   // For detailed timestamps/power readings for specified error.
   // Aggregate error list
@@ -126,11 +128,22 @@ export class PowerMarker extends Marker {
 
         const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
 
+        if (this.timestamp !== data.$metadata.powerObserved.lastUpdateTime) {
+          this.timeChanged = true;
+        } else {
+          this.timeChanged = false;
+        }
+        this.timestamp = data.$metadata.powerObserved.lastUpdateTime;
+
         if (powerError.isError || this.errorSimulation === true) {
           // To make things more realistic...
           if (this.errorSimulation) powerError.powerObserved = 0;
 
-          this.errorList.unshift(powerError);
+          // Always add the first error in, even if there was no time change.
+          if (this.timeChanged || this.errorList.length < 1) {
+            this.errorList.unshift(powerError);
+          }
+
           this.enableError();
 
           this.isPowerError = true;

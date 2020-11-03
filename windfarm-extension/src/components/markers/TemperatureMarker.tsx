@@ -27,6 +27,8 @@ export class TemperatureMarker extends Marker {
   public errorSimulation: boolean = false;
   public errorType: string = "Temperature Alert";
   public errorList: TempDifference[] = [];
+  public timestamp: string = "";
+  public timeChanged: boolean = false;
 
   public temperatureNacelle: number = 0;
   public temperatureGenerator: number = 0;
@@ -51,6 +53,13 @@ export class TemperatureMarker extends Marker {
         this.temperatureGenerator = data.temperatureGenerator;
         this.temperatureNacelle = data.temperatureNacelle;
 
+        if (this.timestamp !== data.$metadata.temperatureGearBox.lastUpdateTime) {
+          this.timeChanged = true;
+        } else {
+          this.timeChanged = false;
+        }
+        this.timestamp = data.$metadata.temperatureGearBox.lastUpdateTime;
+
         if (this.temperatureGearBox >= 80 || this.temperatureGenerator >= 80 || this.temperatureNacelle >= 80 || this.errorSimulation === true) {
 
           // To make things more realistic...
@@ -64,7 +73,9 @@ export class TemperatureMarker extends Marker {
             timestamp: data.$metadata.temperatureGearBox.lastUpdateTime
           };
 
-          this.errorList.unshift(tempDiff);
+          if (this.timeChanged || this.errorList.length < 1) {
+            this.errorList.unshift(tempDiff);
+          }
 
           let foundCurrentEntry = false;
           for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
