@@ -160,13 +160,26 @@ export class PowerMarker extends Marker {
 
         } else {
 
+          // This huge mess to sort the list.
           for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
             if (PowerMarker.aggregateErrorList[i].id === this.id) {
               // We reset the marker if no longer a power error.
               if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
                 PowerMarker.aggregateErrorList[i].isCurrent = false;
-                // Move element to end.
-                PowerMarker.aggregateErrorList.push(PowerMarker.aggregateErrorList.splice(i, 1)[0]);
+                // Move element to first position of non-current queue.
+                for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
+                  // Continue where this error position was.
+                  if (!PowerMarker.aggregateErrorList[j].isCurrent) {
+                    PowerMarker.aggregateErrorList.splice(j - 1, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                    break;
+                  }
+
+                  // This is the first non-current error.
+                  if (j === PowerMarker.aggregateErrorList.length - 1) {
+                    PowerMarker.aggregateErrorList.splice(j, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                  }
+                }
+                // PowerMarker.aggregateErrorList.push(PowerMarker.aggregateErrorList.splice(i, 1)[0]);
                 break;
               }
               break;
