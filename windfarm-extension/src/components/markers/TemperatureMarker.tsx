@@ -25,7 +25,7 @@ export class TemperatureMarker extends Marker {
   public sId: string = "";
 
   public errorSimulation: boolean = false;
-  public errorType: string = "Temperature Error";
+  public errorType: string = "Temperature Alert";
   public errorList: TempDifference[] = [];
 
   public temperatureNacelle: number = 0;

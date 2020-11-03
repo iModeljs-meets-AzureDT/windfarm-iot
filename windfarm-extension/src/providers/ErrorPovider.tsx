@@ -7,7 +7,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "../components/decorators/PowerDecorator";
 import { WindfarmExtension } from "../WindfarmExtension";
-import { StandardViewId } from "@bentley/imodeljs-frontend";
+import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import { TemperatureMarker } from "../components/markers/TemperatureMarker";
 
 function deactivateWidget() {
@@ -42,13 +42,23 @@ export function AggregateErrorList() {
     function onErrorClick(markerId: string, errorType: string) {
 
       PowerDecorator.markers.forEach((marker) => {
-        if (markerId === marker.id && errorType === "Power Error") {
+        if (markerId === marker.id && errorType === "Power Alert") {
           WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedPowerErrorList turbinePower={marker}></DetailedPowerErrorList>, document.getElementById("error-component"));
           return;
-        } else if (markerId === marker.id && errorType === "Temperature Error") {
-          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+        } else if (markerId === marker.id && errorType === "Temperature Alert") {
+          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Back });
+
+          // Remove all other markers.
+          PowerDecorator.markers.forEach(marker => {
+            IModelApp.viewManager.dropDecorator(marker.sensorData);
+            IModelApp.viewManager.dropDecorator(marker.windData);
+            IModelApp.viewManager.dropDecorator(marker.temperatureData);
+          });
+
+          IModelApp.viewManager.addDecorator(marker.temperatureData);
+
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedTemperatureErrorList turbineTemperature={marker.temperatureData.marker}></DetailedTemperatureErrorList>, document.getElementById("error-component"));
           return;
@@ -64,7 +74,7 @@ export function AggregateErrorList() {
       >
 
         {error.isCurrent ?
-         error.errorType === "Power Error" ? 
+         error.errorType === "Power Alert" ? 
           <li className="show-power-error" onClick={() => onErrorClick(error.id, error.errorType)}>
             <div>Turbine: {error.id} <br></br>
               Type: {error.errorType}
@@ -79,7 +89,7 @@ export function AggregateErrorList() {
           :
           <li className="show-non-error" onClick={() => onErrorClick(error.id, error.errorType)}>
             <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType}
+              Type: {error.errorType.replace("Alert", "Event")}
             </div>
           </li>
         }
@@ -145,8 +155,8 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
             <td>
               <ul>
                   <li> OB: {error.powerObserved?.toFixed(2)} </li>
-                  <li> DM: {error.powerDM?.toFixed(2)} </li>
                   <li> PM: {error.powerPM?.toFixed(2)} </li>
+                  <li> DM: {error.powerDM?.toFixed(2)} </li>
               </ul>
             </td>
           </tr>

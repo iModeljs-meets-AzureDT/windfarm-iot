@@ -51,7 +51,7 @@ export class PowerMarker extends Marker {
   // Internal error list
   public errorList: PowerDifference[] = [];
   public isPowerError: boolean = false;
-  public errorType: string = "Power Error";
+  public errorType: string = "Power Alert";
 
   public power: number = 0;
   public powerDM: number = 0;
