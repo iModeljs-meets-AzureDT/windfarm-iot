@@ -74,6 +74,8 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
+      if (vp.displayStyle.scheduleScript !== undefined)
+        vp.timePoint = vp.displayStyle.scheduleScript.computeDuration().low;
       const style = vp.displayStyle.clone();
       const availableModels: ContextRealityModelProps[] = await findAvailableUnattachedRealityModels(imodel.contextId, imodel);
 
