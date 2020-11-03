@@ -79,7 +79,7 @@ export function AggregateErrorList() {
         <title>Minimize</title>
       </svg>
       <div>
-        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Errors:</u></h3> <br />
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Events:</u></h3> <br />
         <ul id="list">
           <TransitionGroup>
             {errors}
