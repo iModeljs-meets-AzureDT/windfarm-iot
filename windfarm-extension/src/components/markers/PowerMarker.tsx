@@ -127,6 +127,9 @@ export class PowerMarker extends Marker {
         const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
 
         if (powerError.isError || this.errorSimulation === true) {
+          // To make things more realistic...
+          if (this.errorSimulation) powerError.powerObserved = 0;
+
           this.errorList.unshift(powerError);
           this.enableError();
 

@@ -145,9 +145,9 @@
   resize: none;
 }
 
-li.show {
+li.show-power {
   list-style: none;
-  background: #d1703c;
+  background: red;
   color: #fff;
   height: 0;
   line-height: 1em;
@@ -163,7 +163,7 @@ li.show {
 
 li.show-temp {
   list-style: none;
-  background: #73AD21;
+  background: purple;
   color: #fff;
   height: 0;
   line-height: 1em;

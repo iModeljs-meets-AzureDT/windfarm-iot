@@ -136,7 +136,7 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
       timeout={{enter: 500, exit: 300}}
       >
 
-      <li className="show">
+      <li className="show-power">
         <table style={{borderCollapse: "collapse"}} cellSpacing="0" cellPadding="0">
           <tr>
             <td>

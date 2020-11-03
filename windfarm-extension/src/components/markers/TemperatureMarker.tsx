@@ -53,6 +53,9 @@ export class TemperatureMarker extends Marker {
 
         if (this.temperatureGearBox >= 80 || this.temperatureGenerator >= 80 || this.temperatureNacelle >= 80 || this.errorSimulation === true) {
 
+          // To make things more realistic...
+          if (this.errorSimulation === true) this.temperatureGearBox = 80;
+
           const tempDiff: TempDifference = {
             id: this.id,
             tempNacelle: this.temperatureNacelle,
