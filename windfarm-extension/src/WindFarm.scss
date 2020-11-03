@@ -161,7 +161,23 @@ li.show {
   cursor: pointer;
 }
 
-li.show-error {
+li.show-temp {
+  list-style: none;
+  background: #73AD21;
+  color: #fff;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.2em;
+  margin: 2px 0;
+  width: 100%;
+  cursor: pointer;
+}
+
+li.show-power-error {
   list-style: none;
   color: black;
   height: 0;
@@ -175,6 +191,22 @@ li.show-error {
   width: 87%;
   cursor: pointer;
   border: 2px solid red;
+}
+
+li.show-temp-error {
+  list-style: none;
+  color: black;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.2em;
+  margin: 2px 0;
+  width: 87%;
+  cursor: pointer;
+  border: 2px solid purple;
 }
 
 li.show-non-error {
@@ -193,8 +225,12 @@ li.show-non-error {
   // border: 2px solid red;
 }
 
-li.show-error:hover {
+li.show-power-error:hover {
   background-color: palevioletred;
+}
+
+li.show-temp-error:hover {
+  background-color: plum;
 }
 
 li.show-non-error:hover {

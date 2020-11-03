@@ -4,7 +4,7 @@ import { PowerMarker } from "./PowerMarker";
 import * as React from "react";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import * as ReactDOM from "react-dom";
-import { DetailedErrorList } from "../../providers/ErrorPovider";
+import { DetailedPowerErrorList } from "../../providers/ErrorPovider";
 
 export class ErrorMarker extends Marker {
 
@@ -26,7 +26,7 @@ export class ErrorMarker extends Marker {
       FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
       // Remove the listener if swapping.
       ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
-      ReactDOM.render(<DetailedErrorList turbinePower={this.powerMarker}></DetailedErrorList>, document.getElementById("error-component"));
+      ReactDOM.render(<DetailedPowerErrorList turbinePower={this.powerMarker}></DetailedPowerErrorList>, document.getElementById("error-component"));
     }
 
     return true;

@@ -23,6 +23,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
   private disableErrorSimulation() {
     PowerDecorator.markers.forEach((marker) => {
       marker.errorSimulation = false;
+      marker.temperatureData.marker.errorSimulation = false;
     })
   }
 
@@ -56,7 +57,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
 
 export class ErrorPanelForm extends React.Component<{}> {
 
-  private toggleError(toggled: boolean, id: string) {
+  private togglePowerError(toggled: boolean, id: string) {
 
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
@@ -69,50 +70,83 @@ export class ErrorPanelForm extends React.Component<{}> {
     })
   }
 
+  private toggleTempError(toggled: boolean, id: string) {
+
+    PowerDecorator.markers.forEach((marker) => {
+      if (marker.id === id) {
+        if (toggled) {
+          marker.temperatureData.marker.errorSimulation = true;
+        } else {
+          marker.temperatureData.marker.errorSimulation = false;
+        }
+      }
+    })
+  }
+
   public render() {
     return (
       <div>
         <hr></hr>
         <form id="ml-form">
           <p className="ml-p">
-            <label className="ml-label">Turbine 1</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG001")}}></Toggle></label>
+            <label className="ml-label">T1 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG001")}}></Toggle></label>
+            <label className="ml-label">  TEMP: </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG001")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 2</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG002")}}></Toggle></label>
+            <label className="ml-label">T2 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG002")}}></Toggle></label>
+            <label className="ml-label">  TEMP: </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG002")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 3</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG003")}}></Toggle></label>
+            <label className="ml-label">T3 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG003")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG003")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 4</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG004")}}></Toggle></label>
+            <label className="ml-label">T4 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG004")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG004")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 5</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG005")}}></Toggle></label>
+            <label className="ml-label">T5 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG005")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG005")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 6</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG006")}}></Toggle></label>
+            <label className="ml-label">T6 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG006")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG006")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 7</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG007")}}></Toggle></label>
+            <label className="ml-label">T7 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG007")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG007")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 8</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG008")}}></Toggle></label>
+            <label className="ml-label">T8 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG008")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG008")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 9</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG009")}}></Toggle></label>
+            <label className="ml-label">T9 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG009")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG009")}}></Toggle></label>
           </p>
           <p className="ml-p">
-            <label className="ml-label">Turbine 10</label>
-            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleError(toggled, "WTG010")}}></Toggle></label>
+            <label className="ml-label">T10 | POW : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.togglePowerError(toggled, "WTG010")}}></Toggle></label>
+            <label className="ml-label">  TEMP : </label>
+            <label className="ml-label"><Toggle onChange={(toggled: boolean) => { this.toggleTempError(toggled, "WTG010")}}></Toggle></label>
           </p>
         </form>
       </div>

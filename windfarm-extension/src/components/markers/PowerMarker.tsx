@@ -51,6 +51,7 @@ export class PowerMarker extends Marker {
   // Internal error list
   public errorList: PowerDifference[] = [];
   public isPowerError: boolean = false;
+  public errorType: string = "Power Error";
 
   public power: number = 0;
   public powerDM: number = 0;
@@ -133,7 +134,7 @@ export class PowerMarker extends Marker {
 
           let foundCurrentEntry = false;
           for (let i = 0; i <  PowerMarker.aggregateErrorList.length; ++i) {
-            if (PowerMarker.aggregateErrorList[i].id === this.id) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
               if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
                 foundCurrentEntry = true;
                 break;
@@ -145,7 +146,7 @@ export class PowerMarker extends Marker {
           if (!foundCurrentEntry) {
             PowerMarker.aggregateErrorList.unshift({
               id: this.id,
-              errorType: "Power Error",
+              errorType: this.errorType,
               timestamp: data.$metadata.powerObserved.lastUpdateTime,
               isCurrent: true
             });
@@ -164,7 +165,7 @@ export class PowerMarker extends Marker {
           for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
             if (PowerMarker.aggregateErrorList[i].id === this.id) {
               // We reset the marker if no longer a power error.
-              if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
                 PowerMarker.aggregateErrorList[i].isCurrent = false;
                 // Move element to first position of non-current queue.
                 for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
