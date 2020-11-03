@@ -165,6 +165,8 @@ export class PowerMarker extends Marker {
               // We reset the marker if no longer a power error.
               if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
                 PowerMarker.aggregateErrorList[i].isCurrent = false;
+                // Move element to end.
+                PowerMarker.aggregateErrorList.push(PowerMarker.aggregateErrorList.splice(i, 1)[0]);
                 break;
               }
               break;
