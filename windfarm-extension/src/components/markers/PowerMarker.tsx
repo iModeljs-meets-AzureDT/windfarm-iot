@@ -13,6 +13,7 @@ import { TimeSeries } from "../../client/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 
 export interface PowerDifference {
   id: string;
@@ -86,6 +87,8 @@ export class PowerMarker extends Marker {
   private powerChanged: boolean = false;
   private powerBlinker: any;
 
+  private clicked: boolean = false;
+
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     PowerMarker.aggregateErrorList = [];
@@ -106,6 +109,10 @@ export class PowerMarker extends Marker {
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
+
+    const PowerNode = document.createElement("div");
+    PowerNode.id = "power-node-" + this.id;
+    this.htmlElement = PowerNode;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
@@ -280,8 +287,9 @@ export class PowerMarker extends Marker {
     }
   }
 
-  public drawFunc(ctx: CanvasRenderingContext2D) {
+  public drawFunc(_ctx: CanvasRenderingContext2D) {
 
+    /*
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
 
@@ -331,6 +339,16 @@ export class PowerMarker extends Marker {
     if (this.powerChanged) {
       WindfarmExtension.viewport?.invalidateDecorations();
     }
+    */
+
+    const props = {
+      isClicked: this.clicked,
+      power: this.power,
+      powerDM: this.powerDM,
+      powerPM: this.powerPM,
+    }
+
+    ReactDOM.render(<PowerPanel props={props}></PowerPanel>, document.getElementById("power-node-" + this.id));
   }
 
   public enableError() {
@@ -361,6 +379,12 @@ export class PowerMarker extends Marker {
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
+    /*
+    if (_ev.isDown) {
+      this.clicked = !this.clicked;
+    }
+    */
+
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
 
     // Drop all other markers.
@@ -374,9 +398,38 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
 
-    TimeSeries.loadTsiDataForNode(this.id);
-    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+    // TimeSeries.loadTsiDataForNode(this.id);
+    // if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
+  }
+}
+
+function PowerPanel ({props}: any) {
+  if (props.isClicked) {
+    return (
+      <>
+        <Button size={ButtonSize.Large} buttonType={ButtonType.Blue}>Power Simple</Button>
+      </>
+    );
+  } else {
+    return (
+      <div className="card">
+        <h1>WTG009</h1>
+        <div className="data">
+          <div className="left">
+            Actual power:<br />
+            Physical model:<br />
+            Data model:
+        </div>
+          <div className="right">
+            {props.power.toFixed(2)} kW<br />
+            {props.powerPM.toFixed(2)} kW<br />
+            {props.powerDM.toFixed(2)} kW
+        </div>
+        </div>
+      </div>
+    );
+
   }
 }
