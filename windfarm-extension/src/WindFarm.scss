@@ -9,9 +9,9 @@
 .show-error-pane-button {
   position: absolute;
   bottom: 10%;
-  right: 2%;
+  right: 15%;
   box-shadow: 1px 5px 0px rgba(0, 0, 0, 0.25);
-  z-index: 1;
+  z-index: 0;
 }
 
 .sample-ui {
@@ -42,7 +42,7 @@
   background-color: #333;
   color: white;
   bottom: 10%;
-  right: 2%;
+  right: 15%;
   -webkit-transition: all 500ms ease;
   -o-transition: all 500ms ease;
   transition: all 500ms ease;
@@ -145,4 +145,146 @@
   resize: none;
 }
 
+li.show-power {
+  list-style: none;
+  background: red;
+  color: #fff;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.7em;
+  margin: 2px 0;
+  width: 100%;
+  font-size: 13px;
+  cursor: pointer;
+}
 
+li.show-temp {
+  list-style: none;
+  background: purple;
+  color: #fff;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.7em;
+  margin: 2px 0;
+  width: 100%;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+li.show-power-error {
+  list-style: none;
+  color: black;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.7em;
+  margin: 2px 0;
+  width: 87%;
+  cursor: pointer;
+  border: 2px solid red;
+}
+
+li.show-temp-error {
+  list-style: none;
+  color: black;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.7em;
+  margin: 2px 0;
+  width: 87%;
+  cursor: pointer;
+  border: 2px solid purple;
+}
+
+li.show-non-error {
+  list-style: none;
+  color: black;
+  height: 0;
+  line-height: 1em;
+  margin: 0;
+  padding: 0 0.5em;
+  overflow: hidden;
+  width: 10em;
+  height: 3.7em;
+  margin: 2px 0;
+  width: 87%;
+  cursor: pointer;
+  border: 2px solid lightgrey;
+}
+
+li.show-power-error:hover {
+  background-color: palevioletred;
+}
+
+li.show-temp-error:hover {
+  background-color: plum;
+}
+
+li.show-non-error:hover {
+  background-color: powderblue;
+}
+
+
+#list {
+  padding: 2px !important;
+  margin: 0;
+}
+
+.error-enter {
+  opacity: 0.01;
+}
+
+.error-enter.error-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.error-exit {
+  opacity: 1;
+}
+
+.error-leave.error-exit-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+.minimize-error-panel {
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+  fill: grey;
+  padding: 10px 16px 10px 16px;
+  float: right;
+}
+
+.minimize-error-panel:hover {
+  fill:black;
+}
+
+.rcorners {
+  border: 4px solid #73AD21;
+  padding: 4px;
+  text-align: left;
+}
+
+.time-caption {
+  font-size: 9px;
+  float: right;
+  line-height: 0.5;
+  margin-top: 5px;
+}

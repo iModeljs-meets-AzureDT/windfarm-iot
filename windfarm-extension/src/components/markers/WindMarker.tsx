@@ -3,6 +3,7 @@ import { Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "../markers/PowerMarker";
 import { PowerDecorator } from "../decorators/PowerDecorator";
+import { TimeSeries } from "../../client/TimeSeries";
 
 // Canvas example.
 export class WindMarker extends Marker {
@@ -94,6 +95,9 @@ export class WindMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.temperatureData);
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
+
+    TimeSeries.loadTsiDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }

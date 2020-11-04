@@ -2,6 +2,7 @@ import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-fronten
 import { Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
+import { TimeSeries } from "../../client/TimeSeries";
 
 // Canvas example.
 export class SensorMarker extends Marker {
@@ -98,6 +99,9 @@ export class SensorMarker extends Marker {
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
     WindfarmExtension.viewport?.zoomToElements([this.cId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    
+    TimeSeries.loadTsiDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }

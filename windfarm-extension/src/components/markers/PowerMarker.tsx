@@ -6,14 +6,31 @@ import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
+import { AggregateErrorList } from "../../providers/ErrorPovider";
 // import { ErrorDecorator } from "../decorators/ErrorDecorator";
+import { TimeSeries } from "../../client/TimeSeries";
 
-interface powerDifference {
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
+export interface PowerDifference {
   id: string;
   percentageDMDiff: number;
   percentagePMDiff: number;
+  powerObserved?: number;
+  powerDM?: number;
+  powerPM?: number;
   timestamp: string;
   isError: boolean;
+}
+
+export interface ErrorType {
+  id: string;
+  errorType: string;
+  timestampstart: string;
+  timestampstop?: string;
+  isCurrent: boolean;
 }
 
 // Canvas example.
@@ -27,10 +44,21 @@ export class PowerMarker extends Marker {
   public sensorData: SensorDecorator;
   public windData: WindDecorator;
   public temperatureData: TemperatureDecorator;
+  public timestamp: string = "";
+  public timeChanged: boolean = false;
 
-  private power: number = 0;
-  private powerDM: number = 0;
-  private powerPM: number = 0;
+  // For detailed timestamps/power readings for specified error.
+  // Aggregate error list
+  public static aggregateErrorList: ErrorType[] = [];
+
+  // Internal error list
+  public errorList: PowerDifference[] = [];
+  public isPowerError: boolean = false;
+  public errorType: string = "Power Alert";
+
+  public power: number = 0;
+  public powerDM: number = 0;
+  public powerPM: number = 0;
   private emphasizedElements: EmphasizeElements;
 
   private isError: boolean = false;
@@ -60,6 +88,7 @@ export class PowerMarker extends Marker {
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
+    PowerMarker.aggregateErrorList = [];
     this.id = id;
 
     // These are mixed up for WTG008
@@ -97,9 +126,83 @@ export class PowerMarker extends Marker {
 
         const powerError = this.calculateDifference(this.power, this.powerPM, this.powerDM, data.$metadata.powerObserved.lastUpdateTime);
 
-        if (powerError.isError || this.errorSimulation === true) {
-          this.enableError();
+        if (this.timestamp !== data.$metadata.powerObserved.lastUpdateTime) {
+          this.timeChanged = true;
         } else {
+          this.timeChanged = false;
+        }
+        this.timestamp = data.$metadata.powerObserved.lastUpdateTime;
+
+        if (powerError.isError || this.errorSimulation === true) {
+          // To make things more realistic...
+          if (this.errorSimulation) powerError.powerObserved = 0;
+
+          // Always add the first error in, even if there was no time change.
+          if (this.timeChanged || this.errorList.length < 1) {
+            this.errorList.unshift(powerError);
+          }
+
+          this.enableError();
+
+          this.isPowerError = true;
+
+          let foundCurrentEntry = false;
+          for (let i = 0; i <  PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
+                foundCurrentEntry = true;
+                break;
+              }
+              break;
+            }
+          }
+
+          if (!foundCurrentEntry) {
+
+            PowerMarker.aggregateErrorList.unshift({
+              id: this.id,
+              errorType: this.errorType,
+              timestampstart: data.$metadata.powerObserved.lastUpdateTime,
+              isCurrent: true
+            });
+          }
+
+          // Open new error panel aggregate.
+          if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
+            ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+            ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
+            FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
+          }
+
+        } else {
+
+          // This huge mess to sort the list.
+          for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id) {
+              // We reset the marker if no longer a power error.
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
+                PowerMarker.aggregateErrorList[i].isCurrent = false;
+                PowerMarker.aggregateErrorList[i].timestampstop = data.$metadata.powerObserved.lastUpdateTime;
+                // Move element to first position of non-current queue.
+                for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
+                  // Continue where this error position was.
+                  if (!PowerMarker.aggregateErrorList[j].isCurrent) {
+                    PowerMarker.aggregateErrorList.splice(j - 1, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                    break;
+                  }
+
+                  // This is the first non-current error.
+                  if (j === PowerMarker.aggregateErrorList.length - 1) {
+                    PowerMarker.aggregateErrorList.splice(j, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                  }
+                }
+                break;
+              }
+              break;
+            }
+          }
+
+          this.isPowerError = false;
           this.disableError();
         }
 
@@ -110,17 +213,20 @@ export class PowerMarker extends Marker {
 
   }
 
-  private calculateDifference(powerObserved: number, powerPM: number, powerDM: number, timestamp: string): powerDifference {
+  private calculateDifference(powerObserved: number, powerPM: number, powerDM: number, timestamp: string): PowerDifference {
     // If percentage difference between powerObserved and (powerPM OR powerDM)
     // >= 50%, return true if error
     const diffPowerPM = 100 * (Math.abs(powerObserved - powerPM) / ((powerObserved + powerPM) / 2))
     const diffPowerDM = 100 * (Math.abs(powerObserved - powerDM) / ((powerObserved + powerDM) / 2))
 
     // We'll only test powerDM right now since powerPM is broken.
-    const diff: powerDifference = {
+    const diff: PowerDifference = {
       id: this.id,
       percentagePMDiff: diffPowerPM,
       percentageDMDiff: diffPowerDM,
+      powerObserved,
+      powerDM,
+      powerPM,
       timestamp: timestamp,
       isError: (diffPowerDM >= 50 || diffPowerPM >= 50) ? true : false
     };
@@ -267,6 +373,9 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
+
+    TimeSeries.loadTsiDataForNode(this.id);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }
