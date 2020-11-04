@@ -213,7 +213,7 @@ namespace Doosan.Function
 
                     using (HttpClient client = new HttpClient())
                     {
-                        HttpResponseMessage response = await client.GetAsync("http://52.157.19.187/api/predictiondata");
+                        HttpResponseMessage response = await client.GetAsync("http://pysical-model-api.koreacentral.azurecontainer.io/api/predictiondata");
 
                         if (response.IsSuccessStatusCode)
                         {
