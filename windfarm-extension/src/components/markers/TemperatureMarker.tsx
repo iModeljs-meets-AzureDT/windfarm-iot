@@ -16,6 +16,7 @@ export interface TempDifference {
   tempGearBox: number;
   timestamp: string;
 }
+import { TimeSeries } from "../../client/TimeSeries";
 
 export class TemperatureMarker extends Marker {
 
@@ -200,6 +201,9 @@ export class TemperatureMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.windData);
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
+
+    TimeSeries.loadTsiDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }

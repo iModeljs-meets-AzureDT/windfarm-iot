@@ -1,16 +1,16 @@
 import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMessagePriority, ScreenViewport } from "@bentley/imodeljs-frontend"
 import { I18N } from "@bentley/imodeljs-i18n";
-import { AbstractWidgetProps, BackstageItem, BackstageItemsManager, CommonToolbarItem, StagePanelLocation, StagePanelSection, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsApplication, UiItemsApplicationAction, UiItemsArbiter, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
+import { AbstractWidgetProps, CommonToolbarItem, StagePanelLocation, StagePanelSection, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
 import PowerPredictionPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
-
 import "./WindFarm.scss";
-import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import ErrorPanel from "./components/ErrorButton";
 import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
+import { PowerDecorator } from "./components/decorators/PowerDecorator";
+import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
 
 (window as any).DEBUG_MODE = false;
 
@@ -60,6 +60,22 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
       )
     ]
   }
+
+  public provideWidgets(_stageId: string, stageUsage: string, location: StagePanelLocation, _section?: StagePanelSection) {
+
+    if (stageUsage === StageUsage.General &&
+      location === StagePanelLocation.Bottom) {
+        const widget: AbstractWidgetProps = {
+          fillZone: true,
+          label: "Time Series Browser",
+          getWidgetContent: () => {
+            return (<TimeSeriesDiagram />)
+          }
+        }
+        return [widget];
+      }
+    return [];
+    }
 }
 
 export class WindfarmExtension extends Extension {
@@ -72,7 +88,6 @@ export class WindfarmExtension extends Extension {
   public async onLoad(): Promise<void> {
     // Wait for the localization to be loaded
     await this.i18n.getNamespace(this._defaultNs)!.readFinished;
-
     await MarkupApp.initialize();
 
     // Register UI Providers.
@@ -101,8 +116,14 @@ export class WindfarmExtension extends Extension {
       WindfarmExtension.imodel = vp.iModel;
 
       FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
+      // Keep bottom panel closed by default.
+      FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState = StagePanelState.Off;
+
       // Add decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
+
+      // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
+      // ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
     });
 
   }

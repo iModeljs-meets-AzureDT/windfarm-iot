@@ -1,12 +1,11 @@
 export default class MLClient {
 
-  public static url: string = "https://windfarm-function-app.azurewebsites.net/api/TriggerML";
+  public static url: string = "https://windfarm-function-app.azurewebsites.net/api/TriggerPrediction?steps=12";
 
-  public static async getPredictedMLPower(inputParams: any): Promise<any> {
+  public static async getPredictedMLPower(): Promise<any> {
 
     const response = await fetch(this.url, {
       method: "POST",
-      body: inputParams,
     }).then((response) => {
       if(response.status === 200) {
         return response.json();

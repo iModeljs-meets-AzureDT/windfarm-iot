@@ -5,10 +5,10 @@ import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
+import 'tsiclient/tsiclient.css';
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
-import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
 
@@ -23,7 +23,7 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
+  
   useEffect(() => {
     const initOidc = async () => {
       if (!AuthorizationClient.oidcClient) {
@@ -75,6 +75,8 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
+      if (vp.displayStyle.scheduleScript !== undefined)
+        vp.timePoint = vp.displayStyle.scheduleScript.computeDuration().low;
       const style = vp.displayStyle.clone();
       const availableModels: ContextRealityModelProps[] = await findAvailableUnattachedRealityModels(imodel.contextId, imodel);
 
