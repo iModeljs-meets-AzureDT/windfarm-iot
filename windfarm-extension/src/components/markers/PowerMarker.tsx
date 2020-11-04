@@ -27,7 +27,8 @@ export interface PowerDifference {
 export interface ErrorType {
   id: string;
   errorType: string;
-  timestamp: string;
+  timestampstart: string;
+  timestampstop?: string;
   isCurrent: boolean;
 }
 
@@ -164,7 +165,7 @@ export class PowerMarker extends Marker {
             PowerMarker.aggregateErrorList.unshift({
               id: this.id,
               errorType: this.errorType,
-              timestamp: data.$metadata.powerObserved.lastUpdateTime,
+              timestampstart: data.$metadata.powerObserved.lastUpdateTime,
               isCurrent: true
             });
           }
@@ -184,6 +185,7 @@ export class PowerMarker extends Marker {
               // We reset the marker if no longer a power error.
               if (PowerMarker.aggregateErrorList[i].isCurrent === true && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
                 PowerMarker.aggregateErrorList[i].isCurrent = false;
+                PowerMarker.aggregateErrorList[i].timestampstop = data.$metadata.powerObserved.lastUpdateTime;
                 // Move element to first position of non-current queue.
                 for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
                   // Continue where this error position was.
@@ -197,7 +199,6 @@ export class PowerMarker extends Marker {
                     PowerMarker.aggregateErrorList.splice(j, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
                   }
                 }
-                // PowerMarker.aggregateErrorList.push(PowerMarker.aggregateErrorList.splice(i, 1)[0]);
                 break;
               }
               break;

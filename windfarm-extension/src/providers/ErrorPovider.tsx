@@ -69,6 +69,12 @@ export function AggregateErrorList() {
       })
     }
 
+    const timeStart = error.timestampstart.split("T")[0] + " " + error.timestampstart.split("T")[1].split(".")[0]
+    let timeEnd;
+    if (error.timestampstop) {
+      timeEnd = error.timestampstop.split("T")[0] + " " + error.timestampstop.split("T")[1].split(".")[0]
+    }
+
     return (
       <CSSTransition
         key={errorList.length - 1 - i}
@@ -80,7 +86,8 @@ export function AggregateErrorList() {
          error.errorType === "Power Alert" ? 
           <li className="show-power-error" onClick={() => onErrorClick(error.id, error.errorType)}>
             <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType}
+              Type: {error.errorType} <br></br>
+              <span className="time-caption">Since {timeStart}</span>
             </div>
           </li>
          :
@@ -88,11 +95,14 @@ export function AggregateErrorList() {
             <div>Turbine: {error.id} <br></br>
               Type: {error.errorType}
             </div>
+              <span className="time-caption">Since {timeStart}</span>
           </li>
           :
           <li className="show-non-error" onClick={() => onErrorClick(error.id, error.errorType)}>
             <div>Turbine: {error.id} <br></br>
               Type: {error.errorType.replace("Alert", "Event")}
+              <span className="time-caption">Start: {timeStart}</span>
+              <span className="time-caption">End: {timeEnd}</span>
             </div>
           </li>
         }

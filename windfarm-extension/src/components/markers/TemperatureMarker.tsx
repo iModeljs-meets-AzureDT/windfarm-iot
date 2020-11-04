@@ -93,7 +93,7 @@ export class TemperatureMarker extends Marker {
             PowerMarker.aggregateErrorList.unshift({
               id: this.id,
               errorType: this.errorType,
-              timestamp: data.$metadata.temperatureGearBox.lastUpdateTime,
+              timestampstart: data.$metadata.temperatureGearBox.lastUpdateTime,
               isCurrent: true
             })
           }
@@ -114,6 +114,8 @@ export class TemperatureMarker extends Marker {
               // We reset the marker if no longer a power error.
               if (PowerMarker.aggregateErrorList[i].isCurrent === true && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
                 PowerMarker.aggregateErrorList[i].isCurrent = false;
+                PowerMarker.aggregateErrorList[i].timestampstop = data.$metadata.temperatureGearBox.lastUpdateTime;
+
                 // Move element to first position of non-current queue.
                 for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
                   // Continue where this error position was.
