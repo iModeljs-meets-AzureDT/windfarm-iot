@@ -6,7 +6,6 @@ import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
-import { ErrorDecorator } from "../decorators/ErrorDecorator";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { AggregateErrorList } from "../../providers/ErrorPovider";
 
@@ -43,7 +42,6 @@ export class PowerMarker extends Marker {
   public sensorData: SensorDecorator;
   public windData: WindDecorator;
   public temperatureData: TemperatureDecorator;
-  public errorElement: ErrorDecorator;
   public timestamp: string = "";
   public timeChanged: boolean = false;
 
@@ -106,9 +104,6 @@ export class PowerMarker extends Marker {
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
-
-    this.errorElement = new ErrorDecorator(this);
-    // IModelApp.viewManager.addDecorator(this.errorElement);
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('powerevent', (data: any) => {
