@@ -75,13 +75,6 @@ export function AggregateErrorList() {
       timeEnd = error.timestampstop.split("T")[0] + " " + error.timestampstop.split("T")[1].split(".")[0]
     }
 
-
-    /*
-            <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType} <br></br>
-              <span className="time-caption">Since {timeStart}</span>
-            </div>
-            */
     return (
       <CSSTransition
         key={errorList.length - 1 - i}
@@ -184,20 +177,17 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
       >
 
       <li className="show-power">
-        <table style={{borderCollapse: "collapse"}} cellSpacing="0" cellPadding="0">
-          <tr>
-            <td>
-              <u>{date}</u> <br></br> {time}
-            </td>
-            <td>
-              <ul>
-                  <li> OB: {error.powerObserved?.toFixed(2)} </li>
-                  <li> PM: {error.powerPM?.toFixed(2)} </li>
-                  <li> DM: {error.powerDM?.toFixed(2)} </li>
-              </ul>
-            </td>
-          </tr>
-        </table>
+          <div className="card-power-alert priority-2">
+            <svg viewBox="0 0 20 20">
+              <path d="m2.5 2.5h15v15h-15z" fill="#f60" />
+              <path d="m17 3v14h-14v-14zm1-1h-16v16h16z" />
+              <path d="m9 14h-2v-2h2zm0-8h-2v4.66667h2zm4 8h-2v-2h2zm0-8h-2v4.66667h2z" />
+            </svg>
+            <p className="title"><u>{date}</u> at {time}</p>
+            <p className="metadata"><b>Observed Power</b>: {error.powerObserved?.toFixed(2)} kW</p>
+            <p className="metadata"><b>Physical Power</b>: {error.powerPM?.toFixed(2)} kW</p>
+            <p className="metadata"><b>Data Model Power</b>: {error.powerDM?.toFixed(2)} kW</p>
+          </div>
       </li>
     </CSSTransition>
   )
