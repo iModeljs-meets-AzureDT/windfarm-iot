@@ -46,14 +46,14 @@ export function AggregateErrorList() {
     function onErrorClick(markerId: string, errorType: string) {
 
       PowerDecorator.markers.forEach((marker) => {
+
+        if (markerId !== marker.id) {
+          IModelApp.viewManager.dropDecorator(marker.sensorData);
+          IModelApp.viewManager.dropDecorator(marker.windData);
+          IModelApp.viewManager.dropDecorator(marker.temperatureData);
+        }
+
         if (markerId === marker.id && errorType === "Power Alert") {
-          // Remove all other markers.
-          PowerDecorator.markers.forEach(otherMarkers => {
-            otherMarkers.clicked = false;
-            otherMarkers.worldLocation = new Point3d(otherMarkers.initialLocation.x, otherMarkers.initialLocation.y, otherMarkers.initialLocation.z);
-          });
-          marker.clicked = true;
-          marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 65, marker.initialLocation.z - 25);
 
           WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
@@ -61,14 +61,6 @@ export function AggregateErrorList() {
           return;
         } else if (markerId === marker.id && errorType === "Temperature Alert") {
           WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
-
-          // Remove all other markers.
-          PowerDecorator.markers.forEach(otherMarkers => {
-            otherMarkers.clicked = false;
-            otherMarkers.worldLocation = new Point3d(otherMarkers.initialLocation.x, otherMarkers.initialLocation.y, otherMarkers.initialLocation.z);
-          });
-          marker.clicked = true;
-          marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 65, marker.initialLocation.z - 25);
 
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedTemperatureErrorList turbineTemperature={marker.temperatureData.marker}></DetailedTemperatureErrorList>, document.getElementById("error-component"));
