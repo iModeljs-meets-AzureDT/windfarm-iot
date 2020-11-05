@@ -12,8 +12,8 @@ export class WindMarker extends Marker {
   public cId: string = "";
   public bId: string = "";
 
-  private windDirection: number = 0;
-  private windSpeed: number = 0;
+  public windDirection: number = 0;
+  public windSpeed: number = 0;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);

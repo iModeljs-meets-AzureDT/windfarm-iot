@@ -3,7 +3,7 @@ import { PowerMarker } from "../markers/PowerMarker";
 import { WindMarker } from "../markers/WindMarker";
 
 export class WindDecorator implements Decorator {
-  protected marker: WindMarker;
+  public marker: WindMarker;
 
   constructor(powerMarker: PowerMarker) {
     this.marker = new WindMarker(powerMarker);

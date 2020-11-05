@@ -1,5 +1,5 @@
 import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements } from "@bentley/imodeljs-frontend";
-import { XYAndZ, XAndY } from "@bentley/geometry-core";
+import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
 import { WindfarmExtension, WindfarmUiItemsProvider } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
@@ -56,6 +56,7 @@ export class PowerMarker extends Marker {
   public errorList: PowerDifference[] = [];
   public isPowerError: boolean = false;
   public errorType: string = "Power Alert";
+  public initialLocation: WritableXYAndZ;
 
   public power: number = 0;
   public powerDM: number = 0;
@@ -91,6 +92,7 @@ export class PowerMarker extends Marker {
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
+    this.initialLocation = location;
     PowerMarker.aggregateErrorList = [];
     this.id = id;
 
@@ -343,9 +345,19 @@ export class PowerMarker extends Marker {
 
     const props = {
       isClicked: this.clicked,
+      id: this.id,
       power: this.power,
       powerDM: this.powerDM,
       powerPM: this.powerPM,
+      tempGenerator: this.temperatureData.marker.temperatureGenerator,
+      tempGearBox: this.temperatureData.marker.temperatureGearBox,
+      tempNacelle: this.temperatureData.marker.temperatureNacelle,
+      blade1Angle: this.sensorData.marker.blade1PitchAngle,
+      blade2Angle: this.sensorData.marker.blade2PitchAngle,
+      blade3Angle: this.sensorData.marker.blade3PitchAngle,
+      yawPosition: this.sensorData.marker.yawPosition,
+      windSpeed: this.windData.marker.windSpeed,
+      windDir: this.windData.marker.windDirection
     }
 
     ReactDOM.render(<PowerPanel props={props}></PowerPanel>, document.getElementById("power-node-" + this.id));
@@ -379,15 +391,19 @@ export class PowerMarker extends Marker {
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
-    /*
     if (_ev.isDown) {
-      this.clicked = !this.clicked;
+      PowerDecorator.markers.forEach(marker => {
+        marker.clicked = false;
+        marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y, marker.initialLocation.z);
+      });
+      this.clicked = true;
+      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 65, this.initialLocation.z - 25);
     }
-    */
 
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
 
     // Drop all other markers.
+    /*
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.sensorData);
       IModelApp.viewManager.dropDecorator(marker.windData);
@@ -397,9 +413,10 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
+    */
 
-    // TimeSeries.loadTsiDataForNode(this.id);
-    // if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+    TimeSeries.loadTsiDataForNode(this.id);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }
@@ -408,14 +425,61 @@ export class PowerMarker extends Marker {
 function PowerPanel ({props}: any) {
   if (props.isClicked) {
     return (
-      <>
-        <Button size={ButtonSize.Large} buttonType={ButtonType.Blue}>Power Simple</Button>
-      </>
+      <div className="card">
+        <h1>{props.id}</h1>
+        <div className="data">
+          <div className="left">
+            Actual power:<br />
+            Physical model:<br />
+            Data model:
+        </div>
+          <div className="right">
+            {props.power.toFixed(2)} kW<br />
+            {props.powerPM.toFixed(2)} kW<br />
+            {props.powerDM.toFixed(2)} kW
+          </div>
+          <div className="left">
+            Wind direction:<br />
+            Wind speed:
+          </div>
+          <div className="right">
+            {props.windDir.toFixed(2)}°<br />
+            {props.windSpeed.toFixed(2)} km/h
+          </div>
+
+          <div className="left">
+            <u>Pitch Angles</u><br />
+              Blade 1:<br />
+              Blade 2:<br />
+              Blade 3:<br />
+              Yaw position:
+          </div>
+          <div className="right">
+            <br />
+            {props.blade1Angle.toFixed(2)}°<br />
+            {props.blade2Angle.toFixed(2)}°<br />
+            {props.blade3Angle.toFixed(2)}°<br />
+            {props.yawPosition.toFixed(2)}°
+          </div>
+
+          <div className="left">
+            Temp. Gear Box:<br />
+            Temp. Generator:<br />
+            Temp. Nacelle:
+          </div>
+          <div className="right">
+            {props.tempGearBox.toFixed(2)}° C<br />
+            {props.tempGenerator.toFixed(2)}° C<br />
+            {props.tempNacelle.toFixed(2)}° C
+          </div>
+
+        </div>
+      </div>
     );
   } else {
     return (
       <div className="card">
-        <h1>WTG009</h1>
+        <h1>{props.id}</h1>
         <div className="data">
           <div className="left">
             Actual power:<br />

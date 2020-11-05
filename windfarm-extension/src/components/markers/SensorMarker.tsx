@@ -4,6 +4,9 @@ import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 import { TimeSeries } from "../../client/TimeSeries";
 
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
 // Canvas example.
 export class SensorMarker extends Marker {
 
@@ -11,19 +14,23 @@ export class SensorMarker extends Marker {
   public cId: string = "";
   public bId: string = "";
 
-  private blade1PitchAngle: number = 0;
-  private blade2PitchAngle: number = 0;
-  private blade3PitchAngle: number = 0;
-  private yawPosition: number = 0;
+  public blade1PitchAngle: number = 0;
+  public blade2PitchAngle: number = 0;
+  public blade3PitchAngle: number = 0;
+  public yawPosition: number = 0;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
 
     // Move it back.
-    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 30);
+    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 65, this.worldLocation.z - 18);
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
+
+    const SensorNode = document.createElement("div");
+    SensorNode.id = "sensor-node-" + this.id;
+    this.htmlElement = SensorNode;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {
@@ -72,8 +79,9 @@ export class SensorMarker extends Marker {
     return radians * (180 / Math.PI);
   }
 
-  public drawFunc(ctx: CanvasRenderingContext2D) {
+  public drawFunc(_ctx: CanvasRenderingContext2D) {
 
+    /*
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(255, 237, 102, 0.5)";
@@ -94,6 +102,11 @@ export class SensorMarker extends Marker {
     ctx.fillText("Blade 2 Pitch Angle : " + this.radiansToDegrees(this.blade2PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 45);
     ctx.fillText("Blade 3 Pitch angle : " + this.radiansToDegrees(this.blade3PitchAngle).toFixed(2) + "°", xPos + 5, yPos + 60);
     ctx.fillText("Yaw Position: " + this.yawPosition.toFixed(2) + "°", xPos + 5, yPos + 75);
+    */
+    const props = {
+      id: this.id
+    }
+    ReactDOM.render(<SensorPanel props={props}></SensorPanel>, document.getElementById("sensor-node-" + this.id));
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
@@ -107,3 +120,47 @@ export class SensorMarker extends Marker {
   }
 }
 
+function SensorPanel({ props }: any) {
+  return (
+    <div className="card">
+      <h1>{props.id}</h1>
+      <div className="data">
+        <div className="left">
+          Wind direction:<br />
+      Wind speed:
+    </div>
+        <div className="right">
+          -2.10°<br />
+      6.49 km/h
+    </div>
+
+        <div className="left">
+          <u>Pitch Angles</u><br />
+      Blade 1:<br />
+      Blade 2:<br />
+      Blade 3:<br />
+      Yaw position:
+    </div>
+        <div className="right">
+          <br />
+      114.59°<br />
+      115.74°<br />
+      110.58°<br />
+      -0.16°
+    </div>
+
+        <div className="left">
+          Temp. Gear Box:<br />
+      Temp. Generator:<br />
+      Temp. Nacelle:
+    </div>
+        <div className="right">
+          41.80° C<br />
+      45.20° C<br />
+      30.00° C
+    </div>
+
+      </div>
+    </div>
+  );
+}
