@@ -417,6 +417,7 @@ export class PowerMarker extends Marker {
     // Move decorators relative to power marker world location.
     this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 50)
 
+    // This mess needs refactoring - the decorators need to position themselves based on the widgets opened.
     // Reposition turbines above 7.
     if (this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") {
       this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 45)
@@ -440,13 +441,14 @@ export class PowerMarker extends Marker {
 
     IModelApp.viewManager.addDecorator(this.temperatureData);
 
-    // Move decorators relative to power marker world location.
-    this.windData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 80, this.worldLocation.z - 50)
+    this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 5)
 
     IModelApp.viewManager.addDecorator(this.windData);
 
     TimeSeries.loadTsiDataForNode(this.id);
-    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+    if (_ev.isDoubleClick) {
+      TimeSeries.showTsiGraph();
+    }
 
     return true;
   }

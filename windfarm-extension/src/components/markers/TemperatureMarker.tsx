@@ -238,7 +238,9 @@ export class TemperatureMarker extends Marker {
     */
 
     TimeSeries.loadTsiDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
-    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+    if (_ev.isDoubleClick) {
+      TimeSeries.showTsiGraph();
+    }
 
     return true;
   }

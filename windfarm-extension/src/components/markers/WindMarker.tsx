@@ -7,6 +7,7 @@ import { TimeSeries } from "../../client/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 // Canvas example.
 export class WindMarker extends Marker {
@@ -20,6 +21,8 @@ export class WindMarker extends Marker {
   public windSpeed: number = 0;
   private hover: boolean = false;
 
+  public powerMarker: PowerMarker;
+
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
 
@@ -29,6 +32,8 @@ export class WindMarker extends Marker {
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
     this.sId = powerMarker.sId;
+
+    this.powerMarker = powerMarker;
 
     const WindNode = document.createElement("div");
     WindNode.id = "wind-node-" + this.id;
@@ -97,6 +102,11 @@ export class WindMarker extends Marker {
     ctx.fillText("Wind Direction: " + this.windDirection.toFixed(2) + "°", xPos + 5, yPos + 30);
     ctx.fillText("Wind Speed: " + Math.abs(this.windSpeed).toFixed(2) + " km/h", xPos + 5, yPos + 45);
     */
+
+    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+      this.worldLocation = new Point3d(this.powerMarker.sensorData.marker.worldLocation.x, this.powerMarker.temperatureData.marker.worldLocation.y, this.powerMarker.sensorData.marker.worldLocation.z + 5)
+    }
+
    
     const props = {
       onHover: this.hover,
@@ -128,7 +138,9 @@ export class WindMarker extends Marker {
     */
 
     TimeSeries.loadTsiDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
-    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+    if (_ev.isDoubleClick) {
+      TimeSeries.showTsiGraph();
+    }
 
     return true;
   }
@@ -140,10 +152,12 @@ function WindPanel({ props }: any) {
       <div className="card-transition">
         <div className="data">
           <div className="left">
-            Wind direction:<br />
-            Wind speed:
+            <u>Wind Data</u><br />
+            Direction:<br />
+            Speed:
           </div>
           <div className="right">
+            <br />
             {props.windDir.toFixed(2)}°<br />
             {props.windSpeed.toFixed(2)} km/h
           </div>
@@ -155,10 +169,12 @@ function WindPanel({ props }: any) {
     <div className="card">
       <div className="data">
           <div className="left">
-            Wind direction:<br />
-            Wind speed:
+          <u>Wind Data</u><br />
+            Direction:<br />
+            Speed:
           </div>
           <div className="right">
+            <br />
             {props.windDir.toFixed(2)}°<br />
             {props.windSpeed.toFixed(2)} km/h
           </div>
