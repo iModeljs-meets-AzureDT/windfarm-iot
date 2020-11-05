@@ -195,16 +195,16 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
 
   return (
     <div>
-      <svg className="minimize-error-panel" onClick={deactivateWidget}>
-        <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
-        <title>Minimize</title>
-      </svg>
-      <button style={{float: "right", marginTop: "10px"}} onClick={displayAggregate}>Back</button>
-      <div className="rcorners">
-        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Turbine: {power.id}</u></h3> <br />
-        Observed: {power.observedPower.toFixed(2)} <br />
-        Physical: {power.physicalPower.toFixed(2)} <br />
-        Data Model: {power.datamodelPower.toFixed(2)} <br />
+      <div className="card-power-status priority-5">
+        <svg className="minimize-error-panel" style={{padding: 0, marginRight: "15px"}} onClick={deactivateWidget}>
+          <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
+          <title>Minimize</title>
+        </svg>
+        <svg className="back-button" onClick={() => displayAggregate()} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m11 3a1.00006 1.00006 0 0 1 1 1v8a.99991.99991 0 0 1 -1.4961.8682l-7.0001-4a1 1 0 0 1 0-1.7364l7.0001-4a.99862.99862 0 0 1 .4961-.1318z"/></svg>
+        <p className="title"><b>Turbine ID: <u>{power.id}</u></b></p>
+        <p className="metadata"><b>Observed Power</b>: {power.observedPower?.toFixed(2)} kW</p>
+        <p className="metadata"><b>Physical Power</b>: {power.physicalPower?.toFixed(2)} kW</p>
+        <p className="metadata"><b>Data Model Power</b>: {power.datamodelPower?.toFixed(2)} kW</p>
       </div>
       <div>
         <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Power Warnings:</u></h3> <br />
@@ -267,16 +267,16 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
 
   return (
     <div>
-      <svg className="minimize-error-panel" onClick={deactivateWidget}>
-        <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
-        <title>Minimize</title>
-      </svg>
-      <button style={{float: "right", marginTop: "10px"}} onClick={displayAggregate}>Back</button>
-      <div className="rcorners">
-        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Turbine: {temperature.id}</u></h3> <br />
-        Nacelle: {temperature.tempNacelle.toFixed(2)} <br />
-        Generator: {temperature.tempGenerator.toFixed(2)} <br />
-        GearBox: {temperature.tempGearBox.toFixed(2)} <br />
+      <div className="card-power-status priority-5">
+        <svg className="minimize-error-panel" style={{padding: 0, marginRight: "15px"}} onClick={deactivateWidget}>
+          <use href="/imjs_extensions/windfarm/icons.svg#minimize"></use>
+          <title>Minimize</title>
+        </svg>
+        <svg className="back-button" onClick={() => displayAggregate()} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m11 3a1.00006 1.00006 0 0 1 1 1v8a.99991.99991 0 0 1 -1.4961.8682l-7.0001-4a1 1 0 0 1 0-1.7364l7.0001-4a.99862.99862 0 0 1 .4961-.1318z"/></svg>
+        <p className="title"><b>Turbine ID: <u>{temperature.id}</u></b></p>
+        <p className="metadata"><b>Temp. Nacelle</b>: {temperature.tempNacelle?.toFixed(2)} °C</p>
+        <p className="metadata"><b>Temp. Generator</b>: {temperature.tempGenerator?.toFixed(2)} °C</p>
+        <p className="metadata"><b>Temp. Gear Box</b>: {temperature.tempGearBox?.toFixed(2)} °C</p>
       </div>
       <div>
         <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Temperature Warnings:</u></h3> <br />
