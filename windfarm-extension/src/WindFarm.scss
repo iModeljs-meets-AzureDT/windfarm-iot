@@ -294,6 +294,50 @@ $foreground-body: white;
 $foreground-primary: #A5D7F5;
 $width: 230px;
 
+.card-transition {
+  border-radius:3px;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+  color: $foreground-body;
+  position: relative;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+  background-color: rgba( invert($foreground-body), .45 );
+  padding: 8px;
+  width: $width;
+  user-select: none;
+  opacity: .85;
+  transition: box-shadow .4s ease-out, opacity .4s ease-out;
+  overflow: hidden;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  opacity: 1;
+  transition: box-shadow .4s ease-out, opacity .4s ease-out;
+
+  
+  > h1 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  >.data {
+    display: grid;
+    grid-gap: 8px;
+    grid-row-gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    
+    >.left {
+      // background-color: pink;
+      text-align: right;
+      opacity: .65;
+    }
+    
+    >.right {
+      // background-color: red;
+      font-weight: 600;
+    }
+   }
+}
+
 .card {
   border-radius:3px;
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);

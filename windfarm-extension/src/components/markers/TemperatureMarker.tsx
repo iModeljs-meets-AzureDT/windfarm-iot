@@ -35,15 +35,26 @@ export class TemperatureMarker extends Marker {
   public temperatureGenerator: number = 0;
   public temperatureGearBox: number = 0;
 
+  private hover: boolean = false;
+  public powerMarker: PowerMarker;
+
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
 
+    this.powerMarker = powerMarker;
+
     // Move it back and left.
-    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 50, this.worldLocation.z - 30);
+    // this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 50, this.worldLocation.z - 30);
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
     this.sId = powerMarker.sId;
+
+    // Create temperature marker.
+    const TemperatureNode = document.createElement("div");
+    TemperatureNode.id = "temperature-node-" + this.id;
+    this.htmlElement = TemperatureNode;
+
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {
@@ -170,8 +181,9 @@ export class TemperatureMarker extends Marker {
     }
   }
 
-  public drawFunc(ctx: CanvasRenderingContext2D) {
+  public drawFunc(_ctx: CanvasRenderingContext2D) {
 
+    /*
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(125, 157, 232, 0.67)";
@@ -191,21 +203,87 @@ export class TemperatureMarker extends Marker {
     ctx.fillText("Temp. Gear Box: " + this.temperatureGearBox.toFixed(2) + "°C", xPos + 5, yPos + 30);
     ctx.fillText("Temp. Generator: " + this.temperatureGenerator.toFixed(2) + "°C", xPos + 5, yPos + 45);
     ctx.fillText("Temp. Nacelle: " + this.temperatureNacelle.toFixed(2) + "°C", xPos + 5, yPos + 60);
+    */
+
+    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+      this.worldLocation = new Point3d(this.powerMarker.worldLocation.x, this.powerMarker.worldLocation.y + 120, this.powerMarker.worldLocation.z)
+    }
+
+    const props = {
+      onHover: this.hover,
+      tempGearBox: this.temperatureGearBox,
+      tempNacelle: this.temperatureNacelle,
+      tempGenerator: this.temperatureGenerator
+    }
+    ReactDOM.render(<TemperaturePanel props={props}></TemperaturePanel>, document.getElementById("temperature-node-" + this.id));
+  }
+
+  public onMouseEnter(_ev: BeButtonEvent): boolean {
+    this.hover = true;
+    return true;
+  }
+
+  public onMouseLeave(): void {
+    this.hover = false;
+    return;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Back});
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
+    /*
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.windData);
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
+    */
 
     TimeSeries.loadTsiDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }
+}
+
+function TemperaturePanel({ props }: any) {
+  if (props.onHover) {
+    return (
+      <div className="card-transition">
+        <div className="data">
+          <div className="left">
+            <u>Temperatures</u><br />
+            Gear Box:<br />
+            Generator:<br />
+            Nacelle:
+          </div>
+          <div className="right">
+            <br />
+            {props.tempGearBox.toFixed(2)}° C<br />
+            {props.tempGenerator.toFixed(2)}° C<br />
+            {props.tempNacelle.toFixed(2)}° C
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="card">
+      <div className="data">
+          <div className="left">
+            <u>Temperatures</u><br />
+            Gear Box:<br />
+            Generator:<br />
+            Nacelle:
+          </div>
+          <div className="right">
+            <br />
+            {props.tempGearBox.toFixed(2)}° C<br />
+            {props.tempGenerator.toFixed(2)}° C<br />
+            {props.tempNacelle.toFixed(2)}° C
+          </div>
+      </div>
+    </div>
+  );
 }
 

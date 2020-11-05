@@ -1,4 +1,4 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, ViewState3d } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
 import { WindfarmExtension, WindfarmUiItemsProvider } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
@@ -89,6 +89,7 @@ export class PowerMarker extends Marker {
   private powerBlinker: any;
 
   public clicked: boolean = false;
+  public hover: boolean = false;
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
@@ -344,6 +345,7 @@ export class PowerMarker extends Marker {
     */
 
     const props = {
+      onHover: this.hover,
       isClicked: this.clicked,
       id: this.id,
       power: this.power,
@@ -352,10 +354,6 @@ export class PowerMarker extends Marker {
       tempGenerator: this.temperatureData.marker.temperatureGenerator,
       tempGearBox: this.temperatureData.marker.temperatureGearBox,
       tempNacelle: this.temperatureData.marker.temperatureNacelle,
-      blade1Angle: this.sensorData.marker.blade1PitchAngle,
-      blade2Angle: this.sensorData.marker.blade2PitchAngle,
-      blade3Angle: this.sensorData.marker.blade3PitchAngle,
-      yawPosition: this.sensorData.marker.yawPosition,
       windSpeed: this.windData.marker.windSpeed,
       windDir: this.windData.marker.windDirection
     }
@@ -390,6 +388,16 @@ export class PowerMarker extends Marker {
     // this.emphasizedElements.wantEmphasis = false;
   }
 
+  public onMouseEnter(_ev: BeButtonEvent): boolean {
+    this.hover = true;
+    return true;
+  }
+
+  public onMouseLeave(): void {
+    this.hover = false;
+    return;
+  }
+
   public onMouseButton(_ev: BeButtonEvent): boolean {
     if (_ev.isDown) {
       PowerDecorator.markers.forEach(marker => {
@@ -397,19 +405,43 @@ export class PowerMarker extends Marker {
         marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y, marker.initialLocation.z);
       });
       this.clicked = true;
-      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 65, this.initialLocation.z - 25);
+      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 65, this.initialLocation.z - 15);
     }
 
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
 
     // Drop all other markers.
-    /*
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.sensorData);
       IModelApp.viewManager.dropDecorator(marker.windData);
       IModelApp.viewManager.dropDecorator(marker.temperatureData);
     });
 
+    // Move decorators relative to power marker world location.
+    this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 50)
+
+    if (this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") {
+      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 45)
+    }
+
+    IModelApp.viewManager.addDecorator(this.sensorData);
+
+    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+      // We need to offset based on the open panels.
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 120, this.worldLocation.z)
+    } else {
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 80, this.worldLocation.z)
+    }
+
+    // For some reason, these are very far away on these turbines.
+    if ((this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") && FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Off) {
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 70, this.worldLocation.z)
+    } else if ((this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") && FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 120, this.worldLocation.z)
+    }
+
+    IModelApp.viewManager.addDecorator(this.temperatureData);
+    /*
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
@@ -422,7 +454,8 @@ export class PowerMarker extends Marker {
   }
 }
 
-function PowerPanel ({props}: any) {
+function PowerPanel({ props }: any) {
+  /*
   if (props.isClicked) {
     return (
       <div className="card">
@@ -477,8 +510,10 @@ function PowerPanel ({props}: any) {
       </div>
     );
   } else {
+    */
+  if (props.onHover) {
     return (
-      <div className="card">
+      <div className="card-transition">
         <h1>{props.id}</h1>
         <div className="data">
           <div className="left">
@@ -494,6 +529,24 @@ function PowerPanel ({props}: any) {
         </div>
       </div>
     );
-
   }
+  return (
+    <div className="card">
+      <h1>{props.id}</h1>
+      <div className="data">
+        <div className="left">
+          Actual power:<br />
+            Physical model:<br />
+            Data model:
+        </div>
+        <div className="right">
+          {props.power.toFixed(2)} kW<br />
+          {props.powerPM.toFixed(2)} kW<br />
+          {props.powerDM.toFixed(2)} kW
+        </div>
+      </div>
+    </div>
+  );
+
+  // }
 }

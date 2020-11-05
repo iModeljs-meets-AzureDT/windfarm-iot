@@ -13,20 +13,23 @@ export class SensorMarker extends Marker {
   public id: string = "";
   public cId: string = "";
   public bId: string = "";
+  public sId: string = "";
 
   public blade1PitchAngle: number = 0;
   public blade2PitchAngle: number = 0;
   public blade3PitchAngle: number = 0;
   public yawPosition: number = 0;
+  public hover: boolean = false;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
 
     // Move it back.
-    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 65, this.worldLocation.z - 18);
+    this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 65, this.worldLocation.z - 35);
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
+    this.sId = powerMarker.sId;
 
     const SensorNode = document.createElement("div");
     SensorNode.id = "sensor-node-" + this.id;
@@ -104,14 +107,28 @@ export class SensorMarker extends Marker {
     ctx.fillText("Yaw Position: " + this.yawPosition.toFixed(2) + "°", xPos + 5, yPos + 75);
     */
     const props = {
-      id: this.id
+      onHover: this.hover,
+      blade1Angle: this.radiansToDegrees(this.blade1PitchAngle).toFixed(2),
+      blade2Angle: this.radiansToDegrees(this.blade2PitchAngle).toFixed(2),
+      blade3Angle: this.radiansToDegrees(this.blade3PitchAngle).toFixed(2),
+      yawPosition: this.yawPosition,
     }
     ReactDOM.render(<SensorPanel props={props}></SensorPanel>, document.getElementById("sensor-node-" + this.id));
   }
 
+  public onMouseEnter(_ev: BeButtonEvent): boolean {
+    this.hover = true;
+    return true;
+  }
+
+  public onMouseLeave(): void {
+    this.hover = false;
+    return;
+  }
+
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
     
     TimeSeries.loadTsiDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
@@ -121,45 +138,45 @@ export class SensorMarker extends Marker {
 }
 
 function SensorPanel({ props }: any) {
+  if (props.onHover) {
+    return (
+      <div className="card-transition">
+        <div className="data">
+          <div className="left">
+            <u>Pitch Angles</u><br />
+              Blade 1:<br />
+              Blade 2:<br />
+              Blade 3:<br />
+              Yaw:
+          </div>
+          <div className="right">
+            <br />
+            {props.blade1Angle}°<br />
+            {props.blade2Angle}°<br />
+            {props.blade3Angle}°<br />
+            {props.yawPosition.toFixed(2)}°
+      </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="card">
-      <h1>{props.id}</h1>
       <div className="data">
-        <div className="left">
-          Wind direction:<br />
-      Wind speed:
-    </div>
-        <div className="right">
-          -2.10°<br />
-      6.49 km/h
-    </div>
-
-        <div className="left">
-          <u>Pitch Angles</u><br />
-      Blade 1:<br />
-      Blade 2:<br />
-      Blade 3:<br />
-      Yaw position:
-    </div>
-        <div className="right">
-          <br />
-      114.59°<br />
-      115.74°<br />
-      110.58°<br />
-      -0.16°
-    </div>
-
-        <div className="left">
-          Temp. Gear Box:<br />
-      Temp. Generator:<br />
-      Temp. Nacelle:
-    </div>
-        <div className="right">
-          41.80° C<br />
-      45.20° C<br />
-      30.00° C
-    </div>
-
+      <div className="left">
+        <u>Pitch Angles</u><br />
+              Blade 1:<br />
+              Blade 2:<br />
+              Blade 3:<br />
+              Yaw:
+          </div>
+      <div className="right">
+        <br />
+        {props.blade1Angle}°<br />
+        {props.blade2Angle}°<br />
+        {props.blade3Angle}°<br />
+        {props.yawPosition.toFixed(2)}°
+      </div>
       </div>
     </div>
   );
