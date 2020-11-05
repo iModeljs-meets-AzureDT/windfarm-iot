@@ -207,7 +207,7 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
         Data Model: {power.datamodelPower.toFixed(2)} <br />
       </div>
       <div>
-        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Warnings:</u></h3> <br />
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Power Warnings:</u></h3> <br />
         <ul id="list">
           <TransitionGroup>
             {items}
@@ -249,20 +249,17 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
       >
 
       <li className="show-temp">
-        <table style={{borderCollapse: "collapse"}} cellSpacing="0" cellPadding="0">
-          <tr>
-            <td>
-              <u>{date}</u> <br></br> {time}
-            </td>
-            <td>
-              <ul>
-                  <li> NA: {error.tempNacelle?.toFixed(2)} </li>
-                  <li> GN: {error.tempGenerator?.toFixed(2)} </li>
-                  <li> GB: {error.tempGearBox?.toFixed(2)} </li>
-              </ul>
-            </td>
-          </tr>
-        </table>
+          <div className="card-power-alert priority-3">
+            <svg viewBox="0 0 20 20">
+              <path d="m.902 17.5 9.098-14.557 9.098 14.557z" fill="#fff200" />
+              <path d="m10 3.8868 8.19575 13.1132h-16.3915zm0-1.8868-10 16h20z" />
+              <path d="m11 15h-2v-2h2zm0-8h-2v4.66667h2z" />
+            </svg>
+            <p className="title"><u>{date}</u> at {time}</p>
+            <p className="metadata"><b>Nacelle Temp.</b>: {error.tempNacelle?.toFixed(2)} °C</p>
+            <p className="metadata"><b>Generator Temp.</b>: {error.tempGenerator?.toFixed(2)} °C</p>
+            <p className="metadata"><b>Gear Box Temp.</b>: {error.tempGearBox?.toFixed(2)} °C</p>
+          </div>
       </li>
     </CSSTransition>
   )
@@ -282,7 +279,7 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
         GearBox: {temperature.tempGearBox.toFixed(2)} <br />
       </div>
       <div>
-        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Warnings:</u></h3> <br />
+        <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Temperature Warnings:</u></h3> <br />
         <ul id="list">
           <TransitionGroup>
             {items}
