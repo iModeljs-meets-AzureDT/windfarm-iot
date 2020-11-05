@@ -5,15 +5,20 @@ import { PowerMarker } from "../markers/PowerMarker";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { TimeSeries } from "../../client/TimeSeries";
 
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
 // Canvas example.
 export class WindMarker extends Marker {
 
   public id: string = "";
   public cId: string = "";
   public bId: string = "";
+  public sId: string = "";
 
   public windDirection: number = 0;
   public windSpeed: number = 0;
+  private hover: boolean = false;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
@@ -23,6 +28,11 @@ export class WindMarker extends Marker {
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
+    this.sId = powerMarker.sId;
+
+    const WindNode = document.createElement("div");
+    WindNode.id = "wind-node-" + this.id;
+    this.htmlElement = WindNode;
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {
@@ -65,8 +75,9 @@ export class WindMarker extends Marker {
     }
   }
 
-  public drawFunc(ctx: CanvasRenderingContext2D) {
+  public drawFunc(_ctx: CanvasRenderingContext2D) {
 
+    /*
     ctx.lineWidth = 4;
     ctx.strokeStyle = "#000000";
     ctx.fillStyle = "rgba(255, 145, 36, 0.5)";
@@ -85,16 +96,36 @@ export class WindMarker extends Marker {
     ctx.textAlign = "left";
     ctx.fillText("Wind Direction: " + this.windDirection.toFixed(2) + "°", xPos + 5, yPos + 30);
     ctx.fillText("Wind Speed: " + Math.abs(this.windSpeed).toFixed(2) + " km/h", xPos + 5, yPos + 45);
+    */
+   
+    const props = {
+      onHover: this.hover,
+      windDir: this.windDirection,
+      windSpeed: this.windSpeed,
+    }
+    ReactDOM.render(<WindPanel props={props}></WindPanel>, document.getElementById("wind-node-" + this.id));
+  }
+
+  public onMouseEnter(_ev: BeButtonEvent): boolean {
+    this.hover = true;
+    return true;
+  }
+
+  public onMouseLeave(): void {
+    this.hover = false;
+    return;
   }
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
+    WindfarmExtension.viewport?.zoomToElements([this.bId, this.cId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
 
+    /*
     PowerDecorator.markers.forEach(marker => {
       IModelApp.viewManager.dropDecorator(marker.temperatureData);
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
+    */
 
     TimeSeries.loadTsiDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
@@ -103,3 +134,35 @@ export class WindMarker extends Marker {
   }
 }
 
+function WindPanel({ props }: any) {
+  if (props.onHover) {
+    return (
+      <div className="card-transition">
+        <div className="data">
+          <div className="left">
+            Wind direction:<br />
+            Wind speed:
+          </div>
+          <div className="right">
+            {props.windDir.toFixed(2)}°<br />
+            {props.windSpeed.toFixed(2)} km/h
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="card">
+      <div className="data">
+          <div className="left">
+            Wind direction:<br />
+            Wind speed:
+          </div>
+          <div className="right">
+            {props.windDir.toFixed(2)}°<br />
+            {props.windSpeed.toFixed(2)} km/h
+          </div>
+      </div>
+    </div>
+  );
+}

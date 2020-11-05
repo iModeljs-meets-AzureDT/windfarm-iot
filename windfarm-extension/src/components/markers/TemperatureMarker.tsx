@@ -44,7 +44,6 @@ export class TemperatureMarker extends Marker {
     this.powerMarker = powerMarker;
 
     // Move it back and left.
-    // this.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 50, this.worldLocation.z - 30);
     this.id = powerMarker.id;
     this.cId = powerMarker.cId;
     this.bId = powerMarker.bId;
@@ -54,7 +53,6 @@ export class TemperatureMarker extends Marker {
     const TemperatureNode = document.createElement("div");
     TemperatureNode.id = "temperature-node-" + this.id;
     this.htmlElement = TemperatureNode;
-
 
     // Add a listener for each marker.
     (window as any).adtEmitter.on('sensorevent', (data: any) => {

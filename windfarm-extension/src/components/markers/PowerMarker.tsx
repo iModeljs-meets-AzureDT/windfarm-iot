@@ -351,9 +351,6 @@ export class PowerMarker extends Marker {
       power: this.power,
       powerDM: this.powerDM,
       powerPM: this.powerPM,
-      tempGenerator: this.temperatureData.marker.temperatureGenerator,
-      tempGearBox: this.temperatureData.marker.temperatureGearBox,
-      tempNacelle: this.temperatureData.marker.temperatureNacelle,
       windSpeed: this.windData.marker.windSpeed,
       windDir: this.windData.marker.windDirection
     }
@@ -420,6 +417,7 @@ export class PowerMarker extends Marker {
     // Move decorators relative to power marker world location.
     this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 50)
 
+    // Reposition turbines above 7.
     if (this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") {
       this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 45)
     }
@@ -441,11 +439,11 @@ export class PowerMarker extends Marker {
     }
 
     IModelApp.viewManager.addDecorator(this.temperatureData);
-    /*
-    IModelApp.viewManager.addDecorator(this.sensorData);
+
+    // Move decorators relative to power marker world location.
+    this.windData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 80, this.worldLocation.z - 50)
+
     IModelApp.viewManager.addDecorator(this.windData);
-    IModelApp.viewManager.addDecorator(this.temperatureData);
-    */
 
     TimeSeries.loadTsiDataForNode(this.id);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
