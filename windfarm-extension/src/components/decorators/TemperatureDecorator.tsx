@@ -3,7 +3,7 @@ import { PowerMarker } from "../markers/PowerMarker";
 import { TemperatureMarker } from "../markers/TemperatureMarker";
 
 export class TemperatureDecorator implements Decorator {
-  protected marker: TemperatureMarker;
+  public marker: TemperatureMarker;
 
   constructor(powerMarker: PowerMarker) {
     this.marker = new TemperatureMarker(powerMarker);

@@ -3,6 +3,20 @@ import { Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 import { PowerDecorator } from "../decorators/PowerDecorator";
+import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
+
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { AggregateErrorList } from "../../providers/ErrorPovider";
+
+export interface TempDifference {
+  id: string;
+  tempNacelle: number;
+  tempGenerator: number;
+  tempGearBox: number;
+  timestamp: string;
+}
+import { TimeSeries } from "../../client/TimeSeries";
 
 export class TemperatureMarker extends Marker {
 
@@ -11,9 +25,15 @@ export class TemperatureMarker extends Marker {
   public bId: string = "";
   public sId: string = "";
 
-  private temperatureNacelle: number = 0;
-  private temperatureGenerator: number = 0;
-  private temperatureGearBox: number = 0;
+  public errorSimulation: boolean = false;
+  public errorType: string = "Temperature Alert";
+  public errorList: TempDifference[] = [];
+  public timestamp: string = "";
+  public timeChanged: boolean = false;
+
+  public temperatureNacelle: number = 0;
+  public temperatureGenerator: number = 0;
+  public temperatureGearBox: number = 0;
 
   constructor(powerMarker: PowerMarker) {
     super(powerMarker.worldLocation, powerMarker.size);
@@ -33,6 +53,89 @@ export class TemperatureMarker extends Marker {
         this.temperatureGearBox = data.temperatureGearBox;
         this.temperatureGenerator = data.temperatureGenerator;
         this.temperatureNacelle = data.temperatureNacelle;
+
+        if (this.timestamp !== data.$metadata.temperatureGearBox.lastUpdateTime) {
+          this.timeChanged = true;
+        } else {
+          this.timeChanged = false;
+        }
+        this.timestamp = data.$metadata.temperatureGearBox.lastUpdateTime;
+
+        if (this.temperatureGearBox >= 80 || this.temperatureGenerator >= 80 || this.temperatureNacelle >= 80 || this.errorSimulation === true) {
+
+          // To make things more realistic...
+          if (this.errorSimulation === true) this.temperatureGearBox = 80;
+
+          const tempDiff: TempDifference = {
+            id: this.id,
+            tempNacelle: this.temperatureNacelle,
+            tempGenerator: this.temperatureGenerator,
+            tempGearBox: this.temperatureGearBox,
+            timestamp: data.$metadata.temperatureGearBox.lastUpdateTime
+          };
+
+          if (this.timeChanged || this.errorList.length < 1) {
+            this.errorList.unshift(tempDiff);
+          }
+
+          let foundCurrentEntry = false;
+          for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true) {
+                foundCurrentEntry = true;
+                break;
+              }
+              break;
+            }
+          }
+
+          if (!foundCurrentEntry) {
+
+            PowerMarker.aggregateErrorList.unshift({
+              id: this.id,
+              errorType: this.errorType,
+              timestampstart: data.$metadata.temperatureGearBox.lastUpdateTime,
+              isCurrent: true
+            })
+          }
+
+          // Open new error panel aggregate.
+          if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
+            ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
+            ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
+            FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
+          }
+
+        } else {
+
+
+          // This huge mess to sort the list.
+          for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
+            if (PowerMarker.aggregateErrorList[i].id === this.id) {
+              // We reset the marker if no longer a power error.
+              if (PowerMarker.aggregateErrorList[i].isCurrent === true && PowerMarker.aggregateErrorList[i].errorType === this.errorType) {
+                PowerMarker.aggregateErrorList[i].isCurrent = false;
+                PowerMarker.aggregateErrorList[i].timestampstop = data.$metadata.temperatureGearBox.lastUpdateTime;
+
+                // Move element to first position of non-current queue.
+                for (let j = i + 1; j < PowerMarker.aggregateErrorList.length; ++j) {
+                  // Continue where this error position was.
+                  if (!PowerMarker.aggregateErrorList[j].isCurrent) {
+                    PowerMarker.aggregateErrorList.splice(j - 1, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                    break;
+                  }
+
+                  // This is the first non-current error.
+                  if (j === PowerMarker.aggregateErrorList.length - 1) {
+                    PowerMarker.aggregateErrorList.splice(j, 0, PowerMarker.aggregateErrorList.splice(i, 1)[0])
+                  }
+                }
+                break;
+              }
+              break;
+            }
+          }
+        }
 
         // Manually call draw func on update.
         WindfarmExtension.viewport?.invalidateDecorations();
@@ -98,6 +201,9 @@ export class TemperatureMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.windData);
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
+
+    TimeSeries.loadTsiDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }

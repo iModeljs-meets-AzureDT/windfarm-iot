@@ -31,9 +31,9 @@ export class PowerDecorator implements Decorator {
 
       // Special cases for WTG008...
       const powerdisplayMarker = new PowerMarker(
-        value.tID ? { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 } : { x: value.origin.x, y: value.origin.y, z: value.origin.z + 90 },
+        value.tID !== "WTG008" ? { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 } : { x: value.origin.x, y: value.origin.y, z: value.origin.z + 90 },
         { x: 100, y: 100 },
-        value.tID ? value.tID : "WTG008",
+        value.tID,
         value.cId,
         value.sId,
         value.bId,
