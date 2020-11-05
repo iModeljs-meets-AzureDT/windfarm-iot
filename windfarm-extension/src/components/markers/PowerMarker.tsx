@@ -88,7 +88,7 @@ export class PowerMarker extends Marker {
   private powerChanged: boolean = false;
   private powerBlinker: any;
 
-  private clicked: boolean = false;
+  public clicked: boolean = false;
 
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
