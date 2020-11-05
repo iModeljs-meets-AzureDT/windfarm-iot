@@ -8,12 +8,10 @@ import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { ColorDef } from "@bentley/imodeljs-common";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { AggregateErrorList } from "../../providers/ErrorPovider";
-// import { ErrorDecorator } from "../decorators/ErrorDecorator";
 import { TimeSeries } from "../../client/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Button, ButtonSize, ButtonType } from "@bentley/ui-core";
 
 export interface PowerDifference {
   id: string;
@@ -260,90 +258,7 @@ export class PowerMarker extends Marker {
     this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
   }
 
-  private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, fill: boolean, stroke: boolean) {
-
-    if (typeof stroke == "undefined") {
-      stroke = true;
-    }
-    if (typeof radius === "undefined") {
-      radius = 5;
-    }
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-
-    if (stroke) {
-      ctx.stroke();
-    }
-
-    // Slight green blinker.
-    if (fill) {
-      ctx.fill();
-    }
-  }
-
   public drawFunc(_ctx: CanvasRenderingContext2D) {
-
-    /*
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#000000";
-
-    // Color blinking logic will only apply if DEBUG_MODE is true.
-    if (this.powerChanged && (window as any).DEBUG_MODE === true) {
-      ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
-        + Math.round(this.g + this.dg * this.step) + ','
-        + Math.round(this.b + this.db * this.step) + ', 0.5)';
-
-      if (this.isError) {
-        // Reverse the additions/subtractions here depending on the color
-        // difference of update color and error color.
-        ctx.fillStyle = 'rgba(' + Math.round(this.r + this.dr * this.step) + ','
-          + Math.round(this.g - this.dg * this.step) + ','
-          + Math.round(this.b - this.db * this.step) + ', 0.5)';
-      }
-
-      ++this.step;
-
-      if (this.step === this.steps) {
-        this.powerChanged = false;
-        this.step = 0;
-      }
-    } else {
-      ctx.fillStyle = "rgba(" + this.desiredRed + ", " + this.desiredGreen + "," + this.desiredBlue + ", 0.5)";
-    }
-
-    const yPos = -20;
-    const xPos = -75;
-    const rectWidth = 150;
-    this.roundRect(ctx, xPos, yPos, rectWidth, 70, 10, true, true);
-    ctx.font = "10px";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "#000000";
-
-    // Manually placing positions since fillText doesn't wrap.
-    ctx.textAlign = "center";
-    ctx.fillText(this.id, xPos + (rectWidth / 2), yPos + 10);
-
-    ctx.textAlign = "left";
-    ctx.fillText("Actual Power: " + this.power.toFixed(2) + " kW", xPos + 5, yPos + 30);
-    ctx.fillText("Physical Model: " + this.powerPM.toFixed(2) + " kW", xPos + 5, yPos + 45);
-    ctx.fillText("Data Model: " + this.powerDM.toFixed(2) + " kW", xPos + 5, yPos + 60);
-
-    // this.errorElement.marker.updatePosition(xPos + 50, yPos + 60);
-
-    if (this.powerChanged) {
-      WindfarmExtension.viewport?.invalidateDecorations();
-    }
-    */
-
     const props = {
       onHover: this.hover,
       isClicked: this.clicked,
