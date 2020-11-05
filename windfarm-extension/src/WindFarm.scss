@@ -156,7 +156,7 @@ li.show-power {
   padding: 0 0.5em;
   overflow: hidden;
   width: 10em;
-  height: 3.7em;
+  height: 4.4em;
   margin: 2px 0;
   width: 100%;
   font-size: 13px;
@@ -193,7 +193,7 @@ li.show-power-error {
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid red;
+  // border: 2px solid red;
 }
 
 li.show-temp-error {
@@ -209,7 +209,7 @@ li.show-temp-error {
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid purple;
+  // border: 2px solid purple;
 }
 
 li.show-non-error {
@@ -221,11 +221,11 @@ li.show-non-error {
   padding: 0 0.5em;
   overflow: hidden;
   width: 10em;
-  height: 3.7em;
+  height: 4.4em;
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid lightgrey;
+  // border: 2px solid lightgrey;
 }
 
 li.show-power-error:hover {
@@ -339,4 +339,68 @@ $width: 230px;
       font-weight: 600;
     }
    }
+}
+
+$color-4: #00FFFF;
+$color-3: #FFF200;
+$color-2: #FF6600;
+$color-1: #ED1C24;
+
+.card-alert {
+  display: block;
+  border-left: 3px solid black;
+  padding: 2px 0px 0px 24px;
+  line-height: 1.3;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  
+  > svg {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+  }
+  
+  > .title {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  > .id {
+    margin: 0;
+  }
+
+  > .metadata {
+    margin: 0;
+    font-size: 9px;
+    text-align: center;
+  }
+  
+  > button {
+    border: 1px solid #dce0e3;
+    background-color: white;
+    padding: 8px 14px;
+    border-radius: 3px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+}
+
+.priority-4 {
+  background-color: rgba($color-4, .1);
+  border-color: $color-4;
+}
+.priority-3 {
+  background-color: rgba($color-3, .1);
+  border-color: $color-3;
+}
+.priority-2 {
+  background-color: rgba($color-2, .1);
+  border-color: $color-2;
+}
+.priority-1 {
+  background-color: rgba($color-1, .1);
+  border-color: $color-1;
 }

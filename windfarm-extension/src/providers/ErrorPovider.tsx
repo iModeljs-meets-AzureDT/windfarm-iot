@@ -83,6 +83,13 @@ export function AggregateErrorList() {
       timeEnd = error.timestampstop.split("T")[0] + " " + error.timestampstop.split("T")[1].split(".")[0]
     }
 
+
+    /*
+            <div>Turbine: {error.id} <br></br>
+              Type: {error.errorType} <br></br>
+              <span className="time-caption">Since {timeStart}</span>
+            </div>
+            */
     return (
       <CSSTransition
         key={errorList.length - 1 - i}
@@ -93,24 +100,41 @@ export function AggregateErrorList() {
         {error.isCurrent ?
          error.errorType === "Power Alert" ? 
           <li className="show-power-error" onClick={() => onErrorClick(error.id, error.errorType)}>
-            <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType} <br></br>
-              <span className="time-caption">Since {timeStart}</span>
+            <div className="card-alert priority-2">
+              <svg viewBox="0 0 20 20">
+                <path d="m2.5 2.5h15v15h-15z" fill="#f60"/>
+                <path d="m17 3v14h-14v-14zm1-1h-16v16h16z"/>
+                <path d="m9 14h-2v-2h2zm0-8h-2v4.66667h2zm4 8h-2v-2h2zm0-8h-2v4.66667h2z"/>
+              </svg>
+              <p className="title">{error.errorType}</p>
+              <p className="id">ID: {error.id}</p>
+              <p className="metadata">Since {timeStart}</p>
             </div>
           </li>
          :
           <li className="show-temp-error" onClick={() => onErrorClick(error.id, error.errorType)}>
-            <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType}
+            <div className="card-alert priority-3">
+                <svg viewBox="0 0 20 20">
+                <path d="m.902 17.5 9.098-14.557 9.098 14.557z" fill="#fff200"/>
+                <path d="m10 3.8868 8.19575 13.1132h-16.3915zm0-1.8868-10 16h20z"/>
+                <path d="m11 15h-2v-2h2zm0-8h-2v4.66667h2z"/>
+              </svg>
+              <p className="title">{error.errorType}</p>
+              <p className="id">ID: {error.id}</p>
+              <p className="metadata">Since {timeStart}</p>
             </div>
-              <span className="time-caption">Since {timeStart}</span>
           </li>
           :
           <li className="show-non-error" onClick={() => onErrorClick(error.id, error.errorType)}>
-            <div>Turbine: {error.id} <br></br>
-              Type: {error.errorType.replace("Alert", "Event")}
-              <span className="time-caption">Start: {timeStart}</span>
-              <span className="time-caption">End: {timeEnd}</span>
+            <div className="card-alert priority-4">
+                <svg viewBox="0 0 16 16">
+                <circle cx="8" cy="8" fill="#0ff" r="7.5"/>
+                <path d="m8 1a7 7 0 1 1 -7 7 7 7 0 0 1 7-7m0-1a8 8 0 1 0 8 8 8 8 0 0 0 -8-8zm1 12h-2v-2h2zm0-8h-2v4.66667h2z"/>
+              </svg>
+              <p className="title">{error.errorType.replace("Alert", "Event")}</p>
+              <p className="id">ID: {error.id}</p>
+              <p className="metadata">Start: {timeStart}</p>
+              <p className="metadata">End: {timeEnd}</p>
             </div>
           </li>
         }
