@@ -16,9 +16,8 @@ using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Azure.DigitalTwins.Core.Serialization;
 using PhysicsModel;
-
 using System.Net.Http;
-using System.Net.Http.Headers;
+
 namespace Doosan.Function
 {
 
@@ -44,30 +43,35 @@ namespace Doosan.Function
         private static DigitalTwinsClient client;
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
         private const int interpolationSteps = 6;
-
+        private static bool processingData = false;
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
             if (client == null) Authenticate(log);
-            var exceptions = new List<Exception>();
-            foreach (EventData eventData in events) {
-                try
-                {
-                    string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
-                    JObject messageData = JObject.Parse(messageBody); 
-                    string deviceIdString = eventData.SystemProperties["iothub-connection-device-id"].ToString();
-                    string deviceId = deviceIdString.Substring(deviceIdString.IndexOf('.') + 1);
+            if (!processingData) {
+                processingData = true;
+                Console.WriteLine("\nProcessing sensor data...\n");
+                var exceptions = new List<Exception>();
+                foreach (EventData eventData in events) {
+                    try
+                    {
+                        string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+                        JObject messageData = JObject.Parse(messageBody); 
+                        string deviceIdString = eventData.SystemProperties["iothub-connection-device-id"].ToString();
+                        string deviceId = deviceIdString.Substring(deviceIdString.IndexOf('.') + 1);
 
-                    await processSensorData(deviceId, messageData);
+                        await processSensorData(deviceId, messageData);
 
-                    await Task.Yield();
+                        await Task.Yield();
+                    }
+                    catch (Exception e)
+                    {
+                        // We need to keep processing the rest of the batch - capture this exception and continue.
+                        // Also, consider capturing details of the message that failed processing so it can be processed again later.
+                        exceptions.Add(e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    // We need to keep processing the rest of the batch - capture this exception and continue.
-                    // Also, consider capturing details of the message that failed processing so it can be processed again later.
-                    exceptions.Add(e);
-                }
+                processingData = false;
             }
         }
 
@@ -211,9 +215,10 @@ namespace Doosan.Function
 
                     using (HttpClient client = new HttpClient())
                     {
-                        HttpResponseMessage response = await client.GetAsync("http://52.157.19.187/api/predictiondata");
+                        // HttpResponseMessage response = await client.GetAsync("http://pysical-model-api.koreacentral.azurecontainer.io/api/predictiondata");
 
-                        if (response.IsSuccessStatusCode)
+                        // if (response.IsSuccessStatusCode)
+                        if (true)
                         {
 
                             IDictionary<string, string> urlParams = req.GetQueryParameterDictionary();
@@ -225,10 +230,9 @@ namespace Doosan.Function
                                 }
                             }
 
-                            string result = await response.Content.ReadAsStringAsync();
+                            // string result = await response.Content.ReadAsStringAsync();
 
                             // Example data in case the prediction data endpoint is dead
-                            /*
                             string predictionRequest = @"[
                                 {""forecastDateTime"":""2020-10-29T00:00:00"",""windspeed"":5.9,""winddirection"":-1,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
                                 {""forecastDateTime"":""2020-10-29T03:00:00"",""windspeed"":6.8,""winddirection"":3,""yawposition"":-109.37,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
@@ -239,9 +243,8 @@ namespace Doosan.Function
                                 {""forecastDateTime"":""2020-10-29T18:00:00"",""windspeed"":6.8,""winddirection"":-4,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
                                 {""forecastDateTime"":""2020-10-29T21:00:00"",""windspeed"":6.8,""winddirection"":-3,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2}
                             ]";
-                            */
 
-                            dynamic forecastData = JsonConvert.DeserializeObject(result);
+                            dynamic forecastData = JsonConvert.DeserializeObject(predictionRequest);
 
                             WTPowerRequestInfo predictionInput = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
 
@@ -313,7 +316,7 @@ namespace Doosan.Function
                         }
                         else
                         {
-                            return new BadRequestObjectResult(response.Content);
+                            return null; // new BadRequestObjectResult(response.Content);
                         }
                     }
                 }

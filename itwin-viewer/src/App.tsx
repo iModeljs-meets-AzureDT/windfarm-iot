@@ -5,16 +5,17 @@ import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { ContextRealityModelProps } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
+import 'tsiclient/tsiclient.css';
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
 import { AnimationTool } from "./animation/BladeAnimation";
-import { TimeSeries } from "./TimeSeries";
 
 import { EventEmitter } from "events";
 
 // I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
+(window as any).adtEmitter.setMaxListeners(50);
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(
@@ -23,9 +24,7 @@ const App: React.FC = () => {
       : false
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // setInterval(async () => {console.log(await AdtDataLink.fetchDataForNode("WTG001"))}, 5000);
-
+  
   useEffect(() => {
     const initOidc = async () => {
       if (!AuthorizationClient.oidcClient) {
@@ -99,14 +98,12 @@ const App: React.FC = () => {
 
         // powerEvent
         AdtDataLink.fetchDataForNode(prefix + turbineIndex).then((data) => {
-          console.log(data);
           (window as any).adtEmitter.emit('powerevent', data);
         }).catch(() => {});
 
         const suffix = "-S";
         // sensorEvent
         AdtDataLink.fetchDataForNode(prefix + turbineIndex + suffix).then((data) => {
-          console.log(data);
           (window as any).adtEmitter.emit('sensorevent', data);
         }).catch(() => {});
       }

@@ -50,11 +50,14 @@ export class AzureAuth {
           const response = await msalInstance.acquireTokenSilent(tokenRequest);
           accessToken = response.accessToken;
         } catch (err) {
+          console.log("ERROR: " + err.name);
           // could also check if err instance of InteractionRequiredAuthError if you can import the class.
           if (err.name === "InteractionRequiredAuthError") {
             const response = await msalInstance.acquireTokenPopup(tokenRequest)
             accessToken = response.accessToken;
           }
+          if (err.name === "ClientAuthError")
+            accessToken = this.fetchToken(scopes);
         }
       }
       if (accessToken != null) return accessToken;
