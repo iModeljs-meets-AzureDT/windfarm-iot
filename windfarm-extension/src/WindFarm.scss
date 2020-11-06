@@ -544,3 +544,6 @@ $color-1: #ED1C24;
   background-color: rgba($color-1, .1);
   border-color: $color-1;
 }
+.uifw-animation-overlay {
+  display: none !important;
+}
