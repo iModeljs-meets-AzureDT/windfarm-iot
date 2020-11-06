@@ -109,6 +109,8 @@ const App: React.FC = () => {
       AnimationTool.register(i18n);
 
       vp.overrideDisplayStyle(ViewStyle);
+      const settings = vp.backgroundMapSettings.clone( { useDepthBuffer: true } );
+      vp.backgroundMapSettings = settings;
       if (vp.displayStyle.scheduleScript !== undefined)
         vp.timePoint = vp.displayStyle.scheduleScript.computeDuration().high;
       const style = vp.displayStyle.clone();
