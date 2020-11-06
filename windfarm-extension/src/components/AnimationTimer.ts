@@ -10,6 +10,7 @@ export class AnimationTimer {
   private _elapsedMillis = 0;
   private _lastMillis = Date.now();
   private _timelineDuration: Range1d = Range1d.createXX(0,0);
+  private _overrideDuration?: Range1d;
 
   constructor(private readonly _vp: Viewport, durationInSeconds: number = 10) {
     this.setDuration(durationInSeconds);
@@ -28,13 +29,20 @@ export class AnimationTimer {
     this.update();
   }
 
+  public getOverrideDuration() {
+    return this._overrideDuration;
+  }
+  public setOverrideDuration(range :Range1d) {
+    this._overrideDuration = range;
+  }
+
   public start() {
     if (this.isPlaying)
       return;
     const script = this._vp.displayStyle.scheduleScript;
     if (undefined === script)
       return;
-    this._timelineDuration = script.computeDuration();
+    this._timelineDuration = this._overrideDuration ?? script.computeDuration();
     this.isPlaying = true;
     this._lastMillis = Date.now();
     this.queueAnimationFrame();
