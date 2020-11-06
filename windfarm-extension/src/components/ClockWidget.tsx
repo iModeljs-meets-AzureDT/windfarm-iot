@@ -1,4 +1,5 @@
-import { FitViewTool, IModelApp } from "@bentley/imodeljs-frontend";
+import { Camera } from "@bentley/imodeljs-common";
+import { FitViewTool, IModelApp, ViewState, ViewState3d } from "@bentley/imodeljs-frontend";
 import * as React from "react";
 import Clock from "react-clock";
 import 'react-clock/dist/Clock.css';
@@ -8,16 +9,21 @@ import { TimeSeries } from "../client/TimeSeries";
 import { PowerDecorator } from "./decorators/PowerDecorator";
 import HoverImage from "./HoverImage";
 
-export default class ClockWidget extends React.Component<{}, { time: Date, powerReading: number }> {
+export default class ClockWidget extends React.Component<{}, { 
+    time: Date, 
+    powerReading: number, 
+    futureMode: boolean, 
+    minimized:boolean }> {
 
     private turbinePower: Map<string, number> = new Map();
-    private futureMode: boolean = false;
+    private savedView?: ViewState;
 
     constructor() {
         super({});
-        this.state = { time: new Date(), powerReading: 0 };
+        this.state = { time: new Date(), powerReading: 0, futureMode: false, minimized: true };
+        this.dropMarkers();
         setInterval(() => {
-            if (!this.futureMode)
+            if (!this.state.futureMode)
                 this.setState({time: new Date()});
         }, 1000);
         this.addDataListener()
@@ -30,7 +36,7 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
     private addDataListener = () => {
         (window as any).adtEmitter.on('powerevent', (data: any) => {​​
             this.turbinePower.set(data["$dtId"], data["powerObserved"])
-            if (!this.futureMode) this.updatePowerReading();
+            if (!this.state.futureMode) this.updatePowerReading();
         });
     }
 
@@ -43,31 +49,50 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
     }
 
     private showTsiData = () => {
-        if (!this.futureMode) 
+        if (!this.state.futureMode) 
             TimeSeries.loadPowerForAllTurbines();
         TimeSeries.showTsiGraph();
     }
 
     private futureModeToggled = async () => {
-        if (this.futureMode === true){
-            this.futureMode = false;
+        if (this.state.futureMode === true){
+            this.setState({futureMode: false});
             this.resetView();
         }
         else {
-            this.futureMode = true;
-            this.runPowerPrediction();
+            this.setState({futureMode: true});
             this.configureView();
+            this.runPowerPrediction();
+        }
+    }
+
+    private minimizeToggled = () => {
+        if (this.state.minimized === true){
+            this.setState({minimized: false});
+            this.addMarkers();
+        }
+        else {
+            this.setState({minimized: true});
+            this.dropMarkers();
         }
     }
 
     private resetView() {
-        PowerDecorator.markers.forEach(marker => {​​​​​​​​
-            marker.visible = true;
-             }​​​​​​​​);
+        this.addMarkers();
+        TimeSeries.loadPowerForAllTurbines();
+        this.setState({time: new Date()});
+        if (this.savedView){
+            // restore view
+        }
     }
 
     private configureView() {
+        this.savedView = IModelApp.viewManager.selectedView!.view.clone();
         IModelApp.tools.run(FitViewTool.toolId, IModelApp.viewManager.selectedView);
+        this.dropMarkers();
+    }
+
+    private dropMarkers() {
         PowerDecorator.markers.forEach(marker => {
             IModelApp.viewManager.dropDecorator(marker.sensorData);
             IModelApp.viewManager.dropDecorator(marker.windData);
@@ -76,20 +101,26 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
           });
     }
 
+    private addMarkers() {
+        PowerDecorator.markers.forEach(marker => {​​​​​​​​
+            marker.visible = true;
+             }​​​​​​​​);
+    }
+
     private runPowerPrediction = async() => {
         const predictedData: any[] = await MLClient.getPredictedMLPower();
         TimeSeries.showTsiGraph();
         TimeSeries.loadPredictedData(predictedData);
 
         for (let i = 1; i < predictedData.length; i++) {
-            if (!this.futureMode) break;
+            if (!this.state.futureMode) break;
 
             const targetTime = new Date(predictedData[i].originSysTime);
             const powerDm = Math.round(predictedData[i].power_DM * 100) / 10;
             this.setState({time: targetTime, powerReading: powerDm});
             
             if (i === (predictedData.length - 1))
-                this.futureMode = false;
+                this.setState({futureMode: false});
             else {
                 const nextTargetTime = new Date(predictedData[i+1].originSysTime);
                 this.animateClock(targetTime, nextTargetTime);
@@ -97,22 +128,6 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
             
             await this.sleep(1000);
         }
-
-
-        // predictedData.forEach((entry, index) => {
-        //     const targetTime = new Date(entry.originSysTime);
-        //     const powerDm = Math.round(entry.power_DM * 100) / 10;
-            
-        //     setTimeout(() => {
-        //         this.setState({time: targetTime, powerReading: powerDm});
-        //         if (index === (predictedData.length - 1))
-        //             this.futureMode = false;
-        //         else {
-        //             const nextTargetTime = new Date(predictedData[index+1].originSysTime);
-        //             this.animateClock(targetTime, nextTargetTime);
-        //         }
-        //     }, 1000 * index);
-        // });
     }
 
     private animateClock(fromTime: Date, toTime: Date) {
@@ -122,20 +137,26 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
         for (let step = 1; step < animationFrames; step++) {
             setTimeout(() => {
                 const nextTime = new Date(fromTime.getTime() + step * stepSpan);
-                this.setState({time: nextTime })
+                if (this.state.futureMode) 
+                    this.setState({time: nextTime })
             }, (step * stepSpan) / 1000);
           }
     }
 
     public render() {
-        const predictionIconImg: string = this.futureMode ? "future-selected.png" : "future.png";
+        const predictionIconImg: string = this.state.futureMode ? "future-selected.png" : "future.png";
 
-        return (
+        const render =  this.state.minimized ? (
+            <>
+                <div className="clock-dock" title="Performance Watchdog" onClick={this.minimizeToggled}>
+                    <img src="clock.png"/>
+                </div>
+            </>) : (
             <>
                 <Draggable>
                     <div className="clock-widget">
-                        <Clock value={new Date(this.state.time)} size={130} renderSecondHand={!this.futureMode}/>
-                        <div className="minimize-icon" title="Minimize">
+                        <Clock value={new Date(this.state.time)} size={130} renderSecondHand={!this.state.futureMode}/>
+                        <div className="minimize-icon" title="Minimize" onClick={this.minimizeToggled}>
                             <HoverImage src="minimize.png" hoverSrc="minimize-selected.png"/>
                         </div>
                         <div className="prediction-icon" title="Power Prediction" onClick={this.futureModeToggled}>
@@ -146,6 +167,9 @@ export default class ClockWidget extends React.Component<{}, { time: Date, power
                 </Draggable>
             </>
         );
+
+
+        return render;
     }
 }
 

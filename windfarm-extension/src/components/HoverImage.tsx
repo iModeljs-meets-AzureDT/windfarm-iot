@@ -1,48 +1,29 @@
 import * as React from "react";
 
-export type HoverImageProps = {
-  src: string;
-  hoverSrc: string;
-  disabled?: boolean;
-  className?: string;
-  style?: any;
-  onClick?: React.MouseEventHandler;
-};
-const HoverImage: React.FC<HoverImageProps> = ({
-  src,
-  hoverSrc,
-  style,
-  disabled,
-  onClick,
-  className,
-}) => {
-  const [imageSrc, setImageSrc] = React.useState<string>(src);
+export default class HoverImage extends React.Component<{src: string, hoverSrc: string}, {imageSrc: string}> {
 
-  const mouseOver = React.useCallback(() => {
-    setImageSrc(hoverSrc);
-  }, []);
+  constructor(props: any) {
+    super(props);
+    this.state = {imageSrc: props.src};
+  }
 
-  const mouseOut = React.useCallback(() => {
-    setImageSrc(src);
-  }, []);
+  private mouseOver = () => {
+    this.setState({imageSrc: this.props.hoverSrc});
+  }
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (!onClick) return;
-    if (!disabled) {
-      onClick(e);
-    }
-  };
+  private mouseOut = () => {
+    this.setState({imageSrc: this.props.src});
+  }
+  
 
-  return (
-    <img
-      src={imageSrc}
-      style={style}
-      onMouseOver={mouseOver}
-      onMouseOut={mouseOut}
-      onClick={handleClick}
-      className={className}
-    />
-  );
-};
+  render() {
+    return (
+      <img
+        src={this.state.imageSrc}
+        onMouseOver={this.mouseOver}
+        onMouseOut={this.mouseOut}
+      />
+    );
+  }
 
-export default HoverImage;
+}

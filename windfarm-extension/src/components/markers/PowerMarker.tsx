@@ -90,6 +90,7 @@ export class PowerMarker extends Marker {
     super(location, size);
     PowerMarker.aggregateErrorList = [];
     this.id = id;
+    this.visible = false;
 
     // These are mixed up for WTG008
     if (this.id === "WTG008") {
