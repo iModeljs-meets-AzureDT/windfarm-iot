@@ -82,10 +82,8 @@ export class SensorMarker extends Marker {
 
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
     
-    TimeSeries.loadTsiDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
-    if (_ev.isDoubleClick)  {
-      TimeSeries.showTsiGraph();
-    }
+    TimeSeries.loadDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
   }

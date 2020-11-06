@@ -12,8 +12,8 @@ export default class PowerPredictionPanel extends React.Component<{}, { collapse
     try {
 
       const response = await MLClient.getPredictedMLPower();
-      TimeSeries.showTsiForPredictedData(response);
-
+      TimeSeries.loadPredictedData(response);
+      
 
     } catch (error) {
       console.error(error);

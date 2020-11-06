@@ -15,6 +15,112 @@
   z-index: 0;
 }
 
+.clock-dock {
+  position: absolute;
+  left: 0%;
+  top: 48%;
+  height: 25px;
+  width: 25px;
+  opacity: 0.75;
+  background-color: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 7px;
+
+  -webkit-user-select: none;
+  -webkit-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out;
+  -ms-transition: opacity 0.2s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+
+  img{
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.clock-dock:hover {
+  opacity: 0.90;
+}
+
+.clock-widget {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  background-color: white;
+  border: black;
+  border-width: 3px;
+  opacity: 0.65;
+  box-shadow: 1px 5px 0px rgba(0, 0, 0.5, 0.5);
+  z-index: 1;
+  padding: 2px;
+  border-top-left-radius: 75px;
+  border-top-right-radius: 75px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  transform-origin: center;
+
+  .power-reading {
+    margin-top: 5px;
+    font-size: 23px;
+    text-align: center;
+    width: 100%;
+    opacity: 0.55;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+
+    -webkit-user-select: none;
+    -webkit-transition: opacity 0.2s ease-in-out;
+    -moz-transition: opacity 0.2s ease-in-out;
+    -ms-transition: opacity 0.2s ease-in-out;
+    -o-transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .power-reading:hover {
+    opacity: 0.75;
+  }
+
+  .prediction-icon {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    right: 3px;
+    top: 114px;
+
+    img{
+      max-width: 100%;
+      max-height: 100%;
+  }
+  }
+
+  .minimize-icon {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    top: 114px;
+
+    img{
+        max-width: 100%;
+        max-height: 100%;
+    }
+  }
+
+  -webkit-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity  0.2s ease-in-out;
+  -ms-transition: opacity 0.2s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+  
+}
+
+.clock-widget:hover {
+  opacity: 0.90;
+}
+
 .sample-ui {
   position: absolute;
   display: block;
