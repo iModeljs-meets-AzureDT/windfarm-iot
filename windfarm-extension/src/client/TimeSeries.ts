@@ -21,8 +21,8 @@ export class TimeSeries {
     const result = [{"" : {"/powerDM" : {}, "/powerPM" : {}}}];
     for (const entry of data) {
       const sysTime = entry.originSysTime;
-      powerDM[sysTime]= {"value" : (entry.power_DM)};
-      powerPM[sysTime]= {"value" : (entry.power_PM)};
+      powerDM[sysTime]= {"value" : (entry.power_DM * 10)};
+      powerPM[sysTime]= {"value" : (entry.power_PM * 10)};
     }      
     result[0][""]["/powerDM"] = powerPM;
     result[0][""]["/powerPM"] = powerDM;
