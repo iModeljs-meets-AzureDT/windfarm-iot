@@ -2,8 +2,8 @@ import "./App.scss";
 
 import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
-import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
-import { ContextRealityModelProps } from "@bentley/imodeljs-common";
+import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport, Viewport } from "@bentley/imodeljs-frontend";
+import { ContextRealityModelProps, DisplayStyle3dSettingsProps, RenderMode } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
 import 'tsiclient/tsiclient.css';
 
@@ -12,6 +12,35 @@ import { Header } from "./Header";
 import { AnimationTool } from "./animation/BladeAnimation";
 
 import { EventEmitter } from "events";
+
+
+const ViewStyle: DisplayStyle3dSettingsProps = {
+    environment: {
+      sky: { display: true, twoColor: false, groundColor: 9741199, nadirColor: 5464143, skyColor: 16764303, zenithColor: 16741686 },
+      ground: { display: false },
+    },
+    viewflags: {
+      noConstruct: true,
+      noCameraLights: false,
+      noSourceLights: false,
+      noSolarLight: false,
+      visEdges: false,
+      hidEdges: false,
+      shadows: true,
+      monochrome: false,
+      ambientOcclusion: false,
+      thematicDisplay: false,
+      renderMode: RenderMode.SmoothShade,
+      backgroundMap: true,
+      noTexture: true,
+    },
+    solarShadows: { color: 0x524f44 },
+    lights: {
+      solar: { direction: [-0.7391245716329828, 0.30165764029437066, -0.3281931795832247] },
+      hemisphere: { intensity: 0.2 },
+      portrait: { intensity: 0 },
+  }
+};
 
 // I use a global emitter here to communicate to the extension.
 (window as any).adtEmitter = new EventEmitter();
@@ -79,6 +108,9 @@ const App: React.FC = () => {
       const i18n = IModelApp.i18n.registerNamespace("WindIotDemo");
       AnimationTool.register(i18n);
 
+      vp.overrideDisplayStyle(ViewStyle);
+      if (vp.displayStyle.scheduleScript !== undefined)
+        vp.timePoint = vp.displayStyle.scheduleScript.computeDuration().high;
       const style = vp.displayStyle.clone();
       const availableModels: ContextRealityModelProps[] = await findAvailableUnattachedRealityModels(imodel.contextId, imodel);
 
