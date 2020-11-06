@@ -50,11 +50,11 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "Toggle Debug Mode",
         () => {
           if (!this.DEBUG_MODE_TOGGLE) {
-            ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
+            // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
             ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
             (window as any).DEBUG_MODE = true;
           } else {
-            ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
+            // ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
             ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
             (window as any).DEBUG_MODE = false;
           }
