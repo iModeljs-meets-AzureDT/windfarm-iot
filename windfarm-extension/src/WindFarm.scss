@@ -148,15 +148,15 @@
 
 li.show-power {
   list-style: none;
-  background: red;
-  color: #fff;
+  // background: red;
+  // color: #fff;
   height: 0;
   line-height: 1em;
   margin: 0;
   padding: 0 0.5em;
   overflow: hidden;
   width: 10em;
-  height: 3.7em;
+  height: 4.4em;
   margin: 2px 0;
   width: 100%;
   font-size: 13px;
@@ -165,15 +165,14 @@ li.show-power {
 
 li.show-temp {
   list-style: none;
-  background: purple;
-  color: #fff;
+  color: black;
   height: 0;
   line-height: 1em;
   margin: 0;
   padding: 0 0.5em;
   overflow: hidden;
   width: 10em;
-  height: 3.7em;
+  height: 4.2em;
   margin: 2px 0;
   width: 100%;
   font-size: 13px;
@@ -193,7 +192,7 @@ li.show-power-error {
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid red;
+  // border: 2px solid red;
 }
 
 li.show-temp-error {
@@ -209,7 +208,7 @@ li.show-temp-error {
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid purple;
+  // border: 2px solid purple;
 }
 
 li.show-non-error {
@@ -221,11 +220,11 @@ li.show-non-error {
   padding: 0 0.5em;
   overflow: hidden;
   width: 10em;
-  height: 3.7em;
+  height: 4.4em;
   margin: 2px 0;
   width: 87%;
   cursor: pointer;
-  border: 2px solid lightgrey;
+  // border: 2px solid lightgrey;
 }
 
 li.show-power-error:hover {
@@ -288,4 +287,260 @@ li.show-non-error:hover {
   float: right;
   line-height: 0.5;
   margin-top: 5px;
+}
+
+$foreground-body: white;
+$foreground-primary: #A5D7F5;
+$width: 230px;
+
+.card-transition {
+  border-radius:3px;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+  color: $foreground-body;
+  position: relative;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+  background-color: rgba( invert($foreground-body), .45 );
+  padding: 8px;
+  width: $width;
+  user-select: none;
+  opacity: .85;
+  transition: box-shadow .4s ease-out, opacity .4s ease-out;
+  overflow: hidden;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  opacity: 1;
+  transition: box-shadow .4s ease-out, opacity .4s ease-out;
+
+  
+  > h1 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  >.data {
+    display: grid;
+    grid-gap: 8px;
+    grid-row-gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    
+    >.left {
+      // background-color: pink;
+      text-align: right;
+      opacity: .65;
+    }
+    
+    >.right {
+      // background-color: red;
+      font-weight: 600;
+    }
+   }
+}
+
+.card {
+  border-radius:3px;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+  color: $foreground-body;
+  position: relative;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+  background-color: rgba( invert($foreground-body), .45 );
+  padding: 8px;
+  width: $width;
+  user-select: none;
+  opacity: .85;
+  transition: box-shadow .4s ease-out, opacity .4s ease-out;
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+    opacity: 1;
+    transition: box-shadow .4s ease-out, opacity .4s ease-out;
+  }
+
+  
+  > h1 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  >.data {
+    display: grid;
+    grid-gap: 8px;
+    grid-row-gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    
+    >.left {
+      // background-color: pink;
+      text-align: right;
+      opacity: .65;
+    }
+    
+    >.right {
+      // background-color: red;
+      font-weight: 600;
+    }
+   }
+}
+
+$color-5: #61EA1C;
+$color-4: #00FFFF;
+$color-3: #FFF200;
+$color-2: #FF6600;
+$color-1: #ED1C24;
+
+.card-power-alert {
+  display: block;
+  border-left: 3px solid black;
+  padding: 2px 0px 0px 24px;
+  line-height: 1.3;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  
+  > svg {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+  }
+  
+  > .title {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  > .id {
+    margin: 0;
+  }
+
+  > .metadata {
+    margin: 0;
+    font-size: 9px;
+    text-align: left;
+  }
+  
+  > button {
+    border: 1px solid #dce0e3;
+    background-color: white;
+    padding: 8px 14px;
+    border-radius: 3px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+}
+
+.card-power-status {
+  display: block;
+  border-left: 3px solid black;
+  border-bottom: 2px solid black;
+  padding: 2px 0px 0px 10px;
+  line-height: 1.3;
+  position: relative;
+  width: 100%;
+  height: 7em;
+  
+  > svg {
+    width: 16px;
+    height: 16px;
+    position: static !important;
+    left: 3px;
+    top: 3px;
+    float: right;
+  }
+
+  > .back-button {
+    margin-right: 10px;
+    fill: grey;
+
+    &:hover {
+      cursor: pointer;
+      fill:black;
+    }
+  }
+  
+  > .title {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  > .metadata {
+    font-size: 12px;
+    text-align: left;
+    margin: 5px;
+  }
+  
+  > button {
+    border: 1px solid #dce0e3;
+    background-color: white;
+    padding: 8px 14px;
+    border-radius: 3px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+}
+
+.card-alert {
+  display: block;
+  border-left: 3px solid black;
+  padding: 2px 0px 0px 24px;
+  line-height: 1.3;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  
+  > svg {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+  }
+  
+  > .title {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  > .id {
+    margin: 0;
+  }
+
+  > .metadata {
+    margin: 0;
+    font-size: 9px;
+    text-align: center;
+  }
+  
+  > button {
+    border: 1px solid #dce0e3;
+    background-color: white;
+    padding: 8px 14px;
+    border-radius: 3px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+}
+
+.priority-5 {
+  background-color: rgba($color-5, .1);
+  border-color: $color-5;
+}
+.priority-4 {
+  background-color: rgba($color-4, .1);
+  border-color: $color-4;
+}
+.priority-3 {
+  background-color: rgba($color-3, .1);
+  border-color: $color-3;
+}
+.priority-2 {
+  background-color: rgba($color-2, .1);
+  border-color: $color-2;
+}
+.priority-1 {
+  background-color: rgba($color-1, .1);
+  border-color: $color-1;
 }

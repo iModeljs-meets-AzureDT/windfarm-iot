@@ -3,7 +3,7 @@ import { PowerMarker } from "../markers/PowerMarker";
 import { SensorMarker } from "../markers/SensorMarker";
 
 export class SensorDecorator implements Decorator {
-  protected marker: SensorMarker;
+  public marker: SensorMarker;
 
   constructor(powerMarker: PowerMarker) {
     this.marker = new SensorMarker(powerMarker);
