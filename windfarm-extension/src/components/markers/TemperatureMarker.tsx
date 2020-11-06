@@ -202,7 +202,7 @@ export class TemperatureMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
 
-    TimeSeries.loadTsiDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
+    TimeSeries.loadDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

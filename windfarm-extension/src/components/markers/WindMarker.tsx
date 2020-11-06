@@ -96,7 +96,7 @@ export class WindMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.sensorData);
     });
 
-    TimeSeries.loadTsiDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
+    TimeSeries.loadDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

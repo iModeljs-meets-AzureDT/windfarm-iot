@@ -374,7 +374,7 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.windData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
 
-    TimeSeries.loadTsiDataForNode(this.id);
+    TimeSeries.loadDataForNode(this.id);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;
