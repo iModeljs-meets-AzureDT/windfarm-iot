@@ -1,0 +1,14 @@
+{
+  "extends": "./node_modules/@bentley/build-tools/tsconfig-base.json",
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false,
+    "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
+    "resolveJsonModule": true,
+    "outDir": "./lib",
+    "noUnusedParameters": false
+  },
+  "include": [
+    "./src/**/*.ts*"
+  ]
+}
