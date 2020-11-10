@@ -94,6 +94,7 @@ export class PowerMarker extends Marker {
     this.initialLocation = location;
     PowerMarker.aggregateErrorList = [];
     this.id = id;
+    this.visible = false;
 
     // These are mixed up for WTG008
     if (this.id === "WTG008") {
@@ -356,14 +357,12 @@ export class PowerMarker extends Marker {
 
     IModelApp.viewManager.addDecorator(this.temperatureData);
 
+    TimeSeries.loadDataForNode(this.id);
+    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
+
     this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 5)
 
     IModelApp.viewManager.addDecorator(this.windData);
-
-    TimeSeries.loadTsiDataForNode(this.id);
-    if (_ev.isDoubleClick) {
-      TimeSeries.showTsiGraph();
-    }
 
     return true;
   }

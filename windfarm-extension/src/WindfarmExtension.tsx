@@ -13,6 +13,7 @@ import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
 import { AnimationTimer } from "./components/AnimationTimer";
 import { Range1d } from "@bentley/geometry-core";
+import ClockWidget from "./components/ClockWidget";
 
 (window as any).DEBUG_MODE = false;
 
@@ -49,17 +50,17 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "Toggle Debug Mode",
         () => {
           if (!this.DEBUG_MODE_TOGGLE) {
-            ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
+            // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
             ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
             (window as any).DEBUG_MODE = true;
           } else {
-            ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
+            // ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
             ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
             (window as any).DEBUG_MODE = false;
           }
           this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
         }
-      )
+      ),
     ]
   }
 
@@ -104,16 +105,6 @@ export class WindfarmExtension extends Extension {
   public async onExecute(): Promise<void> {
     // UiItemsManager.register(new ErrorUiItemsProvider());
 
-    // We need a location to bind the component to.
-    const MLNode = document.createElement("div");
-    MLNode.id = "power-prediction-panel";
-    document.getElementById("root")?.appendChild(MLNode);
-
-    // We need a location to bind the component to.
-    const ErrorNode = document.createElement("div");
-    ErrorNode.id = "error-panel";
-    document.getElementById("root")?.appendChild(ErrorNode);
-
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
@@ -131,7 +122,25 @@ export class WindfarmExtension extends Extension {
       IModelApp.viewManager.addDecorator(new PowerDecorator());
 
       // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
-      // ReactDOM.render(<MachineLearningPanel></MachineLearningPanel>, document.getElementById("machine-learning-panel"));
+      
+      // We need a location to bind the component to.
+      const ClockNode = document.createElement("div");
+      ClockNode.id = "clock-widget";
+      document.getElementById("root")?.appendChild(ClockNode);
+  
+      // We need a location to bind the component to.
+      const MLNode = document.createElement("div");
+      MLNode.id = "power-prediction-panel";
+      document.getElementById("root")?.appendChild(MLNode);
+  
+      // We need a location to bind the component to.
+      const ErrorNode = document.createElement("div");
+      ErrorNode.id = "error-panel";
+      document.getElementById("root")?.appendChild(ErrorNode);
+  
+      // Add clock widget.
+      ReactDOM.render(<ClockWidget/>, document.getElementById("clock-widget"));
+    
     });
 
   }

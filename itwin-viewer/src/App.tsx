@@ -188,6 +188,7 @@ const App: React.FC = () => {
             onIModelConnected={onIModelConnection}
             extensions={useExtensions? extensions : undefined}
             backend={useCustomBackend ? backendOptions : undefined}
+            defaultUiConfig={{hideDefaultStatusBar: true}}
           />
           </div>
         )

@@ -38,3 +38,8 @@ How to set up simulation:
 3. upload all the json and js files in the Advanced tab.
 4. Select Simulations menu and click "New Simulation" 
 5. Set up wind turbine simulation
+
+### **5. local-backend**
+
+This directory exists to kick off a local backend. A local backend is required to animate the spinning turbines, 
+- At the time of this commit, functionality prior to 2.9.0 does not support necessary API calls to transform turbines properly.

@@ -14,25 +14,47 @@ export class TimeSeries {
       FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState = StagePanelState.Open;
   }
 
-  public static showTsiForPredictedData(data: any) {
+  public static loadPredictedData(data: any) {
     const powerDM: { [key: string]: {} } = {};
     const powerPM: { [key: string]: {} } = {};
 
     const result = [{"" : {"/powerDM" : {}, "/powerPM" : {}}}];
     for (const entry of data) {
       const sysTime = entry.originSysTime;
-      powerDM[sysTime]= {"value" : (entry.power_DM)};
-      powerPM[sysTime]= {"value" : (entry.power_PM)};
+      powerDM[sysTime]= {"value" : (entry.power_DM * 10)};
+      powerPM[sysTime]= {"value" : (entry.power_PM * 10)};
     }      
     result[0][""]["/powerDM"] = powerPM;
     result[0][""]["/powerPM"] = powerDM;
-    this.showTsiGraph();
     this.updateTsiGraph(result);
   }
 
-  public static async loadTsiDataForNode(_dtId: string, properties?: string[]) {
+  public static async loadPowerForAllTurbines() {
     const tsiToken = await AzureAuth.getTsiToken();
-    debugger;
+    if (!tsiToken) return;
+    
+    const aggregateExpressions: any[] = [];
+    const now = new Date();
+    // var startDate = now.setHours(now.getHours() - 1);
+    // var endDate = now.setHours(now.getHours() - 25);
+    var startDate = new Date("10/23/2020 08:34:31.496");
+    var endDate = new Date("10/23/2020 10:34:53.551");
+    var searchSpan = { from: startDate, to: endDate, bucketSize: '5m' };
+    aggregateExpressions.push(
+      new this.tsiClient.ux.AggregateExpression(
+        {predicateString: `[patch.path] = '/powerObserved'`},
+        {property: 'patch.value', type: "Double"},
+        ['avg'],
+        searchSpan,
+        {property: 'cloudEvents:subject', type: "String"},
+        {color:'#00B294' , alias: 'Power Output (kW)'}));
+
+    const result: any = await this.tsiClient.server.getAggregates(tsiToken, EnvironmentFqdn, aggregateExpressions.map(function(ae){return ae.toTsx()}));
+    if (result[0]) this.updateTsiGraph(result, aggregateExpressions);
+  }
+
+  public static async loadDataForNode(_dtId: string, properties?: string[]) {
+    const tsiToken = await AzureAuth.getTsiToken();
     if (!tsiToken) return;
     
     const aggregateExpressions: any[] = [];
