@@ -92,9 +92,9 @@ export class PowerMarker extends Marker {
   constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
     super(location, size);
     this.initialLocation = location;
-    PowerMarker.aggregateErrorList = [];
     this.id = id;
     this.visible = false;
+    PowerMarker.aggregateErrorList = [];
 
     // These are mixed up for WTG008
     if (this.id === "WTG008") {
@@ -264,9 +264,9 @@ export class PowerMarker extends Marker {
       onHover: this.hover,
       isClicked: this.clicked,
       id: this.id,
-      power: this.power,
-      powerDM: this.powerDM,
-      powerPM: this.powerPM,
+      power: this.power.toLocaleString(undefined, {minimumFractionDigits: 2}),
+      powerDM: this.powerDM.toLocaleString(undefined, {minimumFractionDigits: 2}),
+      powerPM: this.powerPM.toLocaleString(undefined, {minimumFractionDigits: 2}),
       windSpeed: this.windData.marker.windSpeed,
       windDir: this.windData.marker.windDirection
     }
@@ -369,62 +369,6 @@ export class PowerMarker extends Marker {
 }
 
 function PowerPanel({ props }: any) {
-  /*
-  if (props.isClicked) {
-    return (
-      <div className="card">
-        <h1>{props.id}</h1>
-        <div className="data">
-          <div className="left">
-            Actual power:<br />
-            Physical model:<br />
-            Data model:
-        </div>
-          <div className="right">
-            {props.power.toFixed(2)} kW<br />
-            {props.powerPM.toFixed(2)} kW<br />
-            {props.powerDM.toFixed(2)} kW
-          </div>
-          <div className="left">
-            Wind direction:<br />
-            Wind speed:
-          </div>
-          <div className="right">
-            {props.windDir.toFixed(2)}°<br />
-            {props.windSpeed.toFixed(2)} km/h
-          </div>
-
-          <div className="left">
-            <u>Pitch Angles</u><br />
-              Blade 1:<br />
-              Blade 2:<br />
-              Blade 3:<br />
-              Yaw position:
-          </div>
-          <div className="right">
-            <br />
-            {props.blade1Angle.toFixed(2)}°<br />
-            {props.blade2Angle.toFixed(2)}°<br />
-            {props.blade3Angle.toFixed(2)}°<br />
-            {props.yawPosition.toFixed(2)}°
-          </div>
-
-          <div className="left">
-            Temp. Gear Box:<br />
-            Temp. Generator:<br />
-            Temp. Nacelle:
-          </div>
-          <div className="right">
-            {props.tempGearBox.toFixed(2)}° C<br />
-            {props.tempGenerator.toFixed(2)}° C<br />
-            {props.tempNacelle.toFixed(2)}° C
-          </div>
-
-        </div>
-      </div>
-    );
-  } else {
-    */
   if (props.onHover) {
     return (
       <div className="card-transition">
@@ -436,9 +380,9 @@ function PowerPanel({ props }: any) {
             Data model:
         </div>
           <div className="right">
-            {props.power.toFixed(2)} kW<br />
-            {props.powerPM.toFixed(2)} kW<br />
-            {props.powerDM.toFixed(2)} kW
+            {props.power} kW<br />
+            {props.powerPM} kW<br />
+            {props.powerDM} kW
         </div>
         </div>
       </div>
@@ -454,13 +398,11 @@ function PowerPanel({ props }: any) {
             Data model:
         </div>
         <div className="right">
-          {props.power.toFixed(2)} kW<br />
-          {props.powerPM.toFixed(2)} kW<br />
-          {props.powerDM.toFixed(2)} kW
+          {props.power} kW<br />
+          {props.powerPM} kW<br />
+          {props.powerDM} kW
         </div>
       </div>
     </div>
   );
-
-  // }
 }
