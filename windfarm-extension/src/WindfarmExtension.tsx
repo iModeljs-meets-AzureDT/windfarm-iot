@@ -137,7 +137,11 @@ export class WindfarmExtension extends Extension {
       const ErrorNode = document.createElement("div");
       ErrorNode.id = "error-panel";
       document.getElementById("root")?.appendChild(ErrorNode);
-  
+
+      // Quick work around to hide sign in/sign out buttons in itwin-viewer.
+      const header = document.getElementsByClassName("Header_header__FX0yu")[0];
+      (header as HTMLElement).style.display = "none";
+
       // Add clock widget.
       ReactDOM.render(<ClockWidget/>, document.getElementById("clock-widget"));
     
