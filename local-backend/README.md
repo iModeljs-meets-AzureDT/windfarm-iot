@@ -1,8 +1,4 @@
-# @bentley/general-purpose-imodeljs-backend
-
-Copyright © Bentley Systems, Inc. 2020
-
-## About this Repository
+## About this directory
 
 This repository is a local port of the @bentley/general-purpose-imodeljs-backend.
 
