@@ -1,9 +1,10 @@
 import { DecorateContext, Decorator, IModelApp } from "@bentley/imodeljs-frontend";
 import { WindfarmExtension } from "../../WindfarmExtension";
-import { PowerMarker } from "../markers/PowerMarker";
+import { PowerMarker, PowerMarkerSet } from "../markers/PowerMarker";
 
 export class PowerDecorator implements Decorator {
   public static markers: PowerMarker[] = [];
+  private markerSet: PowerMarkerSet = new PowerMarkerSet();
 
   constructor() {
     this.addMarker();
@@ -40,15 +41,24 @@ export class PowerDecorator implements Decorator {
       );
 
       PowerDecorator.markers.push(powerdisplayMarker);
+      this.markerSet.markers.add(powerdisplayMarker);
     }
 
   }
 
   public decorate(context: DecorateContext): void {
+    /*
     PowerDecorator.markers.forEach((marker) => {
       marker.addDecoration(context);
     });
-
+    */
+   console.log("DECORATING MARKERSET");
+   this.markerSet.addDecoration(context);
+   /*
+    PowerDecorator.markerSet.markers.forEach((marker) => {
+      marker.addDecoration(context);
+    })
+    */
   }
 }
   

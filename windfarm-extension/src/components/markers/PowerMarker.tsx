@@ -1,4 +1,4 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, ViewState3d } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, ViewState3d, MarkerSet, Cluster } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
 import { WindfarmExtension, WindfarmUiItemsProvider } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
@@ -89,11 +89,14 @@ export class PowerMarker extends Marker {
   public clicked: boolean = false;
   public hover: boolean = false;
 
-  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
+  public markerSet?: PowerMarkerSet;
+
+  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string, markerSet?: PowerMarkerSet) {
     super(location, size);
     this.initialLocation = location;
     this.id = id;
-    this.visible = false;
+    this.visible = true;
+    this.markerSet = markerSet;
     PowerMarker.aggregateErrorList = [];
 
     // These are mixed up for WTG008
@@ -405,4 +408,48 @@ function PowerPanel({ props }: any) {
       </div>
     </div>
   );
+}
+
+export class PowerMarkerCluster extends Marker {
+  constructor(location: XYAndZ, size: XAndY, cluster: Cluster<PowerMarker>) {
+    super(location, size);
+
+    this.label = cluster.markers.length.toLocaleString();
+    this.labelColor = "black";
+    this.labelFont = "bold 14px san-serif";
+
+    // Concatenate the tooltips from the markers to create the tooltip for the cluster
+    const maxLen = 10;
+    let title = "";
+    cluster.markers.forEach((marker, index: number) => {
+      if (index < maxLen) {
+        if (title !== "")
+          title += "<br>";
+        title += marker.title;
+      }
+    });
+    if (cluster.markers.length > maxLen)
+      title += "<br>...";
+
+    const div = document.createElement("div");
+    div.innerHTML = title;
+    this.title = div;
+  }
+
+  public drawFunc(ctx: CanvasRenderingContext2D) {
+    console.log("DOES THIS EVER GET CALLED?");
+    ctx.beginPath();
+    ctx.strokeStyle = "#372528";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 5;
+    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+export class PowerMarkerSet extends MarkerSet<PowerMarker> {
+  public minimumClusterSize = 2;
+
+  protected getClusterMarker(cluster: Cluster<PowerMarker>): Marker { return PowerMarkerCluster.makeFrom(cluster.markers[0], cluster); }
 }
