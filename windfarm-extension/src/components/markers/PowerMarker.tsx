@@ -1,6 +1,6 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, ViewState3d } from "@bentley/imodeljs-frontend";
-import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
-import { WindfarmExtension, WindfarmUiItemsProvider } from "../../WindfarmExtension";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, MarkerSet, Cluster } from "@bentley/imodeljs-frontend";
+import { XYAndZ, XAndY, Point3d, WritableXYAndZ, Vector3d } from "@bentley/geometry-core";
+import { WindfarmExtension } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
@@ -89,23 +89,19 @@ export class PowerMarker extends Marker {
   public clicked: boolean = false;
   public hover: boolean = false;
 
-  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string) {
+  public markerSet?: PowerMarkerSet;
+
+  constructor(location: XYAndZ, size: XAndY, id: string, cId: string, sId: string, bId: string, markerSet?: PowerMarkerSet) {
     super(location, size);
     this.initialLocation = location;
     this.id = id;
     this.visible = false;
+    this.markerSet = markerSet;
     PowerMarker.aggregateErrorList = [];
 
-    // These are mixed up for WTG008
-    if (this.id === "WTG008") {
-      this.cId = bId;
-      this.sId = cId;
-      this.bId = sId;
-    } else {
-      this.cId = cId;
-      this.sId = sId;
-      this.bId = bId;
-    }
+    this.cId = cId;
+    this.sId = sId;
+    this.bId = bId;
 
     this.emphasizedElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     this.sensorData = new SensorDecorator(this);
@@ -318,7 +314,7 @@ export class PowerMarker extends Marker {
         marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y, marker.initialLocation.z);
       });
       this.clicked = true;
-      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 65, this.initialLocation.z - 15);
+      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 50, this.initialLocation.z - 15);
     }
 
     WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
@@ -330,39 +326,24 @@ export class PowerMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.temperatureData);
     });
 
-    // Move decorators relative to power marker world location.
-    this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 50)
-
-    // This mess needs refactoring - the decorators need to position themselves based on the widgets opened.
-    // Reposition turbines above 7.
-    if (this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") {
-      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 45)
+    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) { 
+      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 35)
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 75, this.worldLocation.z)
+      this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 3)
+    } else {
+      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 25)
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 50, this.worldLocation.z)
+      this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 3)
     }
 
     IModelApp.viewManager.addDecorator(this.sensorData);
-
-    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-      // We need to offset based on the open panels.
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 120, this.worldLocation.z)
-    } else {
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 80, this.worldLocation.z)
-    }
-
-    // For some reason, these are very far away on these turbines.
-    if ((this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") && FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Off) {
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 70, this.worldLocation.z)
-    } else if ((this.id === "WTG007" || this.id == "WTG008" || this.id === "WTG009" || this.id === "WTG010") && FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 120, this.worldLocation.z)
-    }
-
     IModelApp.viewManager.addDecorator(this.temperatureData);
+    IModelApp.viewManager.addDecorator(this.windData);
 
     TimeSeries.loadDataForNode(this.id);
-    if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
-
-    this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 5)
-
-    IModelApp.viewManager.addDecorator(this.windData);
+    if (_ev.isDoubleClick) { 
+      TimeSeries.showTsiGraph() 
+    };
 
     return true;
   }
@@ -405,4 +386,28 @@ function PowerPanel({ props }: any) {
       </div>
     </div>
   );
+}
+
+export class PowerMarkerCluster extends Marker {
+  constructor(location: XYAndZ, size: XAndY, _cluster: Cluster<PowerMarker>) {
+    super(location, size);
+  }
+
+  public drawFunc(_ctx: CanvasRenderingContext2D) {
+    /*
+    ctx.beginPath();
+    ctx.strokeStyle = "#372528";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 5;
+    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    */
+  }
+}
+
+export class PowerMarkerSet extends MarkerSet<PowerMarker> {
+  public minimumClusterSize = 2;
+
+  protected getClusterMarker(cluster: Cluster<PowerMarker>): Marker { return PowerMarkerCluster.makeFrom(cluster.markers[0], cluster); }
 }
