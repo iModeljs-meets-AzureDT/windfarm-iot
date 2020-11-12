@@ -19,10 +19,11 @@ export class PowerDecorator implements Decorator {
                           blades.ecinstanceid as bId, 
                           control.origin
                       FROM bis.physicalelement control 
+                      INNER JOIN bis.category category ON control.category.id = category.ecinstanceid
                       INNER JOIN bis.physicalelement structure ON control.parent.id = structure.parent.id 
                       INNER JOIN bis.physicalelement blades ON control.parent.id = blades.parent.id 
                       JOIN DgnCustomItemTypes_WindEnergy.Turbine turbine ON control.parent.id = turbine.ecinstanceid
-                      WHERE control.userlabel = 'ControlUnit' AND structure.userlabel = 'Structure' AND blades.userlabel = 'Blades'`;
+                      WHERE control.userlabel = 'Mesh' AND category.codevalue = 'Nacelle' AND structure.userlabel = 'Base' AND blades.userlabel = 'Blades'`;
 
     const rowIterator = WindfarmExtension.imodel!.query(query);
 
@@ -32,8 +33,8 @@ export class PowerDecorator implements Decorator {
 
       // Special cases for WTG008...
       const powerdisplayMarker = new PowerMarker(
-        value.tID !== "WTG008" ? { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 } : { x: value.origin.x, y: value.origin.y, z: value.origin.z + 90 },
-        { x: 100, y: 100 },
+        { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
+        { x: 220, y: 120 },
         value.tID,
         value.cId,
         value.sId,
@@ -52,13 +53,7 @@ export class PowerDecorator implements Decorator {
       marker.addDecoration(context);
     });
     */
-   console.log("DECORATING MARKERSET");
    this.markerSet.addDecoration(context);
-   /*
-    PowerDecorator.markerSet.markers.forEach((marker) => {
-      marker.addDecoration(context);
-    })
-    */
   }
 }
   

@@ -55,9 +55,11 @@ export class WindMarker extends Marker {
 
   public drawFunc(_ctx: CanvasRenderingContext2D) {
 
+    /*
     if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
       this.worldLocation = new Point3d(this.powerMarker.sensorData.marker.worldLocation.x, this.powerMarker.temperatureData.marker.worldLocation.y, this.powerMarker.sensorData.marker.worldLocation.z + 5)
     }
+    */
    
     const props = {
       onHover: this.hover,

@@ -108,11 +108,12 @@ export class WindfarmExtension extends Extension {
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
+      /*
       WindfarmExtension.timer = new AnimationTimer(vp, 6);
       const duration = vp.view.scheduleScript!.computeDuration();
       const buffer = 60 * 1000 /* Minutes */;
-      WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
-      WindfarmExtension.timer.start();
+      // WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
+      // WindfarmExtension.timer.start();
 
       FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       // Keep bottom panel closed by default.
