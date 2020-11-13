@@ -9,7 +9,6 @@ import { PowerDecorator } from "../components/decorators/PowerDecorator";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import { TemperatureMarker } from "../components/markers/TemperatureMarker";
-import { Point3d } from "@bentley/geometry-core";
 
 // The lists continue to grow but we shouldn't pollute the DOM.
 const MAX_ELEMENTS = 12;

@@ -6,7 +6,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 1. npm install
 2. npm start
-3. (recommended to load extension):
+3. Start the local backend instance, your imodels won't load without this step.
+- cd into windfarm-iot/local-backend
+- npm install
+- npm run build
+- npm run start
+4. (recommended to load extension):
 - cd into windfarm-iot/winfarm-extension
 - npm install
 - npm run watch

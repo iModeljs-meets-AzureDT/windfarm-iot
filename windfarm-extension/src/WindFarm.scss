@@ -15,10 +15,19 @@
   z-index: 0;
 }
 
+.timeline-bar {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 163px;
+  width: 2px;
+  background-color: black;
+}
+
 .clock-dock {
   position: absolute;
   left: 0%;
-  top: 48%;
+  top: 47vh;
   height: 25px;
   width: 25px;
   opacity: 0.75;
@@ -61,8 +70,18 @@
   border-bottom-right-radius: 10px;
   transform-origin: center;
 
+  .title {
+    font-size: 10px;
+    bottom: 33px;
+    left: 32px;
+    text-align: center;
+    position: absolute;
+    color:black;
+    font-weight: 600;
+  }
+
   .power-reading {
-    margin-top: 5px;
+    margin-top: 14.5px;
     font-size: 23px;
     text-align: center;
     width: 100%;
@@ -88,7 +107,7 @@
     height: 20px;
     width: 20px;
     right: 3px;
-    top: 114px;
+    top: 118px;
 
     img{
       max-width: 100%;
@@ -100,8 +119,8 @@
     position: absolute;
     height: 20px;
     width: 20px;
-    left: 4px;
-    top: 114px;
+    left: 5px;
+    top: 118px;
 
     img{
         max-width: 100%;
@@ -649,4 +668,11 @@ $color-1: #ED1C24;
 .priority-1 {
   background-color: rgba($color-1, .1);
   border-color: $color-1;
+}
+.uifw-animation-overlay {
+  display: none !important;
+}
+
+.itwin-viewer-container {
+  height: 100vh !important;
 }

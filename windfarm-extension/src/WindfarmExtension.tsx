@@ -13,6 +13,8 @@ import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
 import MLClient from "./client/MLClient";
 import { TimeSeries } from "./client/TimeSeries";
+import { AnimationTimer } from "./components/AnimationTimer";
+import { Range1d } from "@bentley/geometry-core";
 import ClockWidget from "./components/ClockWidget";
 
 (window as any).DEBUG_MODE = false;
@@ -50,11 +52,11 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "Toggle Debug Mode",
         () => {
           if (!this.DEBUG_MODE_TOGGLE) {
-            ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
+            // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
             ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
             (window as any).DEBUG_MODE = true;
           } else {
-            ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
+            // ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
             ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
             (window as any).DEBUG_MODE = false;
           }
@@ -86,6 +88,7 @@ export class WindfarmExtension extends Extension {
   protected _defaultNs = "windfarm";
   public static viewport?: ScreenViewport;
   public static imodel?: IModelConnection;
+  public static timer?: AnimationTimer;
 
   /** Invoked the first time this extension is loaded. */
   public async onLoad(): Promise<void> {
@@ -107,6 +110,12 @@ export class WindfarmExtension extends Extension {
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
+      /*
+      WindfarmExtension.timer = new AnimationTimer(vp, 6);
+      const duration = vp.view.scheduleScript!.computeDuration();
+      const buffer = 60 * 1000 /* Minutes */;
+      // WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
+      // WindfarmExtension.timer.start();
 
       FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       // Keep bottom panel closed by default.
@@ -131,7 +140,11 @@ export class WindfarmExtension extends Extension {
       const ErrorNode = document.createElement("div");
       ErrorNode.id = "error-panel";
       document.getElementById("root")?.appendChild(ErrorNode);
-  
+
+      // Quick work around to hide sign in/sign out buttons in itwin-viewer.
+      const header = document.getElementsByTagName("header")[0];
+      (header as HTMLElement).style.display = "none";
+
       // Add clock widget.
       ReactDOM.render(<ClockWidget/>, document.getElementById("clock-widget"));
     

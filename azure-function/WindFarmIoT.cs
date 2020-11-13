@@ -253,6 +253,8 @@ namespace Doosan.Function
                                 // Interpolation occurs here, we add *interpolationSteps* additional points between each data point.
                                 for (int j = 0; j < steps; ++j)
                                 {
+                                  // We only do one step for last data point.
+                                  if (j > 0 && i == forecastData.Count - 1) break;
                                     DateTime d1 = DateTime.Parse((string)forecastData[i].forecastDateTime);
                                     DateTime interpolatedDate = d1;
 
@@ -285,7 +287,7 @@ namespace Doosan.Function
                                         float windDirectionNext = forecastData[next].winddirection;
                                         interpolatedWindDirection = interpolateData(windDirectionCurrent, windDirectionNext, j, steps);
 
-                                    }
+                                    } 
 
                                     // No need to interpolate blade angles since they remain constant.
                                     predictionInput.PowerInputs.Add(new WTInfo
