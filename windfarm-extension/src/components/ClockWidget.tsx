@@ -128,7 +128,7 @@ export default class ClockWidget extends React.Component<{}, {
             else {
                 const nextTargetTime = new Date(predictedData[i+1].originSysTime);
                 this.animateClock(targetTime, nextTargetTime);
-                this.animateTimeline(i);
+                this.animateTimeline(i, predictedData.length);
             }
             
             await this.sleep(1000);
@@ -147,19 +147,19 @@ export default class ClockWidget extends React.Component<{}, {
             setTimeout(() => {
                 const nextTime = new Date(fromTime.getTime() + step * stepSpan);
                 if (this.state.futureMode) 
-                    this.setState({time: nextTime })
+                    this.setState({time: nextTime})
             }, (step * stepSpan) / 1000);
           }
     }
 
-    private animateTimeline = (stepIndex: number) => {
+    private animateTimeline = (stepIndex: number, stepCount: number) => {
 
         const boundRect = document.querySelector(".voronoiRect")?.getBoundingClientRect();
         if (!boundRect) return;
         const initialX = boundRect.left;
         const initialY = boundRect.top;
         const width = boundRect.width;
-        const step = width / 84;
+        const step = width / stepCount;
         debugger;
 
         if ((stepIndex*step) <= (initialX + width)) {
