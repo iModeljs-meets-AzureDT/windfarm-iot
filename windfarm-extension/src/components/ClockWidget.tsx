@@ -72,12 +72,33 @@ export default class ClockWidget extends React.Component<{}, {
         if (this.state.minimized === true){
             this.setState({minimized: false});
             this.addMarkers();
+            this.dockAppear();
         }
         else {
             this.setState({minimized: true});
             this.dropMarkers();
+            this.dockDisappear();
         }
     }
+
+    private dockAppear() {
+        const dock = document.getElementById("clock-dock");
+
+        dock?.animate([
+            { opacity: 1.0 }, 
+            { opacity: 0.0 }
+          ], {duration: 500, fill: "forwards", easing: "ease-out"});
+    }
+
+    private dockDisappear() {
+        const dock = document.getElementById("clock-dock");
+
+        dock?.animate([
+            { opacity: 0.0 }, 
+            { opacity: 1.0 }
+          ], {duration: 500, delay: 500, fill: "forwards", easing: "ease-out"});
+    }
+
 
     private resetView() {
         this.addMarkers();
@@ -163,7 +184,7 @@ export default class ClockWidget extends React.Component<{}, {
         debugger;
 
         if ((stepIndex*step) <= (initialX + width)) {
-            const timelineBar = document.getElementById("timelineBar");
+            const timelineBar = document.getElementById("clock-timeline-bar");
 
             const keyFrames = [
                 { transform: `translate(${initialX + step*stepIndex}px, ${initialY}px)` }, 
@@ -203,18 +224,15 @@ export default class ClockWidget extends React.Component<{}, {
         const animDuration = this.firstRender ? 0 : 1000;
         this.firstRender = false;
         const clockAnimation = this.state.minimized ? this.getExitAnimation() : this.getEntryAnimation();
-        const dockFadeDelay = this.state.minimized ? 500 : 0;
         const futureModeAnimation = this.state.futureMode ? "shake" : undefined;
         const flashDuration = this.state.futureMode ? 1500 : 0;
         const predictionIconImg: string = this.state.futureMode ? "future-selected.png" : "future.png";
 
         return (
             <>
-                <Fade reverse={!this.state.minimized} duration={500} delay={dockFadeDelay}>
-                    <div className="clock-dock" title="Performance Watchdog" onClick={this.minimizeToggled}>
-                        <img src="clock.png"/>
-                    </div>
-                </Fade>
+                <div id="clock-dock" className="clock-dock" title="Performance Watchdog" onClick={this.minimizeToggled}>
+                    <img src="clock.png"/>
+                </div>
                 <Reveal keyframes={clockAnimation} duration={animDuration}>
                     <AttentionSeeker effect={futureModeAnimation} duration={flashDuration}>
                         <Draggable>
@@ -234,10 +252,8 @@ export default class ClockWidget extends React.Component<{}, {
                         </Draggable>
                     </AttentionSeeker>
                 </Reveal>
-                <div id= "timelineBar" className="timeline-bar" hidden={!this.state.futureMode}/>
+                <div id= "clock-timeline-bar" className="timeline-bar" hidden={!this.state.futureMode}/>
             </>
         );
     }
 }
-
-// 1328

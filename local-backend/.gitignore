@@ -11,6 +11,9 @@ dist
 coverage
 .nyc_output
 
+# npm
+.npmrc
+
 
 # briefcase cache
 .local
