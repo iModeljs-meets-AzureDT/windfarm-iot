@@ -19,6 +19,7 @@ export default class ClockWidget extends React.Component<{}, {
     private turbinePower: Map<string, number> = new Map();
     private savedView?: ViewState;
     private firstRender = true;
+    private predictedData: any[] = [];
 
     constructor() {
         super({});
@@ -29,6 +30,7 @@ export default class ClockWidget extends React.Component<{}, {
                 this.setState({time: new Date()});
         }, 1000);
         this.addDataListener()
+        this.addErrorWidgetEventListener();
     }
 
     private sleep(ms: number) {
@@ -40,6 +42,14 @@ export default class ClockWidget extends React.Component<{}, {
             this.turbinePower.set(data["$dtId"], data["powerObserved"])
             if (!this.state.futureMode) this.updatePowerReading();
         });
+    }
+
+    private addErrorWidgetEventListener() {
+        (window as any).errorWidgetOpened = () => {
+            if (this.state.futureMode) {
+                TimeSeries.loadPredictedData(this.predictedData);
+            }
+        }
     }
 
     private updatePowerReading() {
@@ -131,25 +141,25 @@ export default class ClockWidget extends React.Component<{}, {
     }
 
     private runPowerPrediction = async() => {
-        const predictedData: any[] = await MLClient.getPredictedMLPower();
+        this.predictedData = await MLClient.getPredictedMLPower();
         TimeSeries.showTsiGraph();
-        TimeSeries.loadPredictedData(predictedData);
+        TimeSeries.loadPredictedData(this.predictedData);
 
-        for (let i = 0; i < predictedData.length; i++) {
+        for (let i = 0; i < this.predictedData.length; i++) {
             if (!this.state.futureMode) break;
 
-            const targetTime = new Date(predictedData[i].originSysTime);
-            const powerDm = Math.round(predictedData[i].power_DM * 100) / 10;
+            const targetTime = new Date(this.predictedData[i].originSysTime);
+            const powerDm = Math.round(this.predictedData[i].power_DM * 100) / 10;
             this.setState({time: targetTime, powerReading: this.numberWithCommas(powerDm)});
              
-            if (i === (predictedData.length - 1)) {
+            if (i === (this.predictedData.length - 1)) {
                 this.setState({futureMode: false});
                 this.resetView();
             }
             else {
-                const nextTargetTime = new Date(predictedData[i+1].originSysTime);
+                const nextTargetTime = new Date(this.predictedData[i+1].originSysTime);
                 this.animateClock(targetTime, nextTargetTime);
-                this.animateTimeline(i, predictedData.length);
+                this.animateTimeline(i, this.predictedData.length);
             }
             
             await this.sleep(1000);
@@ -181,7 +191,6 @@ export default class ClockWidget extends React.Component<{}, {
         const initialY = boundRect.top;
         const width = boundRect.width;
         const step = width / stepCount;
-        debugger;
 
         if ((stepIndex*step) <= (initialX + width)) {
             const timelineBar = document.getElementById("clock-timeline-bar");

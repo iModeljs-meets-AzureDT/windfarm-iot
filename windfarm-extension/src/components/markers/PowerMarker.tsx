@@ -177,6 +177,7 @@ export class PowerMarker extends Marker {
             ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
             ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
             FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
+            (window as any).errorWidgetOpened();
           }
 
         } else {
