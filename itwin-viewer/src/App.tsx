@@ -33,7 +33,7 @@ const ViewStyle: DisplayStyle3dSettingsProps = {
       thematicDisplay: false,
       renderMode: RenderMode.SmoothShade,
       backgroundMap: true,
-      noTexture: true,
+      noTexture: false,
     },
     solarShadows: { color: 0x524f44 },
     lights: {
