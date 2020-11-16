@@ -37,6 +37,7 @@
     "@types/react-transition-group": "^4.4.0",
     "msal": "^1.4.1",
     "react": "16.13.1",
+    "react-awesome-reveal": "^3.4.0",
     "react-clock": "^3.0.0",
     "react-dom": "16.13.1",
     "react-draggable": "^4.4.3",

@@ -2,6 +2,11 @@
   height: 93.5vh !important;
 }
 
+.tsi-markerContainer {
+  animation: none !important;
+  margin-top: -50px;
+}
+
 .tsi-stackedButton, .tsi-ellipsisButton{
   opacity: 0 !important;
 }

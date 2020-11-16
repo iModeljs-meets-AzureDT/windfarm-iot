@@ -1,4 +1,3 @@
-import { Dictionary } from "@bentley/bentleyjs-core";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import TsiClient from "tsiclient";
 import { AzureAuth } from "./AzureToken";
@@ -17,16 +16,27 @@ export class TimeSeries {
   public static loadPredictedData(data: any) {
     const powerDM: { [key: string]: {} } = {};
     const powerPM: { [key: string]: {} } = {};
+    const windSpeed: { [key: string]: {} } = {};
 
-    const result = [{"" : {"/powerDM" : {}, "/powerPM" : {}}}];
+    const result = [{"kW" : {"Power - Data Model" : {}, "Power - Physics Model" : {}}}, {"km/hr" : {"Wind Speed": {}}}];
+    const maxVal = {"power" : 0, "windSpeed" : 0};
     for (const entry of data) {
       const sysTime = entry.originSysTime;
       powerDM[sysTime]= {"value" : (entry.power_DM * 10)};
       powerPM[sysTime]= {"value" : (entry.power_PM * 10)};
+      windSpeed[sysTime]= {"value" : (entry.windSpeed)};
+
+      // track max value for each measurement (for y extents)
+      maxVal.power = (entry.power_DM > maxVal.power) ? entry.power_DM : maxVal.power;
+      maxVal.power = (entry.power_PM > maxVal.power) ? entry.power_PM : maxVal.power;
+      maxVal.windSpeed = (entry.windSpeed > maxVal.windSpeed) ? entry.windSpeed : maxVal.windSpeed;
     }      
-    result[0][""]["/powerDM"] = powerPM;
-    result[0][""]["/powerPM"] = powerDM;
-    this.updateTsiGraph(result);
+    result[0]["kW"]!["Power - Data Model"] = powerDM;
+    result[0]["kW"]!["Power - Physics Model"] = powerPM;
+    result[1]["km/hr"]!["Wind Speed"] = windSpeed;
+    this.updateTsiGraph(result, null, [{alias: 'kW', yExtent: [0, maxVal.power * 10]}, {alias: 'km/hr', yExtent: [0, maxVal.windSpeed]}]);
+
+    return result;
   }
 
   public static async loadPowerForAllTurbines() {
@@ -78,6 +88,16 @@ export class TimeSeries {
     if (result[0]) this.updateTsiGraph(result, aggregateExpressions);
   }
 
+  public static updateTsiGraph(result: any, aggregateExpressions?: any, chartOptions?: any) {
+    var transformedResult = !aggregateExpressions ? result : this.tsiClient.ux.transformAggregatesForVisualization(result, aggregateExpressions);
+    let customOptions = chartOptions ? chartOptions : aggregateExpressions;
+    const diagram = document.getElementById('diagramDIV');
+    if (diagram) {
+      this.lineChart = !this.lineChart ? new this.tsiClient.ux.LineChart(diagram) : this.lineChart;
+      this.lineChart.render(transformedResult, {yAxisState: 'overlap', theme: 'light', legend: 'compact',  grid: true, tooltip: true}, customOptions);
+    }
+  }
+
   private static generatePropertyQuery(properties: string[]) {
     let query = " AND ";
     for (let i = 0; i < properties.length; i++) {
@@ -87,14 +107,5 @@ export class TimeSeries {
     }
 
     return query;
-  }
-
-  private static updateTsiGraph(result: any, aggregateExpressions?: any) {
-    var transformedResult = !aggregateExpressions ? result : this.tsiClient.ux.transformAggregatesForVisualization(result, aggregateExpressions);
-    const diagram = document.getElementById('diagramDIV');
-    if (diagram) {
-      this.lineChart = !this.lineChart ? new this.tsiClient.ux.LineChart(diagram) : this.lineChart;
-      this.lineChart.render(transformedResult, {theme: 'light', legend: 'compact',  grid: true, tooltip: true}, aggregateExpressions);
-    }
   }
 }

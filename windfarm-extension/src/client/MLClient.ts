@@ -1,6 +1,6 @@
 export default class MLClient {
 
-  public static url: string = "https://windfarm-function-app.azurewebsites.net/api/TriggerPrediction?steps=12";
+  public static url: string = "https://windfarm-function-app.azurewebsites.net/api/TriggerPrediction?steps=12&alldata";
 
   public static async getPredictedMLPower(): Promise<any> {
 
