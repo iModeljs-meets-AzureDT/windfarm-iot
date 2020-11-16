@@ -15,6 +15,7 @@ import { EventEmitter } from "events";
 
 
 const ViewStyle: DisplayStyle3dSettingsProps = {
+    backgroundMap: { applyTerrain: true },
     environment: {
       sky: { display: true, twoColor: false, groundColor: 9741199, nadirColor: 5464143, skyColor: 16764303, zenithColor: 16741686 },
       ground: { display: false },
@@ -32,7 +33,7 @@ const ViewStyle: DisplayStyle3dSettingsProps = {
       thematicDisplay: false,
       renderMode: RenderMode.SmoothShade,
       backgroundMap: true,
-      noTexture: false,
+      noTexture: true,
     },
     solarShadows: { color: 0x524f44 },
     lights: {
