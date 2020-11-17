@@ -34,7 +34,7 @@ export class TimeSeries {
     result[0]["kW"]!["Power - Data Model"] = powerDM;
     result[0]["kW"]!["Power - Physics Model"] = powerPM;
     result[1]["km/hr"]!["Wind Speed"] = windSpeed;
-    this.updateTsiGraph(result, null, [{alias: 'kW', yExtent: [0, maxVal.power * 10]}, {alias: 'km/hr', yExtent: [0, maxVal.windSpeed]}]);
+    this.updateTsiGraph(result, null, [{alias: 'kW', yExtent: [0, maxVal.power * 10]}, {alias: 'km/hr', yExtent: [0, maxVal.windSpeed]}], -240);
 
     return result;
   }
@@ -88,13 +88,13 @@ export class TimeSeries {
     if (result[0]) this.updateTsiGraph(result, aggregateExpressions);
   }
 
-  public static updateTsiGraph(result: any, aggregateExpressions?: any, chartOptions?: any) {
+  public static updateTsiGraph(result: any, aggregateExpressions?: any, chartDataOptions?: any, timeOffset: number = 0) {
     var transformedResult = !aggregateExpressions ? result : this.tsiClient.ux.transformAggregatesForVisualization(result, aggregateExpressions);
-    let customOptions = chartOptions ? chartOptions : aggregateExpressions;
+    let customOptions = chartDataOptions ? chartDataOptions : aggregateExpressions;
     const diagram = document.getElementById('diagramDIV');
     if (diagram) {
       this.lineChart = !this.lineChart ? new this.tsiClient.ux.LineChart(diagram) : this.lineChart;
-      this.lineChart.render(transformedResult, {yAxisState: 'overlap', theme: 'light', legend: 'compact',  grid: true, tooltip: true}, customOptions);
+      this.lineChart.render(transformedResult, {yAxisState: 'overlap', theme: 'light', legend: 'compact',  grid: true, tooltip: true, offset: timeOffset}, customOptions);
     }
   }
 
