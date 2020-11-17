@@ -11,6 +11,8 @@ import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
+import MLClient from "./client/MLClient";
+import { TimeSeries } from "./client/TimeSeries";
 import { AnimationTimer } from "./components/AnimationTimer";
 import ClockWidget from "./components/ClockWidget";
 

@@ -56,7 +56,8 @@ export default class ClockWidget extends React.Component<{}, {
         let powerReading = 0;
         for (const [_tId, power] of this.turbinePower)
             powerReading += power;
-        powerReading = (Math.round(powerReading * 10) / 10);
+        
+        powerReading = Math.round(powerReading * 10) / 10
         this.setState({powerReading: this.numberWithCommas(powerReading)});
     }
 
@@ -144,14 +145,14 @@ export default class ClockWidget extends React.Component<{}, {
         this.predictedData = await MLClient.getPredictedMLPower();
         TimeSeries.showTsiGraph();
         TimeSeries.loadPredictedData(this.predictedData);
-        
+
         for (let i = 0; i < this.predictedData.length; i++) {
             if (!this.state.futureMode) break;
 
             const targetTime = new Date(this.predictedData[i].originSysTime);
             const powerDm = Math.round(this.predictedData[i].power_DM * 100) / 10;
             this.setState({time: targetTime, powerReading: this.numberWithCommas(powerDm)});
-                
+
             if (i === (this.predictedData.length - 1)) {
                 this.setState({futureMode: false});
                 this.resetView();
@@ -167,7 +168,6 @@ export default class ClockWidget extends React.Component<{}, {
     }
 
     private numberWithCommas(x: number) {
-
         return x.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
