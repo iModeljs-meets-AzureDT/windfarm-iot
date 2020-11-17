@@ -13,7 +13,7 @@ export class PowerDecorator implements Decorator {
   private async addMarker() {
 
     // Structure, ControlUnit and Blades are used to construct the ZoomToElements.
-    const query = `SELECT turbine.TID, 
+    const query = `SELECT turbine.TID,
                           control.ecinstanceid as cId, 
                           structure.ecinstanceid as sId, 
                           blades.ecinstanceid as bId, 

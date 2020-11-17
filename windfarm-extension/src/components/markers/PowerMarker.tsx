@@ -173,12 +173,14 @@ export class PowerMarker extends Marker {
           }
 
           // Open new error panel aggregate.
+          /*
           if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
             ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
             ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
             FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
             (window as any).errorWidgetOpened();
           }
+          */
 
         } else {
 
@@ -278,11 +280,12 @@ export class PowerMarker extends Marker {
     this.powerBlinker = setInterval(() => {
       if (this.isBlinking) {
         // this.emphasizedElements.wantEmphasis = true;
-        // this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
+        // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
         this.isBlinking = false;
       } else {
         // this.emphasizedElements.wantEmphasis = false;
-        // this.emphasizedElements?.overrideElements([this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+        // this.emphasizedElements?.clearOverriddenElements(WindfarmExtension.viewport!);
+        // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
         this.isBlinking = true;
       }
     }, 1500);
@@ -294,7 +297,7 @@ export class PowerMarker extends Marker {
     this.isError = false;
     clearInterval(this.powerBlinker);
     // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
-    // this.emphasizedElements?.overrideElements([this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
+    // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
     // this.emphasizedElements.wantEmphasis = false;
   }
 
@@ -340,6 +343,7 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.sensorData);
     IModelApp.viewManager.addDecorator(this.temperatureData);
     IModelApp.viewManager.addDecorator(this.windData);
+    WindfarmExtension.viewport?.invalidateDecorations();
 
     TimeSeries.loadDataForNode(this.id);
     if (_ev.isDoubleClick) { 

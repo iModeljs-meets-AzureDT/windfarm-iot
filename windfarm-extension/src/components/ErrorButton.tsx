@@ -57,7 +57,7 @@ export default class ErrorPanel extends React.Component<{}, { collapsed: boolean
 
 export class ErrorPanelForm extends React.Component<{}> {
 
-  private togglePowerError(toggled: boolean, id: string) {
+  static togglePowerError(toggled: boolean, id: string) {
 
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
@@ -70,7 +70,7 @@ export class ErrorPanelForm extends React.Component<{}> {
     })
   }
 
-  private toggleTempError(toggled: boolean, id: string) {
+  static toggleTempError(toggled: boolean, id: string) {
 
     PowerDecorator.markers.forEach((marker) => {
       if (marker.id === id) {
@@ -83,6 +83,7 @@ export class ErrorPanelForm extends React.Component<{}> {
     })
   }
 
+  /*
   public render() {
     return (
       <div>
@@ -152,6 +153,7 @@ export class ErrorPanelForm extends React.Component<{}> {
       </div>
     )
   }
+  */
 }
 
 

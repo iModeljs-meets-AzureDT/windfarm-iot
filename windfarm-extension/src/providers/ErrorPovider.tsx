@@ -9,6 +9,8 @@ import { PowerDecorator } from "../components/decorators/PowerDecorator";
 import { WindfarmExtension } from "../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import { TemperatureMarker } from "../components/markers/TemperatureMarker";
+import { Point3d } from "@bentley/geometry-core";
+import { TimeSeries } from "../client/TimeSeries";
 
 // The lists continue to grow but we shouldn't pollute the DOM.
 const MAX_ELEMENTS = 12;
@@ -47,10 +49,33 @@ export function AggregateErrorList() {
 
       PowerDecorator.markers.forEach((marker) => {
 
-        if (markerId !== marker.id) {
-          IModelApp.viewManager.dropDecorator(marker.sensorData);
-          IModelApp.viewManager.dropDecorator(marker.windData);
-          IModelApp.viewManager.dropDecorator(marker.temperatureData);
+        // Hide all other markers and display the appropriate decorators.
+        if (markerId === marker.id) {
+          PowerDecorator.markers.forEach(otherMarkers => {
+            otherMarkers.clicked = false;
+            otherMarkers.worldLocation = new Point3d(otherMarkers.initialLocation.x, otherMarkers.initialLocation.y, otherMarkers.initialLocation.z);
+            IModelApp.viewManager.dropDecorator(otherMarkers.sensorData);
+            IModelApp.viewManager.dropDecorator(otherMarkers.windData);
+            IModelApp.viewManager.dropDecorator(otherMarkers.temperatureData);
+          });
+          marker.clicked = true;
+          marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 50, marker.initialLocation.z - 15);
+
+          if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 35)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 75, marker.worldLocation.z)
+            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+          } else {
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 25)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 50, marker.worldLocation.z)
+            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+          }
+
+          IModelApp.viewManager.addDecorator(marker.sensorData);
+          IModelApp.viewManager.addDecorator(marker.temperatureData);
+          IModelApp.viewManager.addDecorator(marker.windData);
+
+          TimeSeries.loadDataForNode(marker.id);
         }
 
         if (markerId === marker.id && errorType === "Power Alert") {

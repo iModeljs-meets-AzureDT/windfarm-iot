@@ -6,7 +6,7 @@ import PowerPredictionPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
-import ErrorPanel from "./components/ErrorButton";
+import ErrorPanel, { ErrorPanelForm } from "./components/ErrorButton";
 import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
@@ -52,11 +52,23 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         () => {
           if (!this.DEBUG_MODE_TOGGLE) {
             // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
-            ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
+            // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
+            ErrorPanelForm.togglePowerError(true, "WTG001");
+            ErrorPanelForm.toggleTempError(true, "WTG001");
+            ErrorPanelForm.togglePowerError(true, "WTG005");
+            ErrorPanelForm.toggleTempError(true, "WTG005");
+            ErrorPanelForm.togglePowerError(true, "WTG009");
+            ErrorPanelForm.toggleTempError(true, "WTG009");
             (window as any).DEBUG_MODE = true;
           } else {
             // ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
-            ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
+            // ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
+            ErrorPanelForm.togglePowerError(false, "WTG001");
+            ErrorPanelForm.toggleTempError(false, "WTG001");
+            ErrorPanelForm.togglePowerError(false, "WTG005");
+            ErrorPanelForm.toggleTempError(false, "WTG005");
+            ErrorPanelForm.togglePowerError(false, "WTG009");
+            ErrorPanelForm.toggleTempError(false, "WTG009");
             (window as any).DEBUG_MODE = false;
           }
           this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
