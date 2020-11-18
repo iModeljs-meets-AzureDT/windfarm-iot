@@ -233,16 +233,17 @@ namespace Doosan.Function
                             // string result = await response.Content.ReadAsStringAsync();
 
                             // Example data in case the prediction data endpoint is dead
-                            string predictionRequest = @"[
-                                {""forecastDateTime"":""2020-10-29T00:00:00"",""windspeed"":5.9,""winddirection"":-1,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T03:00:00"",""windspeed"":6.8,""winddirection"":3,""yawposition"":-109.37,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T06:00:00"",""windspeed"":6.3,""winddirection"":5,""yawposition"":-104.41,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T09:00:00"",""windspeed"":5.9,""winddirection"":5,""yawposition"":-104.41,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T12:00:00"",""windspeed"":6.9,""winddirection"":2,""yawposition"":-109.37,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T15:00:00"",""windspeed"":7.1,""winddirection"":-4,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T18:00:00"",""windspeed"":6.8,""winddirection"":-4,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2},
-                                {""forecastDateTime"":""2020-10-29T21:00:00"",""windspeed"":6.8,""winddirection"":-3,""yawposition"":-131.48,""bladepitch1"":2,""bladepitch2"":2,""bladepitch3"":2}
-                            ]";
+                            string tomorrow = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+                            string predictionRequest = "[" + 
+                                " {'forecastDateTime':'" + tomorrow + "T00:00:00','windspeed':5.9,'winddirection':-1,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T03:00:00','windspeed':6.8,'winddirection':3,'yawposition':-109.37,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T06:00:00','windspeed':6.3,'winddirection':5,'yawposition':-104.41,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T09:00:00','windspeed':5.9,'winddirection':5,'yawposition':-104.41,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T12:00:00','windspeed':6.9,'winddirection':2,'yawposition':-109.37,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T15:00:00','windspeed':7.1,'winddirection':-4,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T18:00:00','windspeed':6.8,'winddirection':-4,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
+                                " {'forecastDateTime':'" + tomorrow + "T21:00:00','windspeed':6.8,'winddirection':-3,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}" +
+                            " ]";
 
                             dynamic forecastData = JsonConvert.DeserializeObject(predictionRequest);
 
