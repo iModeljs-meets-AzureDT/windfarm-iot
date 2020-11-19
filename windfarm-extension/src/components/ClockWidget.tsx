@@ -116,9 +116,22 @@ export default class ClockWidget extends React.Component<{}, {
         this.addMarkers();
         TimeSeries.loadPowerForAllTurbines();
         this.setState({time: new Date()});
-        if (this.savedView){
+
+        const zoomElements: any = [];
+        PowerDecorator.markers.forEach(marker => {
+          const turbineValue = parseInt(marker.id.slice(-2));
+          if (turbineValue <= 7 && turbineValue >= 3) {
+            zoomElements.push(marker.cId)
+            zoomElements.push(marker.sId)
+            zoomElements.push(marker.bId)
+          }
+        });
+
+        WindfarmExtension.viewport?.zoomToElements(zoomElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
+
+        // if (this.savedView){
             // restore view
-        }
+        // }
     }
 
   private configureView() {
