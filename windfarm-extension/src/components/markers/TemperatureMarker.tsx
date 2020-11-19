@@ -204,9 +204,9 @@ function TemperaturePanel({ props }: any) {
           </div>
           <div className="right">
             <br />
-            {props.tempGearBox.toFixed(2)}° C<br />
-            {props.tempGenerator.toFixed(2)}° C<br />
-            {props.tempNacelle.toFixed(2)}° C
+            {props.tempGearBox.toFixed(1)}° C<br />
+            {props.tempGenerator.toFixed(1)}° C<br />
+            {props.tempNacelle.toFixed(1)}° C
           </div>
         </div>
       </div>
@@ -223,9 +223,9 @@ function TemperaturePanel({ props }: any) {
           </div>
           <div className="right">
             <br />
-            {props.tempGearBox.toFixed(2)}° C<br />
-            {props.tempGenerator.toFixed(2)}° C<br />
-            {props.tempNacelle.toFixed(2)}° C
+            {props.tempGearBox.toFixed(1)}° C<br />
+            {props.tempGenerator.toFixed(1)}° C<br />
+            {props.tempNacelle.toFixed(1)}° C
           </div>
       </div>
     </div>

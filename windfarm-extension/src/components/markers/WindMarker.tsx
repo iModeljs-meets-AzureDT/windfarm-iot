@@ -102,8 +102,8 @@ function WindPanel({ props }: any) {
           </div>
           <div className="right">
             <br />
-            {props.windDir.toFixed(2)}°<br />
-            {props.windSpeed.toFixed(2)} km/h
+            {props.windDir.toFixed(1)}°<br />
+            {props.windSpeed.toFixed(1)} km/h
           </div>
         </div>
       </div>
@@ -119,8 +119,8 @@ function WindPanel({ props }: any) {
           </div>
           <div className="right">
             <br />
-            {props.windDir.toFixed(2)}°<br />
-            {props.windSpeed.toFixed(2)} km/h
+            {props.windDir.toFixed(1)}°<br />
+            {props.windSpeed.toFixed(1)} km/h
           </div>
       </div>
     </div>

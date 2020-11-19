@@ -263,9 +263,9 @@ export class PowerMarker extends Marker {
       onHover: this.hover,
       isClicked: this.clicked,
       id: this.id,
-      power: this.power.toLocaleString(undefined, {minimumFractionDigits: 2}),
-      powerDM: this.powerDM.toLocaleString(undefined, {minimumFractionDigits: 2}),
-      powerPM: this.powerPM.toLocaleString(undefined, {minimumFractionDigits: 2}),
+      power: this.power.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}),
+      powerDM: this.powerDM.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}),
+      powerPM: this.powerPM.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}),
       windSpeed: this.windData.marker.windSpeed,
       windDir: this.windData.marker.windDirection
     }

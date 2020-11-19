@@ -1,4 +1,4 @@
-import { FitViewTool, IModelApp, ViewState } from "@bentley/imodeljs-frontend";
+import { FitViewTool, IModelApp, StandardViewId, ViewState } from "@bentley/imodeljs-frontend";
 import * as React from "react";
 import Clock from "react-clock";
 import 'react-clock/dist/Clock.css';
@@ -9,6 +9,7 @@ import { PowerDecorator } from "./decorators/PowerDecorator";
 import HoverImage from "./HoverImage";
 import Reveal, { AttentionSeeker, Fade } from "react-awesome-reveal";
 import { keyframes } from "@emotion/core";
+import { WindfarmExtension } from "../WindfarmExtension";
 
 export default class ClockWidget extends React.Component<{}, { 
     time: Date, 
@@ -120,11 +121,19 @@ export default class ClockWidget extends React.Component<{}, {
         }
     }
 
-    private configureView() {
-        this.savedView = IModelApp.viewManager.selectedView!.view.clone();
-        IModelApp.tools.run(FitViewTool.toolId, IModelApp.viewManager.selectedView);
-        this.dropMarkers();
-    }
+  private configureView() {
+    this.savedView = IModelApp.viewManager.selectedView!.view.clone();
+    // IModelApp.tools.run(FitViewTool.toolId, IModelApp.viewManager.selectedView);
+    const allElements: any = [];
+    PowerDecorator.markers.forEach(marker => {
+      allElements.push(marker.cId)
+      allElements.push(marker.sId)
+      allElements.push(marker.bId)
+    });
+
+    WindfarmExtension.viewport?.zoomToElements(allElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
+    this.dropMarkers();
+  }
 
     private dropMarkers() {
         PowerDecorator.markers.forEach(marker => {

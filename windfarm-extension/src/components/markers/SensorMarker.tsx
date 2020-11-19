@@ -60,9 +60,9 @@ export class SensorMarker extends Marker {
 
     const props = {
       onHover: this.hover,
-      blade1Angle: this.radiansToDegrees(this.blade1PitchAngle).toFixed(2),
-      blade2Angle: this.radiansToDegrees(this.blade2PitchAngle).toFixed(2),
-      blade3Angle: this.radiansToDegrees(this.blade3PitchAngle).toFixed(2),
+      blade1Angle: this.radiansToDegrees(this.blade1PitchAngle).toFixed(1),
+      blade2Angle: this.radiansToDegrees(this.blade2PitchAngle).toFixed(1),
+      blade3Angle: this.radiansToDegrees(this.blade3PitchAngle).toFixed(1),
       yawPosition: this.yawPosition,
     }
     ReactDOM.render(<SensorPanel props={props}></SensorPanel>, document.getElementById("sensor-node-" + this.id));

@@ -209,9 +209,9 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
               <path d="m9 14h-2v-2h2zm0-8h-2v4.66667h2zm4 8h-2v-2h2zm0-8h-2v4.66667h2z" />
             </svg>
             <p className="title"><u>{date}</u> at {time}</p>
-            <p className="metadata"><b>Observed Power</b>: {error.powerObserved?.toFixed(2)} kW</p>
-            <p className="metadata"><b>Physical Power</b>: {error.powerPM?.toFixed(2)} kW</p>
-            <p className="metadata"><b>Data Model Power</b>: {error.powerDM?.toFixed(2)} kW</p>
+            <p className="metadata"><b>Observed Power</b>: {error.powerObserved?.toFixed(1)} kW</p>
+            <p className="metadata"><b>Physical Power</b>: {error.powerPM?.toFixed(1)} kW</p>
+            <p className="metadata"><b>Data Model Power</b>: {error.powerDM?.toFixed(1)} kW</p>
           </div>
       </li>
     </CSSTransition>
@@ -227,9 +227,9 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
         </svg>
         <svg className="back-button" onClick={() => displayAggregate()} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m11 3a1.00006 1.00006 0 0 1 1 1v8a.99991.99991 0 0 1 -1.4961.8682l-7.0001-4a1 1 0 0 1 0-1.7364l7.0001-4a.99862.99862 0 0 1 .4961-.1318z"/></svg>
         <p className="title"><b>Turbine ID: <u>{power.id}</u></b></p>
-        <p className="metadata"><b>Observed Power</b>: {power.observedPower?.toFixed(2)} kW</p>
-        <p className="metadata"><b>Physical Power</b>: {power.physicalPower?.toFixed(2)} kW</p>
-        <p className="metadata"><b>Data Model Power</b>: {power.datamodelPower?.toFixed(2)} kW</p>
+        <p className="metadata"><b>Observed Power</b>: {power.observedPower?.toFixed(1)} kW</p>
+        <p className="metadata"><b>Physical Power</b>: {power.physicalPower?.toFixed(1)} kW</p>
+        <p className="metadata"><b>Data Model Power</b>: {power.datamodelPower?.toFixed(1)} kW</p>
       </div>
       <div>
         <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Power Warnings:</u></h3> <br />
@@ -281,9 +281,9 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
               <path d="m11 15h-2v-2h2zm0-8h-2v4.66667h2z" />
             </svg>
             <p className="title"><u>{date}</u> at {time}</p>
-            <p className="metadata"><b>Nacelle Temp.</b>: {error.tempNacelle?.toFixed(2)} °C</p>
-            <p className="metadata"><b>Generator Temp.</b>: {error.tempGenerator?.toFixed(2)} °C</p>
-            <p className="metadata"><b>Gear Box Temp.</b>: {error.tempGearBox?.toFixed(2)} °C</p>
+            <p className="metadata"><b>Nacelle Temp.</b>: {error.tempNacelle?.toFixed(1)} °C</p>
+            <p className="metadata"><b>Generator Temp.</b>: {error.tempGenerator?.toFixed(1)} °C</p>
+            <p className="metadata"><b>Gear Box Temp.</b>: {error.tempGearBox?.toFixed(1)} °C</p>
           </div>
       </li>
     </CSSTransition>
@@ -299,9 +299,9 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
         </svg>
         <svg className="back-button" onClick={() => displayAggregate()} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m11 3a1.00006 1.00006 0 0 1 1 1v8a.99991.99991 0 0 1 -1.4961.8682l-7.0001-4a1 1 0 0 1 0-1.7364l7.0001-4a.99862.99862 0 0 1 .4961-.1318z"/></svg>
         <p className="title"><b>Turbine ID: <u>{temperature.id}</u></b></p>
-        <p className="metadata"><b>Temp. Nacelle</b>: {temperature.tempNacelle?.toFixed(2)} °C</p>
-        <p className="metadata"><b>Temp. Generator</b>: {temperature.tempGenerator?.toFixed(2)} °C</p>
-        <p className="metadata"><b>Temp. Gear Box</b>: {temperature.tempGearBox?.toFixed(2)} °C</p>
+        <p className="metadata"><b>Temp. Nacelle</b>: {temperature.tempNacelle?.toFixed(1)} °C</p>
+        <p className="metadata"><b>Temp. Generator</b>: {temperature.tempGenerator?.toFixed(1)} °C</p>
+        <p className="metadata"><b>Temp. Gear Box</b>: {temperature.tempGearBox?.toFixed(1)} °C</p>
       </div>
       <div>
         <h3 style={{margin: "0", marginBottom: "-13px"}}><u>Temperature Warnings:</u></h3> <br />
