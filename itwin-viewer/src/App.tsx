@@ -3,7 +3,7 @@ import "./App.scss";
 import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
 import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport, Viewport } from "@bentley/imodeljs-frontend";
-import { ContextRealityModelProps, DisplayStyle3dSettingsProps, RenderMode } from "@bentley/imodeljs-common";
+import { BackgroundMapType, ContextRealityModelProps, DisplayStyle3dSettingsProps, RenderMode } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
 import 'tsiclient/tsiclient.css';
 
@@ -13,9 +13,11 @@ import { AnimationTool } from "./animation/BladeAnimation";
 
 import { EventEmitter } from "events";
 
-
 const ViewStyle: DisplayStyle3dSettingsProps = {
-    backgroundMap: { applyTerrain: true },
+    backgroundMap: { 
+      applyTerrain: true,
+      providerData: { mapType: BackgroundMapType.Aerial }
+    },
     environment: {
       sky: { display: true, twoColor: false, groundColor: 9741199, nadirColor: 5464143, skyColor: 16764303, zenithColor: 16741686 },
       ground: { display: false },
