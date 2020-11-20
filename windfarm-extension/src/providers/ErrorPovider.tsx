@@ -59,17 +59,30 @@ export function AggregateErrorList() {
             IModelApp.viewManager.dropDecorator(otherMarkers.temperatureData);
           });
           marker.clicked = true;
-          marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 50, marker.initialLocation.z - 15);
+          // marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 50, marker.initialLocation.z - 15);
 
+          const xOffset = 60;
           if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 35)
-            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 75, marker.worldLocation.z)
-            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z - 30)
+            marker.windData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z - 55)
           } else {
-            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 25)
-            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 50, marker.worldLocation.z)
-            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 25)
+            marker.windData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 45)
           }
+
+        /*
+              if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
+                marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 35)
+                marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 75, marker.worldLocation.z)
+                marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+              } else {
+                marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 25)
+                marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 50, marker.worldLocation.z)
+                marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+              }
+              */
 
           IModelApp.viewManager.addDecorator(marker.sensorData);
           IModelApp.viewManager.addDecorator(marker.temperatureData);
@@ -80,12 +93,12 @@ export function AggregateErrorList() {
 
         if (markerId === marker.id && errorType === "Power Alert") {
 
-          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+          WindfarmExtension.viewport?.zoomToElements([marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedPowerErrorList turbinePower={marker}></DetailedPowerErrorList>, document.getElementById("error-component"));
           return;
         } else if (markerId === marker.id && errorType === "Temperature Alert") {
-          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+          WindfarmExtension.viewport?.zoomToElements([marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
 
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedTemperatureErrorList turbineTemperature={marker.temperatureData.marker}></DetailedTemperatureErrorList>, document.getElementById("error-component"));

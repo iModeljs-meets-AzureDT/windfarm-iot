@@ -80,7 +80,7 @@ export class SensorMarker extends Marker {
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
     
     TimeSeries.loadDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();

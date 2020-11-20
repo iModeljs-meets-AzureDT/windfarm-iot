@@ -81,7 +81,7 @@ export class WindMarker extends Marker {
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.bId, this.cId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
 
     TimeSeries.loadDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
