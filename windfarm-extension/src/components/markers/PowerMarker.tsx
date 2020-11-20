@@ -318,10 +318,10 @@ export class PowerMarker extends Marker {
         marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y, marker.initialLocation.z);
       });
       this.clicked = true;
-      this.worldLocation = new Point3d(this.initialLocation.x, this.initialLocation.y + 50, this.initialLocation.z - 15);
+      // this.worldLocation = new Point3d(this.initialLocation.x + 25, this.initialLocation.y + 50, this.initialLocation.z - 15);
     }
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.sId, this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+    WindfarmExtension.viewport?.zoomToElements([this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
 
     // Drop all other markers.
     PowerDecorator.markers.forEach(marker => {
@@ -330,14 +330,16 @@ export class PowerMarker extends Marker {
       IModelApp.viewManager.dropDecorator(marker.temperatureData);
     });
 
+    const xOffset = 60;
+    /* Corner Layout */
     if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) { 
-      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 35)
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 75, this.worldLocation.z)
-      this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 3)
+      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset - 10, this.worldLocation.y, this.worldLocation.z)
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset - 10, this.worldLocation.y, this.worldLocation.z - 30)
+      this.windData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset - 10, this.worldLocation.y, this.worldLocation.z - 55)
     } else {
-      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y, this.worldLocation.z - 25)
-      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x, this.worldLocation.y + 50, this.worldLocation.z)
-      this.windData.marker.worldLocation = new Point3d(this.sensorData.marker.worldLocation.x, this.temperatureData.marker.worldLocation.y, this.sensorData.marker.worldLocation.z + 3)
+      this.sensorData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset + 5, this.worldLocation.y, this.worldLocation.z)
+      this.temperatureData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset + 5, this.worldLocation.y, this.worldLocation.z - 25)
+      this.windData.marker.worldLocation = new Point3d(this.worldLocation.x - xOffset + 5, this.worldLocation.y, this.worldLocation.z - 45)
     }
 
     IModelApp.viewManager.addDecorator(this.sensorData);
@@ -361,7 +363,7 @@ function PowerPanel({ props }: any) {
         <h1>{props.id}</h1>
         <div className="data">
           <div className="left">
-            Actual power:<br />
+            Observed power:<br />
             Physical model:<br />
             Data model:
         </div>
@@ -379,7 +381,7 @@ function PowerPanel({ props }: any) {
       <h1>{props.id}</h1>
       <div className="data">
         <div className="left">
-          Actual power:<br />
+          Observed power:<br />
             Physical model:<br />
             Data model:
         </div>
@@ -411,8 +413,8 @@ export class PowerMarkerCluster extends Marker {
   }
 }
 
-export class PowerMarkerSet extends MarkerSet<PowerMarker> {
+export class PowerMarkerSet extends MarkerSet<Marker> {
   public minimumClusterSize = 2;
 
-  protected getClusterMarker(cluster: Cluster<PowerMarker>): Marker { return PowerMarkerCluster.makeFrom(cluster.markers[0], cluster); }
+  protected getClusterMarker(cluster: Cluster<Marker>): Marker { return PowerMarkerCluster.makeFrom(cluster.markers[0], cluster); }
 }

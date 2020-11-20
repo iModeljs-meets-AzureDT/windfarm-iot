@@ -39,6 +39,7 @@ export class PowerDecorator implements Decorator {
         value.cId,
         value.sId,
         value.bId,
+        this.markerSet
       );
 
       PowerDecorator.markers.push(powerdisplayMarker);

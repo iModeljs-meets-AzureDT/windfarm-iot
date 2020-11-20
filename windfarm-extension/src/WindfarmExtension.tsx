@@ -15,6 +15,7 @@ import MLClient from "./client/MLClient";
 import { TimeSeries } from "./client/TimeSeries";
 import { AnimationTimer } from "./components/AnimationTimer";
 import ClockWidget from "./components/ClockWidget";
+import { Range1d } from "@bentley/geometry-core";
 
 (window as any).DEBUG_MODE = false;
 
@@ -121,12 +122,11 @@ export class WindfarmExtension extends Extension {
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
-      /*
       WindfarmExtension.timer = new AnimationTimer(vp, 6);
       const duration = vp.view.scheduleScript!.computeDuration();
       const buffer = 60 * 1000 /* Minutes */;
-      // WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
-      // WindfarmExtension.timer.start();
+      WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
+      WindfarmExtension.timer.start();
 
       FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       // Keep bottom panel closed by default.
