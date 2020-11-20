@@ -88,7 +88,7 @@ export function AggregateErrorList() {
           IModelApp.viewManager.addDecorator(marker.temperatureData);
           IModelApp.viewManager.addDecorator(marker.windData);
 
-          TimeSeries.loadDataForNode(marker.id);
+          TimeSeries.loadDataForNodes(marker.id + " - Power", [marker.id], ["powerObserved", "powerPM", "powerDM"]);
         }
 
         if (markerId === marker.id && errorType === "Power Alert") {

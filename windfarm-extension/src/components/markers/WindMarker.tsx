@@ -83,7 +83,7 @@ export class WindMarker extends Marker {
 
     WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
 
-    TimeSeries.loadDataForNode(this.id+"-S", ["windDirection", "windSpeed"]);
+    TimeSeries.loadDataForNodes(this.id + " - Wind Data", [this.id+"-S"], ["windDirection", "windSpeed"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

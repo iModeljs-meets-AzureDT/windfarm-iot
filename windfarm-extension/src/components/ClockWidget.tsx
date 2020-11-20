@@ -7,7 +7,7 @@ import MLClient from "../client/MLClient";
 import { TimeSeries } from "../client/TimeSeries";
 import { PowerDecorator } from "./decorators/PowerDecorator";
 import HoverImage from "./HoverImage";
-import Reveal, { AttentionSeeker, Fade } from "react-awesome-reveal";
+import Reveal, { AttentionSeeker } from "react-awesome-reveal";
 import { keyframes } from "@emotion/core";
 import { WindfarmExtension } from "../WindfarmExtension";
 
@@ -64,7 +64,7 @@ export default class ClockWidget extends React.Component<{}, {
 
     private showTsiData = () => {
         if (!this.state.futureMode) 
-            TimeSeries.loadPowerForAllTurbines();
+            TimeSeries.loadDataForNodes("Observed Power", TimeSeries.AllNodes, ["powerObserved"], true, false);
         TimeSeries.showTsiGraph();
     }
 
@@ -72,11 +72,13 @@ export default class ClockWidget extends React.Component<{}, {
         if (this.state.futureMode === true){
             this.setState({futureMode: false});
             this.resetView();
+            (window as any).futureModeOff();
         }
         else {
             this.setState({futureMode: true});
             this.configureView();
             this.runPowerPrediction();
+            (window as any).futureModeOn();
         }
     }
 
@@ -114,7 +116,7 @@ export default class ClockWidget extends React.Component<{}, {
 
     private resetView() {
         this.addMarkers();
-        TimeSeries.loadPowerForAllTurbines();
+        TimeSeries.loadDataForNodes("Observed Power", TimeSeries.AllNodes, ["powerObserved"], true, false);
         this.setState({time: new Date()});
 
         const zoomElements: any = [];
@@ -269,7 +271,7 @@ export default class ClockWidget extends React.Component<{}, {
                     <AttentionSeeker effect={futureModeAnimation} duration={flashDuration}>
                         <Draggable>
                             <div className="clock-widget">
-                                <Clock value={new Date(this.state.time)} size={130} renderSecondHand={!this.state.futureMode}/>
+                                <Clock value={new Date(this.state.time)} size={115} renderSecondHand={!this.state.futureMode}/>
                                 <div className="minimize-icon" title="Minimize" onClick={this.minimizeToggled}>
                                     <HoverImage src="minimize.png" hoverSrc="minimize-selected.png"/>
                                 </div>

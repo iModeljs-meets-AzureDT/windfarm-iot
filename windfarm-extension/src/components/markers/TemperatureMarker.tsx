@@ -184,7 +184,7 @@ export class TemperatureMarker extends Marker {
 
     WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
 
-    TimeSeries.loadDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
+    TimeSeries.loadDataForNodes(this.id + " - Temperatures", [this.id+"-S"], ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

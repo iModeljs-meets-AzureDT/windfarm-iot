@@ -347,7 +347,7 @@ export class PowerMarker extends Marker {
     IModelApp.viewManager.addDecorator(this.windData);
     WindfarmExtension.viewport?.invalidateDecorations();
 
-    TimeSeries.loadDataForNode(this.id);
+    TimeSeries.loadDataForNodes(this.id + " - Power", [this.id], ["powerObserved", "powerPM", "powerDM"]);
     if (_ev.isDoubleClick) { 
       TimeSeries.showTsiGraph() 
     };
