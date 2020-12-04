@@ -51,6 +51,13 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "icon-window",
         "Toggle Debug Mode",
         () => {
+        PowerDecorator.markers.forEach(marker => {
+            IModelApp.viewManager.dropDecorator(marker.sensorData);
+            IModelApp.viewManager.dropDecorator(marker.windData);
+            IModelApp.viewManager.dropDecorator(marker.temperatureData);
+            // marker.visible = false;
+          });
+
           if (!this.DEBUG_MODE_TOGGLE) {
             // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
             // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));

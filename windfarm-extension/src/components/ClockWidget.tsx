@@ -157,12 +157,28 @@ export default class ClockWidget extends React.Component<{}, {
             IModelApp.viewManager.dropDecorator(marker.temperatureData);
             marker.visible = false;
           });
+
+      if (PowerDecorator.markers[0]) {
+        PowerDecorator.markers[0].markerSet!.markers.forEach(marker => {
+          marker.visible = false;
+        })
+      }
+
+      WindfarmExtension.viewport?.invalidateDecorations();
     }
 
     private addMarkers() {
+      if (PowerDecorator.markers[0]) {
+        PowerDecorator.markers[0].markerSet!.markers.forEach(marker => {
+          marker.visible = true;
+        })
+      }
+
         PowerDecorator.markers.forEach(marker => {​​​​​​​​
             marker.visible = true;
              }​​​​​​​​);
+
+      WindfarmExtension.viewport?.invalidateDecorations();
     }
 
     private runPowerPrediction = async() => {

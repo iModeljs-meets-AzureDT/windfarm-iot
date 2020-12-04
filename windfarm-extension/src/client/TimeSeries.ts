@@ -64,7 +64,7 @@ export class TimeSeries {
     result[0]["kW"]!["Power - Physics Model"] = powerPM;
     result[1]["km/hr"]!["Wind Speed"] = windSpeed;
     
-    this.updateTsiGraph(result, "Total Predicted Power", null, [{alias: 'kW', yExtent: [0, maxVal.power * 10]}, {alias: 'km/hr', yExtent: [0, maxVal.windSpeed]}], -240);
+    this.updateTsiGraph(result, "Predicted Power for Tomorrow", null, [{alias: 'kW', yExtent: [0, maxVal.power * 10]}, {alias: 'km/hr', yExtent: [0, maxVal.windSpeed]}], -240);
 
     return result;
   }
