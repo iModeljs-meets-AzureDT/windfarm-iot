@@ -2,17 +2,14 @@ import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMes
 import { I18N } from "@bentley/imodeljs-i18n";
 import { AbstractWidgetProps, CommonToolbarItem, StagePanelLocation, StagePanelSection, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
-import PowerPredictionPanel from "./components/MLButton";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
-import ErrorPanel, { ErrorPanelForm } from "./components/ErrorButton";
+import { ErrorPanelForm } from "./components/ErrorButton";
 import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
-import MLClient from "./client/MLClient";
-import { TimeSeries } from "./client/TimeSeries";
 import { AnimationTimer } from "./components/AnimationTimer";
 import ClockWidget from "./components/ClockWidget";
 import { Range1d } from "@bentley/geometry-core";
@@ -55,12 +52,9 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
             IModelApp.viewManager.dropDecorator(marker.sensorData);
             IModelApp.viewManager.dropDecorator(marker.windData);
             IModelApp.viewManager.dropDecorator(marker.temperatureData);
-            // marker.visible = false;
           });
 
           if (!this.DEBUG_MODE_TOGGLE) {
-            // ReactDOM.render(<PowerPredictionPanel></PowerPredictionPanel>, document.getElementById("power-prediction-panel"));
-            // ReactDOM.render(<ErrorPanel></ErrorPanel>, document.getElementById("error-panel"));
             ErrorPanelForm.togglePowerError(true, "WTG001");
             ErrorPanelForm.toggleTempError(true, "WTG001");
             ErrorPanelForm.togglePowerError(true, "WTG005");
@@ -69,8 +63,6 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
             ErrorPanelForm.toggleTempError(true, "WTG009");
             (window as any).DEBUG_MODE = true;
           } else {
-            // ReactDOM.unmountComponentAtNode(document.getElementById("power-prediction-panel")!);
-            // ReactDOM.unmountComponentAtNode(document.getElementById("error-panel")!);
             ErrorPanelForm.togglePowerError(false, "WTG001");
             ErrorPanelForm.toggleTempError(false, "WTG001");
             ErrorPanelForm.togglePowerError(false, "WTG005");
@@ -124,7 +116,6 @@ export class WindfarmExtension extends Extension {
 
   /** Invoked each time this extension is loaded. */
   public async onExecute(): Promise<void> {
-    // UiItemsManager.register(new ErrorUiItemsProvider());
 
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
       WindfarmExtension.viewport = vp;
