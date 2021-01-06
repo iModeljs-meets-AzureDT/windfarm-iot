@@ -43,3 +43,7 @@ How to set up simulation:
 
 This directory exists to kick off a local backend. A local backend is required to animate the spinning turbines, 
 - At the time of this commit, functionality prior to 2.9.0 does not support necessary API calls to transform turbines properly.
+
+### **6. model-animation**
+
+This directory contains the json file that describes the render schedule used to rotate the turbines.  This file was generated programmatically using frontend code, exported, the manually edited to the correct format required by the [iModel.js SYNCHRO Schedule Importer](https://github.com/imodeljs/imodeljs/tree/master/test-apps/synchro-schedule-importer).  The schedule must be imported into the iModel itself for the tiles to be updated correctly on the backend.
