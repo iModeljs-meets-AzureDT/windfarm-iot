@@ -1,13 +1,11 @@
 import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, MarkerSet, Cluster } from "@bentley/imodeljs-frontend";
-import { XYAndZ, XAndY, Point3d, WritableXYAndZ, Vector3d } from "@bentley/geometry-core";
+import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
-import { ColorDef } from "@bentley/imodeljs-common";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
-import { AggregateErrorList } from "../../providers/ErrorPovider";
 import { TimeSeries } from "../../client/TimeSeries";
 
 import * as React from "react";
@@ -59,31 +57,11 @@ export class PowerMarker extends Marker {
   public power: number = 0;
   public powerDM: number = 0;
   public powerPM: number = 0;
-  private emphasizedElements: EmphasizeElements;
 
   private isError: boolean = false;
   public errorSimulation: boolean = false;
   private isBlinking: boolean = false;
 
-  // Our default color transitioned.
-  private r: number = 87;
-  private g: number = 229;
-  private b: number = 130;
-
-  // Reduce/Increase this to change duration of color fade.
-  private steps: number = 20;
-  private step: number = 0;
-
-  // Color to transition to. (Default white for normal state).
-  private desiredRed = 255;
-  private desiredBlue = 255;
-  private desiredGreen = 255;
-
-  private dr: number = Math.abs(this.desiredRed - this.r) / this.steps;
-  private dg: number = Math.abs(this.desiredGreen - this.g) / this.steps;
-  private db: number = Math.abs(this.desiredBlue - this.b) / this.steps;
-
-  private powerChanged: boolean = false;
   private powerBlinker: any;
 
   public clicked: boolean = false;
@@ -103,7 +81,6 @@ export class PowerMarker extends Marker {
     this.sId = sId;
     this.bId = bId;
 
-    this.emphasizedElements = EmphasizeElements.getOrCreate(WindfarmExtension.viewport!);
     this.sensorData = new SensorDecorator(this);
     this.windData = new WindDecorator(this);
     this.temperatureData = new TemperatureDecorator(this);
@@ -122,7 +99,6 @@ export class PowerMarker extends Marker {
         if (this.power !== data.powerObserved ||
           this.powerDM !== data.powerDM ||
           this.powerPM !== data.powerPM) {
-          this.powerChanged = true;
         }
 
         this.power = data.powerObserved;
@@ -171,17 +147,6 @@ export class PowerMarker extends Marker {
               isCurrent: true
             });
           }
-
-          // Open new error panel aggregate.
-          /*
-          if (FrontstageManager.activeFrontstageDef!.rightPanel!.panelState === StagePanelState.Off) {
-            ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
-            ReactDOM.render(<AggregateErrorList></AggregateErrorList>, document.getElementById("error-component"));
-            FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Open;
-            (window as any).errorWidgetOpened();
-          }
-          */
-
         } else {
 
           // This huge mess to sort the list.
@@ -242,22 +207,6 @@ export class PowerMarker extends Marker {
     return diff;
   }
 
-  private colorReset(desiredColor?: number[]) {
-    if (desiredColor) {
-      this.desiredRed = desiredColor[0];
-      this.desiredGreen = desiredColor[1];
-      this.desiredBlue = desiredColor[2];
-    } else {
-      this.desiredRed = 255;
-      this.desiredGreen = 255;
-      this.desiredBlue = 255;
-    }
-
-    this.dr = Math.abs(this.desiredRed - this.r) / this.steps;
-    this.dg = Math.abs(this.desiredGreen - this.g) / this.steps;
-    this.db = Math.abs(this.desiredBlue - this.b) / this.steps;
-  }
-
   public drawFunc(_ctx: CanvasRenderingContext2D) {
     const props = {
       onHover: this.hover,
@@ -275,17 +224,11 @@ export class PowerMarker extends Marker {
 
   public enableError() {
     if (this.isError === true) return;
-    this.colorReset([255, 10, 10])
     this.isError = true;
     this.powerBlinker = setInterval(() => {
       if (this.isBlinking) {
-        // this.emphasizedElements.wantEmphasis = true;
-        // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.red);
         this.isBlinking = false;
       } else {
-        // this.emphasizedElements.wantEmphasis = false;
-        // this.emphasizedElements?.clearOverriddenElements(WindfarmExtension.viewport!);
-        // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.sId, this.bId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
         this.isBlinking = true;
       }
     }, 1500);
@@ -293,12 +236,8 @@ export class PowerMarker extends Marker {
 
   public disableError() {
     if (this.isError === false) return;
-    this.colorReset();
     this.isError = false;
     clearInterval(this.powerBlinker);
-    // We don't want to use emphasizedElements.clearOverridenElements since this clears all errors.
-    // this.emphasizedElements?.overrideElements([this.towerId, this.cId, this.bId, this.sId], WindfarmExtension.viewport!, ColorDef.create("rgb(153, 153, 153)"));
-    // this.emphasizedElements.wantEmphasis = false;
   }
 
   public onMouseEnter(_ev: BeButtonEvent): boolean {
@@ -318,7 +257,6 @@ export class PowerMarker extends Marker {
         marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y, marker.initialLocation.z);
       });
       this.clicked = true;
-      // this.worldLocation = new Point3d(this.initialLocation.x + 25, this.initialLocation.y + 50, this.initialLocation.z - 15);
     }
 
     WindfarmExtension.viewport?.zoomToElements([this.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
@@ -398,18 +336,6 @@ function PowerPanel({ props }: any) {
 export class PowerMarkerCluster extends Marker {
   constructor(location: XYAndZ, size: XAndY, _cluster: Cluster<PowerMarker>) {
     super(location, size);
-  }
-
-  public drawFunc(_ctx: CanvasRenderingContext2D) {
-    /*
-    ctx.beginPath();
-    ctx.strokeStyle = "#372528";
-    ctx.fillStyle = "white";
-    ctx.lineWidth = 5;
-    ctx.arc(0, 0, 15, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    */
   }
 }
 

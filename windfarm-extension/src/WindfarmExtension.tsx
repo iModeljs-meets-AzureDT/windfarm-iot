@@ -1,4 +1,4 @@
-import { Extension, IModelApp, IModelConnection, NotifyMessageDetails, OutputMessagePriority, ScreenViewport } from "@bentley/imodeljs-frontend"
+import { Extension, IModelApp, IModelConnection, ScreenViewport } from "@bentley/imodeljs-frontend"
 import { I18N } from "@bentley/imodeljs-i18n";
 import { AbstractWidgetProps, CommonToolbarItem, StagePanelLocation, StagePanelSection, StageUsage, ToolbarItemUtilities, ToolbarOrientation, ToolbarUsage, UiItemsManager, UiItemsProvider } from "@bentley/ui-abstract"
 import { MarkupApp } from "@bentley/imodeljs-markup";
@@ -10,7 +10,7 @@ import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
-import { AnimationTimer } from "./components/AnimationTimer";
+import { AnimationTimer } from "./animation/AnimationTimer";
 import ClockWidget from "./components/ClockWidget";
 import { Range1d } from "@bentley/geometry-core";
 

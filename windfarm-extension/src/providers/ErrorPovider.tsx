@@ -59,7 +59,6 @@ export function AggregateErrorList() {
             IModelApp.viewManager.dropDecorator(otherMarkers.temperatureData);
           });
           marker.clicked = true;
-          // marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 50, marker.initialLocation.z - 15);
 
           const xOffset = 60;
           if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
@@ -71,18 +70,6 @@ export function AggregateErrorList() {
             marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 25)
             marker.windData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 45)
           }
-
-        /*
-              if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-                marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 35)
-                marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 75, marker.worldLocation.z)
-                marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
-              } else {
-                marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 25)
-                marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 50, marker.worldLocation.z)
-                marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
-              }
-              */
 
           IModelApp.viewManager.addDecorator(marker.sensorData);
           IModelApp.viewManager.addDecorator(marker.temperatureData);

@@ -49,11 +49,6 @@ export class PowerDecorator implements Decorator {
   }
 
   public decorate(context: DecorateContext): void {
-    /*
-    PowerDecorator.markers.forEach((marker) => {
-      marker.addDecoration(context);
-    });
-    */
    this.markerSet.addDecoration(context);
   }
 }
