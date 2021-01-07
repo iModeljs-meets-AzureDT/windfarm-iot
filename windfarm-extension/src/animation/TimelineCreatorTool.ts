@@ -12,6 +12,7 @@ import { IModelApp, RenderScheduleState, Tool, Viewport } from "@bentley/imodelj
 * Even after this timeline is generated, it must be embedded in the iModel directly so the
 *   tiles can be updated correctly by the backend.  This can be done using the 
 *   synchro-schedule-importer in the iModel.js repo under the test-apps directory.
+*   https://github.com/imodeljs/imodeljs/tree/master/test-apps/synchro-schedule-importer
 * Before the JSON this file produces can be embedded the importer, there must be a few
 *   changes must be made.  An example of such changes would be the "elementIds" properties
 *   being change to "elementId" that only accepts a single string.
