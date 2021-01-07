@@ -9,7 +9,6 @@ import 'tsiclient/tsiclient.css';
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
-import { AnimationTool } from "./animation/BladeAnimation";
 
 import { EventEmitter } from "events";
 
@@ -108,8 +107,6 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
-      const i18n = IModelApp.i18n.registerNamespace("WindIotDemo");
-      AnimationTool.register(i18n);
 
       vp.overrideDisplayStyle(ViewStyle);
       const settings = vp.backgroundMapSettings.clone( { useDepthBuffer: true } );
