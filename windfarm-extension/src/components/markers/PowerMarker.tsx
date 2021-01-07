@@ -149,7 +149,7 @@ export class PowerMarker extends Marker {
           }
         } else {
 
-          // This huge mess to sort the list.
+          // Sort errors.
           for (let i = 0; i < PowerMarker.aggregateErrorList.length; ++i) {
             if (PowerMarker.aggregateErrorList[i].id === this.id) {
               // We reset the marker if no longer a power error.
