@@ -3,6 +3,8 @@
   "compilerOptions": {
     "outDir": "./lib",
     "jsx": "react",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
   },
   "include": [
     "src/**/*.ts",
