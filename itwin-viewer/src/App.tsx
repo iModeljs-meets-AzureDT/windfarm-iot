@@ -13,7 +13,8 @@ import { Header } from "./Header";
 import { EventEmitter } from "events";
 
 const ViewStyle: DisplayStyle3dSettingsProps = {
-    backgroundMap: { 
+    backgroundMap: {
+      useDepthBuffer: true,
       applyTerrain: true,
       providerData: { mapType: BackgroundMapType.Aerial }
     },
