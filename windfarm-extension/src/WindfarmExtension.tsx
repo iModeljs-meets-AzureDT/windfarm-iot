@@ -6,7 +6,7 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
 import { ErrorToggle } from "./ErrorToggle";
-import { displayAggregate, ErrorUiItemsProvider } from "./providers/AlertProvider";
+import { displayAggregate, ErrorUiItemsProvider } from "./components/alerts/AlertProvider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./components/time-series/TimeSeriesDiagram";

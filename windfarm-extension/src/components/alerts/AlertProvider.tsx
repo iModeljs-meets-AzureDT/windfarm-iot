@@ -2,18 +2,17 @@ import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, UiItemsProv
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { useState } from "react";
-import { ErrorType, PowerMarker } from "../components/markers/PowerMarker";
+import { ErrorType, PowerMarker } from "../markers/PowerMarker";
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
-import { PowerDecorator } from "../components/decorators/PowerDecorator";
-import { WindfarmExtension } from "../WindfarmExtension";
+import { PowerDecorator } from "../decorators/PowerDecorator";
+import { WindfarmExtension } from "../../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
-import { TemperatureMarker } from "../components/markers/TemperatureMarker";
+import { TemperatureMarker } from "../markers/TemperatureMarker";
 import { Point3d } from "@bentley/geometry-core";
-import { TimeSeries } from "../components/time-series/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
-// The lists continue to grow but we shouldn't pollute the DOM.
-const MAX_ELEMENTS = 12;
+const MAX_ALERTS = 12;
 
 function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
@@ -43,7 +42,7 @@ export function AggregateErrorList() {
     }
   })
 
-  const errors = errorList.slice(0, MAX_ELEMENTS).map((error: ErrorType, i: any) => {
+  const errors = errorList.slice(0, MAX_ALERTS).map((error: ErrorType, i: any) => {
 
     function onErrorClick(markerId: string, errorType: string) {
 
@@ -190,7 +189,7 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
     }
   })
 
-  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
+  const items = errors.slice(0, MAX_ALERTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]
@@ -262,7 +261,7 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
     }
   })
 
-  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
+  const items = errors.slice(0, MAX_ALERTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]

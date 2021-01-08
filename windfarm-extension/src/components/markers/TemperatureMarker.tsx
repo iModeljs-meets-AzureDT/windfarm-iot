@@ -5,7 +5,7 @@ import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AggregateErrorList } from "../../providers/AlertProvider";
+import { AggregateErrorList } from "../alerts/AlertProvider";
 
 export interface TempDifference {
   id: string;
