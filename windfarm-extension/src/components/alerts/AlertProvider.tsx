@@ -322,7 +322,7 @@ function ErrorListComponent() {
   )
 }
 
-export class ErrorUiItemsProvider implements UiItemsProvider {
+export class AlertItemsProvider implements UiItemsProvider {
   public readonly id = "ErrorUiProvider";
 
   public provideWidgets(stageId: string, _stageUsage: string, location: StagePanelLocation, _section?: StagePanelSection | undefined): ReadonlyArray<AbstractWidgetProps> {

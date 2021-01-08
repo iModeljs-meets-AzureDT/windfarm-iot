@@ -6,7 +6,7 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
 import { ErrorToggle } from "./ErrorToggle";
-import { displayAggregate, ErrorUiItemsProvider } from "./components/alerts/AlertProvider";
+import { displayAggregate, AlertItemsProvider } from "./components/alerts/AlertProvider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./components/time-series/TimeSeriesDiagram";
@@ -109,7 +109,7 @@ export class WindfarmExtension extends Extension {
 
     // Register UI Providers.
     UiItemsManager.register(new WindfarmUiItemsProvider(this.i18n));
-    UiItemsManager.register(new ErrorUiItemsProvider());
+    UiItemsManager.register(new AlertItemsProvider());
   }
 
   private startAnimation(vp: ScreenViewport) {
