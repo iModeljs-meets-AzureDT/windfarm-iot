@@ -2,7 +2,7 @@ import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-fronten
 import { Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";

@@ -6,7 +6,7 @@ import { PowerDecorator } from "../decorators/PowerDecorator";
 import { WindDecorator } from "../decorators/WindDecorator";
 import { TemperatureDecorator } from "../decorators/TemperatureDecorator";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";

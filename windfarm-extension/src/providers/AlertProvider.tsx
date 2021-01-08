@@ -10,7 +10,7 @@ import { WindfarmExtension } from "../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import { TemperatureMarker } from "../components/markers/TemperatureMarker";
 import { Point3d } from "@bentley/geometry-core";
-import { TimeSeries } from "../client/TimeSeries";
+import { TimeSeries } from "../components/time-series/TimeSeries";
 
 // The lists continue to grow but we shouldn't pollute the DOM.
 const MAX_ELEMENTS = 12;

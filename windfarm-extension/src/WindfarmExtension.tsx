@@ -9,7 +9,7 @@ import { ErrorToggle } from "./ErrorToggle";
 import { displayAggregate, ErrorUiItemsProvider } from "./providers/AlertProvider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
-import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
+import { TimeSeriesDiagram } from "./components/time-series/TimeSeriesDiagram";
 import { AnimationTimer } from "./animation/AnimationTimer";
 import ClockWidget from "./components/clock/ClockWidget";
 import { Range1d } from "@bentley/geometry-core";

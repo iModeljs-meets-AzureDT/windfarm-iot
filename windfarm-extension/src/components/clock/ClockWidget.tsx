@@ -4,7 +4,7 @@ import Clock from "react-clock";
 import 'react-clock/dist/Clock.css';
 import Draggable from 'react-draggable';
 import MLClient from "../../client/MLClient";
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import HoverImage from "./HoverImage";
 import Reveal, { AttentionSeeker } from "react-awesome-reveal";

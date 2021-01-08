@@ -14,7 +14,7 @@ export interface TempDifference {
   tempGearBox: number;
   timestamp: string;
 }
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
 export class TemperatureMarker extends Marker {
 

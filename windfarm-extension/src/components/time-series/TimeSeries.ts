@@ -1,6 +1,6 @@
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import TsiClient from "tsiclient";
-import { AzureAuth } from "./AzureToken";
+import { AzureAuth } from "../../client/AzureToken";
 
 const EnvironmentFqdn = "b62ef342-563d-4e83-8c06-1d46143e934c.env.timeseries.azure.com";
 
