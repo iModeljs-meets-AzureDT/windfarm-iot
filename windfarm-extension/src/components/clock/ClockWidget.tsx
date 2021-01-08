@@ -61,12 +61,6 @@ export default class ClockWidget extends React.Component<{}, {
         this.setState({powerReading: this.numberWithCommas(powerReading)});
     }
 
-    private showTsiData = () => {
-        if (!this.state.futureMode) 
-            TimeSeries.loadDataForNodes("Observed Power", TimeSeries.AllNodes, ["powerObserved"], true, false);
-        TimeSeries.showTsiGraph();
-    }
-
     private futureModeToggled = async () => {
         if (this.state.futureMode === true){
             this.setState({futureMode: false});
@@ -80,6 +74,14 @@ export default class ClockWidget extends React.Component<{}, {
             (window as any).futureModeOn();
         }
     }
+
+    private showTsiData = () => {
+        if (!this.state.futureMode) 
+            TimeSeries.loadDataForNodes("Observed Power", TimeSeries.AllNodes, ["powerObserved"], true, false);
+        TimeSeries.showTsiGraph();
+    }
+
+    // minimize/maximize clock and resulting view changes
 
     private minimizeToggled = () => {
         if (this.state.minimized === true){
@@ -112,7 +114,6 @@ export default class ClockWidget extends React.Component<{}, {
           ], {duration: 500, delay: 500, fill: "forwards", easing: "ease-out"});
     }
 
-
     private resetView() {
         this.addMarkers();
         TimeSeries.loadDataForNodes("Observed Power", TimeSeries.AllNodes, ["powerObserved"], true, false);
@@ -131,18 +132,17 @@ export default class ClockWidget extends React.Component<{}, {
         WindfarmExtension.viewport?.zoomToElements(zoomElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
     }
 
-  private configureView() {
+    private configureView() {
+        const allElements: any = [];
+        PowerDecorator.markers.forEach(marker => {
+        allElements.push(marker.cId)
+        allElements.push(marker.sId)
+        allElements.push(marker.bId)
+        });
 
-    const allElements: any = [];
-    PowerDecorator.markers.forEach(marker => {
-      allElements.push(marker.cId)
-      allElements.push(marker.sId)
-      allElements.push(marker.bId)
-    });
-
-    WindfarmExtension.viewport?.zoomToElements(allElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
-    this.dropMarkers();
-  }
+        WindfarmExtension.viewport?.zoomToElements(allElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
+        this.dropMarkers();
+    }
 
     private dropMarkers() {
         PowerDecorator.markers.forEach(marker => {
@@ -150,13 +150,13 @@ export default class ClockWidget extends React.Component<{}, {
             IModelApp.viewManager.dropDecorator(marker.windData);
             IModelApp.viewManager.dropDecorator(marker.temperatureData);
             marker.visible = false;
-          });
+            });
 
-      if (PowerDecorator.markers[0]) {
+        if (PowerDecorator.markers[0]) {
         PowerDecorator.markers[0].markerSet!.markers.forEach(marker => {
-          marker.visible = false;
+            marker.visible = false;
         })
-      }
+        }
 
       WindfarmExtension.viewport?.invalidateDecorations();
     }
@@ -174,6 +174,8 @@ export default class ClockWidget extends React.Component<{}, {
 
       WindfarmExtension.viewport?.invalidateDecorations();
     }
+
+    // power prediction mode
 
     private runPowerPrediction = async() => {
         this.predictedData = await MLClient.getPredictedMLPower();
@@ -205,6 +207,8 @@ export default class ClockWidget extends React.Component<{}, {
         return x.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
+    // animation code
+
     private animateClock(fromTime: Date, toTime: Date) {
         const animationFrames = 30;
         const timeDifference = toTime.getTime() - fromTime.getTime();
@@ -219,7 +223,6 @@ export default class ClockWidget extends React.Component<{}, {
     }
 
     private animateTimeline = (stepIndex: number, stepCount: number) => {
-
         const boundRect = document.querySelector(".voronoiRect")?.getBoundingClientRect();
         if (!boundRect) return;
         const initialX = boundRect.left;

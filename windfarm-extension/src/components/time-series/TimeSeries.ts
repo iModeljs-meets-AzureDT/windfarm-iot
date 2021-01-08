@@ -102,7 +102,7 @@ export class TimeSeries {
     for (const dtId of dtIds) {
       for (const property of properties) {
         linechartTsqExpressions.push(new this.tsiClient.ux.TsqExpression(
-          {timeSeriesId: [dtId, "/" + property] }, // instance json
+          {timeSeriesId: [dtId, "/" + property] },
           {avg: {
               kind: 'numeric',
               value: {tsx: 'coalesce($event.patch.value.Double, todouble($event.patch.value.Long))'},
@@ -120,10 +120,10 @@ export class TimeSeries {
             value: {tsx: 'coalesce($event.patch.value.Double, todouble($event.patch.value.Long))'},
             filter: null,
             aggregation: {tsx: 'max($value)'}
-          }}, // variable json
-          searchSpan, // search span
+          }},
+          searchSpan,
           {includeEnvelope: includeEnvelope, alias: nameByDtId ? dtId : property }
-          )); // alias
+          ));
       }
     }
     
