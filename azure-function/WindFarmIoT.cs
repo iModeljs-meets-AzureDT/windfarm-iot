@@ -44,7 +44,7 @@ namespace Doosan.Function
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
         private const int interpolationSteps = 6;
         private static bool processingData = false;
-        /*
+        /* We have this commented out since we don't want to run this locally.
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
