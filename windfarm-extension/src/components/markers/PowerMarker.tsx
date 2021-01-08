@@ -1,4 +1,4 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp, EmphasizeElements, MarkerSet, Cluster } from "@bentley/imodeljs-frontend";
+import { Marker, BeButtonEvent, StandardViewId, IModelApp, MarkerSet, Cluster } from "@bentley/imodeljs-frontend";
 import { XYAndZ, XAndY, Point3d, WritableXYAndZ } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { SensorDecorator } from "../decorators/SensorDecorator";
