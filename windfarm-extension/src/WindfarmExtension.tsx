@@ -14,8 +14,6 @@ import { AnimationTimer } from "./animation/AnimationTimer";
 import ClockWidget from "./components/ClockWidget";
 import { Range1d } from "@bentley/geometry-core";
 
-(window as any).DEBUG_MODE = false;
-
 export class WindfarmUiItemsProvider implements UiItemsProvider {
   public readonly id = "WindfarmProvider";
   public static i18n: I18N;
@@ -61,7 +59,6 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
             ErrorPanelForm.toggleTempError(true, "WTG005");
             ErrorPanelForm.togglePowerError(true, "WTG009");
             ErrorPanelForm.toggleTempError(true, "WTG009");
-            (window as any).DEBUG_MODE = true;
           } else {
             ErrorPanelForm.togglePowerError(false, "WTG001");
             ErrorPanelForm.toggleTempError(false, "WTG001");
@@ -69,7 +66,6 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
             ErrorPanelForm.toggleTempError(false, "WTG005");
             ErrorPanelForm.togglePowerError(false, "WTG009");
             ErrorPanelForm.toggleTempError(false, "WTG009");
-            (window as any).DEBUG_MODE = false;
           }
           this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
         }
