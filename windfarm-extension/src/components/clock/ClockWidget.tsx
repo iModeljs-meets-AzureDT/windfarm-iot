@@ -241,6 +241,8 @@ export default class ClockWidget extends React.Component<{}, {
         }
     }
 
+    // clock entry/exit animation 
+
     private getEntryAnimation = () => {
         return keyframes`
         from {

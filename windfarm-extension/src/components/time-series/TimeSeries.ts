@@ -40,6 +40,7 @@ export class TimeSeries {
       FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState = StagePanelState.Open;
   }
 
+  // loading TSI chart using local data.
   public static loadPredictedData(data: any) {
     clearInterval(this.pollData);
 
@@ -86,6 +87,7 @@ export class TimeSeries {
     }
   }
 
+  // loading TSI chart by querying TSI instance.
   private static async _loadData(title: string, dtIds: string[], properties: string[], nameByDtId = false, includeEnvelope = true ) {
     const tsiToken = await AzureAuth.getTsiToken();
     if (!tsiToken) return;
@@ -99,6 +101,12 @@ export class TimeSeries {
     else
       searchSpan = { from: now.valueOf() - (2*60*60*1000), to: now, bucketSize: '10m' }
 
+    // TSI query to get historic values of properties and dtIds (TIDs) passed in.
+    
+    // Official code sample for writing TSI gen 2 queries - 
+    // https://github.com/microsoft/tsiclient/blob/master/pages/examples/withplatform/PAYG.html#L29
+    // Documentation - https://docs.microsoft.com/en-us/rest/api/time-series-insights/reference-time-series-expression-syntax
+    
     for (const dtId of dtIds) {
       for (const property of properties) {
         linechartTsqExpressions.push(new this.tsiClient.ux.TsqExpression(
@@ -128,8 +136,11 @@ export class TimeSeries {
     }
     
     const liveMode = this.liveMode;
+
+    // hack to force TSI graph update to only the latest call
     const requestGuid = this.generateGuid();
     this.latestRequestId = requestGuid;
+  
     const result: any = await this.tsiClient.server.getTsqResults(tsiToken, EnvironmentFqdn, linechartTsqExpressions.map(function(ae){return liveMode ? ae.toTsq(false, false, true) : ae.toTsq()}));
     if (result[0] && (this.latestRequestId == requestGuid)) this.updateTsiGraph(result, title, linechartTsqExpressions, null, -300, 'shared', liveMode);
   }
