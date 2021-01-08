@@ -5,7 +5,7 @@ import { MarkupApp } from "@bentley/imodeljs-markup";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
-import { ErrorPanelForm } from "./components/ErrorButton";
+import { ErrorToggle } from "./components/ErrorButton";
 import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
@@ -32,19 +32,19 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
     });
 
     if (!this.DEBUG_MODE_TOGGLE) {
-      ErrorPanelForm.togglePowerError(true, "WTG001");
-      ErrorPanelForm.toggleTempError(true, "WTG001");
-      ErrorPanelForm.togglePowerError(true, "WTG005");
-      ErrorPanelForm.toggleTempError(true, "WTG005");
-      ErrorPanelForm.togglePowerError(true, "WTG009");
-      ErrorPanelForm.toggleTempError(true, "WTG009");
+      ErrorToggle.togglePowerError(true, "WTG001");
+      ErrorToggle.toggleTempError(true, "WTG001");
+      ErrorToggle.togglePowerError(true, "WTG005");
+      ErrorToggle.toggleTempError(true, "WTG005");
+      ErrorToggle.togglePowerError(true, "WTG009");
+      ErrorToggle.toggleTempError(true, "WTG009");
     } else {
-      ErrorPanelForm.togglePowerError(false, "WTG001");
-      ErrorPanelForm.toggleTempError(false, "WTG001");
-      ErrorPanelForm.togglePowerError(false, "WTG005");
-      ErrorPanelForm.toggleTempError(false, "WTG005");
-      ErrorPanelForm.togglePowerError(false, "WTG009");
-      ErrorPanelForm.toggleTempError(false, "WTG009");
+      ErrorToggle.togglePowerError(false, "WTG001");
+      ErrorToggle.toggleTempError(false, "WTG001");
+      ErrorToggle.togglePowerError(false, "WTG005");
+      ErrorToggle.toggleTempError(false, "WTG005");
+      ErrorToggle.togglePowerError(false, "WTG009");
+      ErrorToggle.toggleTempError(false, "WTG009");
     }
     this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
   }
