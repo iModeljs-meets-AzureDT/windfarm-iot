@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PowerDecorator } from "./decorators/PowerDecorator";
+import { PowerDecorator } from "./components/decorators/PowerDecorator";
 
 export class ErrorToggle extends React.Component<{}> {
 

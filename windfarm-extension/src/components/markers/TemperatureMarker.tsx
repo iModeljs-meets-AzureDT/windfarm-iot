@@ -1,12 +1,11 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
-import { Point3d } from "@bentley/geometry-core";
+import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AggregateErrorList } from "../../providers/ErrorPovider";
+import { AggregateErrorList } from "../../providers/AlertProvider";
 
 export interface TempDifference {
   id: string;

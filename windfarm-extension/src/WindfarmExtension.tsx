@@ -5,13 +5,13 @@ import { MarkupApp } from "@bentley/imodeljs-markup";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "./WindFarm.scss";
-import { ErrorToggle } from "./components/ErrorButton";
-import { displayAggregate, ErrorUiItemsProvider } from "./providers/ErrorPovider";
+import { ErrorToggle } from "./ErrorToggle";
+import { displayAggregate, ErrorUiItemsProvider } from "./providers/AlertProvider";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 import { PowerDecorator } from "./components/decorators/PowerDecorator";
 import { TimeSeriesDiagram } from "./client/TimeSeriesDiagram";
 import { AnimationTimer } from "./animation/AnimationTimer";
-import ClockWidget from "./components/ClockWidget";
+import ClockWidget from "./components/clock/ClockWidget";
 import { Range1d } from "@bentley/geometry-core";
 
 export class WindfarmUiItemsProvider implements UiItemsProvider {
