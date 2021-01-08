@@ -24,6 +24,31 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
     this.DEBUG_MODE_TOGGLE = false;
   }
 
+  private triggerErrors() {
+    PowerDecorator.markers.forEach(marker => {
+      IModelApp.viewManager.dropDecorator(marker.sensorData);
+      IModelApp.viewManager.dropDecorator(marker.windData);
+      IModelApp.viewManager.dropDecorator(marker.temperatureData);
+    });
+
+    if (!this.DEBUG_MODE_TOGGLE) {
+      ErrorPanelForm.togglePowerError(true, "WTG001");
+      ErrorPanelForm.toggleTempError(true, "WTG001");
+      ErrorPanelForm.togglePowerError(true, "WTG005");
+      ErrorPanelForm.toggleTempError(true, "WTG005");
+      ErrorPanelForm.togglePowerError(true, "WTG009");
+      ErrorPanelForm.toggleTempError(true, "WTG009");
+    } else {
+      ErrorPanelForm.togglePowerError(false, "WTG001");
+      ErrorPanelForm.toggleTempError(false, "WTG001");
+      ErrorPanelForm.togglePowerError(false, "WTG005");
+      ErrorPanelForm.toggleTempError(false, "WTG005");
+      ErrorPanelForm.togglePowerError(false, "WTG009");
+      ErrorPanelForm.toggleTempError(false, "WTG009");
+    }
+    this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
+  }
+
   public provideToolbarButtonItems(_stageId: string, stageUsage: string, toolbarUsage: ToolbarUsage, toolbarOrientation: ToolbarOrientation): CommonToolbarItem[] {
     if (stageUsage !== StageUsage.General ||
       toolbarUsage !== ToolbarUsage.ContentManipulation ||
@@ -46,28 +71,7 @@ export class WindfarmUiItemsProvider implements UiItemsProvider {
         "icon-window",
         "Toggle Debug Mode",
         () => {
-        PowerDecorator.markers.forEach(marker => {
-            IModelApp.viewManager.dropDecorator(marker.sensorData);
-            IModelApp.viewManager.dropDecorator(marker.windData);
-            IModelApp.viewManager.dropDecorator(marker.temperatureData);
-          });
-
-          if (!this.DEBUG_MODE_TOGGLE) {
-            ErrorPanelForm.togglePowerError(true, "WTG001");
-            ErrorPanelForm.toggleTempError(true, "WTG001");
-            ErrorPanelForm.togglePowerError(true, "WTG005");
-            ErrorPanelForm.toggleTempError(true, "WTG005");
-            ErrorPanelForm.togglePowerError(true, "WTG009");
-            ErrorPanelForm.toggleTempError(true, "WTG009");
-          } else {
-            ErrorPanelForm.togglePowerError(false, "WTG001");
-            ErrorPanelForm.toggleTempError(false, "WTG001");
-            ErrorPanelForm.togglePowerError(false, "WTG005");
-            ErrorPanelForm.toggleTempError(false, "WTG005");
-            ErrorPanelForm.togglePowerError(false, "WTG009");
-            ErrorPanelForm.toggleTempError(false, "WTG009");
-          }
-          this.DEBUG_MODE_TOGGLE = !this.DEBUG_MODE_TOGGLE;
+          this.triggerErrors();
         }
       ),
     ]
@@ -106,8 +110,25 @@ export class WindfarmExtension extends Extension {
     // Register UI Providers.
     UiItemsManager.register(new WindfarmUiItemsProvider(this.i18n));
     UiItemsManager.register(new ErrorUiItemsProvider());
+  }
 
-    // Add your initialization code here
+  private startAnimation(vp: ScreenViewport) {
+      WindfarmExtension.timer = new AnimationTimer(vp, 6);
+      const duration = vp.view.scheduleScript!.computeDuration();
+      const buffer = 60 * 1000;
+      WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
+      WindfarmExtension.timer.start();
+  }
+
+  private bindUi() {
+    // We bind additional UI elements to root.
+    const ClockNode = document.createElement("div");
+    ClockNode.id = "clock-widget";
+    document.getElementById("root")?.appendChild(ClockNode);
+
+    // Quick work around to hide sign in/sign out buttons in itwin-viewer.
+    const header = document.getElementsByTagName("header")[0];
+    (header as HTMLElement).style.display = "none";
   }
 
   /** Invoked each time this extension is loaded. */
@@ -117,39 +138,15 @@ export class WindfarmExtension extends Extension {
       WindfarmExtension.viewport = vp;
       WindfarmExtension.imodel = vp.iModel;
 
-      WindfarmExtension.timer = new AnimationTimer(vp, 6);
-      const duration = vp.view.scheduleScript!.computeDuration();
-      const buffer = 60 * 1000;
-      WindfarmExtension.timer.setOverrideDuration(Range1d.createXX(duration.low + buffer, duration.high - buffer));
-      WindfarmExtension.timer.start();
-
-      FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       // Keep bottom panel closed by default.
+      FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
       FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState = StagePanelState.Off;
 
-      // Add decorators.
+      this.startAnimation(vp);
+      this.bindUi();
+
+      // Power decorator is the anchor for all other decorators.
       IModelApp.viewManager.addDecorator(new PowerDecorator());
-
-      // You can pass the viewport/imodel as a prop instead, I made it part of the extension class to simplify the example.
-      
-      // We need a location to bind the component to.
-      const ClockNode = document.createElement("div");
-      ClockNode.id = "clock-widget";
-      document.getElementById("root")?.appendChild(ClockNode);
-  
-      // We need a location to bind the component to.
-      const MLNode = document.createElement("div");
-      MLNode.id = "power-prediction-panel";
-      document.getElementById("root")?.appendChild(MLNode);
-  
-      // We need a location to bind the component to.
-      const ErrorNode = document.createElement("div");
-      ErrorNode.id = "error-panel";
-      document.getElementById("root")?.appendChild(ErrorNode);
-
-      // Quick work around to hide sign in/sign out buttons in itwin-viewer.
-      const header = document.getElementsByTagName("header")[0];
-      (header as HTMLElement).style.display = "none";
 
       // Add clock widget.
       ReactDOM.render(<ClockWidget/>, document.getElementById("clock-widget"));
