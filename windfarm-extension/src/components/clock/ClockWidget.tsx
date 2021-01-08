@@ -1,4 +1,4 @@
-import { IModelApp, StandardViewId, ViewState } from "@bentley/imodeljs-frontend";
+import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
 import * as React from "react";
 import Clock from "react-clock";
 import 'react-clock/dist/Clock.css';
@@ -18,7 +18,6 @@ export default class ClockWidget extends React.Component<{}, {
     minimized:boolean }> {
 
     private turbinePower: Map<string, number> = new Map();
-    private savedView?: ViewState;
     private firstRender = true;
     private predictedData: any[] = [];
 
@@ -130,15 +129,10 @@ export default class ClockWidget extends React.Component<{}, {
         });
 
         WindfarmExtension.viewport?.zoomToElements(zoomElements, { animateFrustumChange: true, standardViewId: StandardViewId.RightIso });
-
-        // if (this.savedView){
-            // restore view
-        // }
     }
 
   private configureView() {
-    this.savedView = IModelApp.viewManager.selectedView!.view.clone();
-    // IModelApp.tools.run(FitViewTool.toolId, IModelApp.viewManager.selectedView);
+
     const allElements: any = [];
     PowerDecorator.markers.forEach(marker => {
       allElements.push(marker.cId)
