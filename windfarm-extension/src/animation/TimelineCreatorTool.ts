@@ -55,7 +55,6 @@ export class TimelineCreatorTool extends Tool {
   public run(vp: Viewport): boolean {
 
     this.getElements(vp).then((bladeElements) => {
-      // console.log(bladeElements.map((result) => result.origin));
       const script = this.createScript(vp, bladeElements.map((results) => ({ elementId: results.id, modelId: results.model.id, originArray: [results.origin.x, results.origin.y, results.origin.z], originXYZ: results.origin}) as BladeProps));
       vp.timePoint = script?.computeDuration().low;
       vp.displayStyle.scheduleScript = script;
@@ -69,7 +68,6 @@ export class TimelineCreatorTool extends Tool {
     const query = "SELECT ECInstanceID,Roll,Pitch,Yaw,Model,Origin FROM DgnCustomItemTypes_WindEnergy.Blades";
     for await (const row of vp.iModel.query(query))
       rows.push(row);
-    console.log("Queried Rows", rows);
     return rows as QueryResults[];
   }
 
@@ -90,7 +88,6 @@ export class TimelineCreatorTool extends Tool {
 
     const timeDiff = timeEnd - timeNow;
     if (timeDiff !== Math.round(timeDiff)) {
-      console.log("Time different not equally divisible.");
       return script;
     }
 
@@ -101,9 +98,7 @@ export class TimelineCreatorTool extends Tool {
       props.forEach((element) => { // Loop elements in model
         const elementTimeline: RenderSchedule.ElementTimelineProps = { batchId: 1, elementIds: [element.elementId], transformTimeline: []};
         const shiftTimeline = new Array<RenderSchedule.TransformEntryProps>();
-        // private formatTransformEntry(pos: number[], ori: number[], piv: number[]): RenderSchedule.TransformProps
-        // const trans = Transform.createFixedPointAndMatrix(Point3d.createFrom(element.originXYZ), Matrix3d.identity);
-        // shiftTimeline.push({ time: timeNow, interpolation: 2, value: { transform: trans.toJSON()}});
+
         const points = quaternionRotation.length
         let pivotIndex = Math.floor(Math.random() * points);
         for (let i = 0; i<points+1; i+=1) {
@@ -120,16 +115,7 @@ export class TimelineCreatorTool extends Tool {
       });
       script.modelTimelines.push(RenderScheduleState.ModelTimeline.fromJSON(modelTimeline));
     });
-    // modelMap.forEach((elementIds, modelId) => {
-    //   modelTimeline.modelId = modelId;
-    //   elementTimeline.elementIds = elementIds;
-    //   script.modelTimelines.push(RenderScheduleState.ModelTimeline.fromJSON(modelTimeline));
-    // });
-    // vp.view.forEachModel((model) => {
-    //   modelTimeline.modelId = model.id;
-    //   script.modelTimelines.push(RenderScheduleState.ModelTimeline.fromJSON(modelTimeline));
-    // });
-    console.log(script.toJSON());
+
     return script;
   }
 
