@@ -1,5 +1,7 @@
 # Getting Started with the itwin-viewer
 
+![Dataflow Diagram](../images/iTwinViewer.png)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Quickstart

@@ -1,5 +1,7 @@
 # Getting Started with the extension
 
+![Dataflow Diagram](../images/Extension.png)
+
 Extensions add functionality and UI to the itwin-viewer.
 
 ## Quickstart

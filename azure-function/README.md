@@ -1,5 +1,7 @@
 # Getting Started with the WindFarmIot Azure Function
 
+![Dataflow Diagram](../images/AzureFunction.png)
+
 ## Environment Variables
 
 Prior to running the function app locally, you'll need to declare some environment variables:
