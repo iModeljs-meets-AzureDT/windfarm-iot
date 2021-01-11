@@ -2,6 +2,8 @@
 
 ## Overview of file structure
 
+![Dataflow Diagram](./images/DataflowDiagram.png)
+
 ### **1. azure-function**
 
 The azure-function serves as the mediator between IoT Hub and the itwin viewer.
