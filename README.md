@@ -10,11 +10,13 @@ The azure-function serves as the mediator between IoT Hub and the itwin viewer.
 
 Responsibilities include:
 
-1. Retrieving and parsing data from IoT Hub.
+1. Retrieving and  data from IoT Hub.
 2. Sending parsed data to Physics Model API to generate predicted physical model power.
 3. Sending parsed data to Machine Learning API to generate predicted machine learning model power.
 4. Retrieving DTDL from imodeljs and pushing to an ADT instance.
 6. Routing weather forecasted data to PM/ML APIs to generate predicted power.
+
+For more a more detailed explanation, please read the README.md in directory azure-function.
 
 ### **2. itwin-viewer**
 
@@ -26,6 +28,8 @@ Responsibilties include:
 3. Load reality data and Bing map to provide terrain graphics.
 3. Retrieve data from ADT and emit the data across the application.
 
+For more a more detailed explanation, please read the README.md in directory itwin-viewer.
+
 ### **3. windfarm-extension**
 
 This extension adds UI components and functionality to our viewer.
@@ -34,3 +38,5 @@ This extension adds UI components and functionality to our viewer.
 2. Creates an alert system for unexpected power outputs given from Machine and Physics learning models.
 3. Provide a historical data via Azure Time Series Insights to visualize past power output readings.
  and predicted power from Physics and Machine Learning Model.
+
+For more a more detailed explanation, please read the README.md in directory windfarm-extension
