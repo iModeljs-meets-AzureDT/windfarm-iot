@@ -1,8 +1,18 @@
-# windfarm-iot
+# Windfarm-Iot Hackathon
 
-## Overview of file structure
+## About this repository
 
 ![Dataflow Diagram](./images/DataflowDiagram.png)
+
+This hackathon was designed as a proof of concept demonstrating the capabilities of Microsoft's Azure IoT and Azure Digital Twins in conjunction with Bentley Systems' iTwin viewer and iModel services. The diagram above explains the data flow of how this application comes together.
+
+The processes in the light blue background indicate Microsoft technologies, while the grey background indicate Bentley Systems technologies. The application focused in this repository center around three major components:
+
+1) Azure Function
+2) iTwin Viewer
+3) Windfarm Extension
+
+## Overview of file structure
 
 ### **1. azure-function**
 
