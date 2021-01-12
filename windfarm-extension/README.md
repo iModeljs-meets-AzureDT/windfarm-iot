@@ -20,6 +20,8 @@ components:
 - decorators/markers: Code to provide the floating boxes above the wind turbines to provide the live data feed from the ADT instance.
 - time-series: Code that displays the widget that shows historical data graphs from Time Series Insights in the bottom widget.
 
+WindfarmExtension.tsx: The main extension file that initializes all required components for our custom UI.
+
 
 # Getting Started with the extension
 
