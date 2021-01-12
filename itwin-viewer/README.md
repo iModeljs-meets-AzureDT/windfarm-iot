@@ -15,6 +15,8 @@ The app polls the ADT instance every 10 seconds and emits the data to all the ev
 
 # Getting Started with the itwin-viewer
 
+*NOTE: Instructions provided assuming you have the necessary permissions. The information below was designed for team members of the hackathon, and is retained purely for educational purposes. This code will not work without the appropriate resources and permissions.*
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Quickstart
