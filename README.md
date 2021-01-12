@@ -20,8 +20,6 @@ Note that all data within this project are simulated.
 
 The azure-function serves as the mediator between IoT Hub and the itwin viewer.
 
-Responsibilities include:
-
 1. Retrieving and  data from IoT Hub.
 2. Sending parsed data to Physics Model API to generate predicted physical model power.
 3. Sending parsed data to Machine Learning API to generate predicted machine learning model power.
@@ -34,7 +32,6 @@ For more a more detailed explanation, please read the README.md in directory azu
 
 The itwin-viewer is the UI visualizer for the windfarm.
 
-Responsibilties include:
 1. Configuring the imodel connection and authorization to use Bentley Systems CONNECT services
 2. Render specified models and reality mesh for the windfarm.
 3. Load reality data and Bing map to provide terrain graphics.
