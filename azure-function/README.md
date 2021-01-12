@@ -14,8 +14,6 @@ File structure breakdown:
 - WindFarmIot.cs: The bulk of the work done in this file, two functions are created:
   1) "WindFarmIot" - This function is an event hub connection that streams data from the IoT Hub, parses and pushes the data into the ADT instance
   2) "TriggerPrediction" - This function calls the weather forecast API to get forecasted wind speed/direction for tomorrow, and calls the machine learning and physics model api to calculate the expected power for the following day.
-- pysical-model-api: Contains sample code on how the physics model endpoint was constructed.
-- device-simulation: Contains sample code written in javascript to invoke custom commands on our IoT device simulations.
 
 # Getting Started with the WindFarmIot Azure Function
 
