@@ -16,6 +16,8 @@ Note that all data within this project are simulated.
 
 ## Overview of file structure
 
+*NOTE: If you intend on running this application locally, it will not work! All 'Getting Started' instructions assume you have the necessary permissions. The quick-start guides were designed for team members of the hackathon, and is retained purely for educational purposes. This code will not work without the appropriate resources and permissions.*
+
 ### **1. azure-function**
 
 The azure-function serves as the mediator between IoT Hub and the itwin viewer.
