@@ -2,7 +2,7 @@ import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-fronten
 import { Point3d } from "@bentley/geometry-core";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -80,9 +80,9 @@ export class SensorMarker extends Marker {
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
     
-    TimeSeries.loadDataForNode(this.id+"-S", ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
+    TimeSeries.loadDataForNodes(this.id + " - Pitch Angles", [this.id+"-S"], ["blade1PitchAngle", "blade2PitchAngle", "blade3PitchAngle", "yawPosition"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

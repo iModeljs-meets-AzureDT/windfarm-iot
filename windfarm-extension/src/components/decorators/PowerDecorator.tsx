@@ -31,7 +31,6 @@ export class PowerDecorator implements Decorator {
       const { done, value } = await rowIterator.next();
       if (done) break;
 
-      // Special cases for WTG008...
       const powerdisplayMarker = new PowerMarker(
         { x: value.origin.x, y: value.origin.y, z: value.origin.z + 30 },
         { x: 220, y: 120 },
@@ -39,6 +38,7 @@ export class PowerDecorator implements Decorator {
         value.cId,
         value.sId,
         value.bId,
+        this.markerSet
       );
 
       PowerDecorator.markers.push(powerdisplayMarker);
@@ -48,11 +48,6 @@ export class PowerDecorator implements Decorator {
   }
 
   public decorate(context: DecorateContext): void {
-    /*
-    PowerDecorator.markers.forEach((marker) => {
-      marker.addDecoration(context);
-    });
-    */
    this.markerSet.addDecoration(context);
   }
 }

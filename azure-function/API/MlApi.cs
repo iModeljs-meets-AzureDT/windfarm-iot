@@ -46,14 +46,6 @@ namespace MachineLearning
                         DMResultInfo dmResult = JsonConvert.DeserializeObject<DMResultInfo>(result);
 
                         return dmResult;
-
-                        /* This is unnecessary ? We can calculate the power gap client side.
-                        info.PowerInputs[0].Power_DM = (dmResult.result.Length > 0 ? float.Parse(dmResult.result[0].ToString()) : 0.0f);
-                        // Gap
-                        info.PowerInputs[0].PowerGap_DM = Math.Abs(info.PowerInputs[0].Power - info.PowerInputs[0].Power_DM);
-
-                        return info.PowerInputs[0].Power_DM;
-                        */
                     }
                     else
                     {

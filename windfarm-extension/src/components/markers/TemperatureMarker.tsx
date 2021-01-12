@@ -1,12 +1,11 @@
-import { Marker, BeButtonEvent, StandardViewId, IModelApp } from "@bentley/imodeljs-frontend";
-import { Point3d } from "@bentley/geometry-core";
+import { Marker, BeButtonEvent, StandardViewId } from "@bentley/imodeljs-frontend";
 import { WindfarmExtension } from "../../WindfarmExtension";
 import { PowerMarker } from "./PowerMarker";
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AggregateErrorList } from "../../providers/ErrorPovider";
+import { AggregateErrorList } from "../alerts/AlertProvider";
 
 export interface TempDifference {
   id: string;
@@ -15,7 +14,7 @@ export interface TempDifference {
   tempGearBox: number;
   timestamp: string;
 }
-import { TimeSeries } from "../../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
 export class TemperatureMarker extends Marker {
 
@@ -155,12 +154,6 @@ export class TemperatureMarker extends Marker {
 
   public drawFunc(_ctx: CanvasRenderingContext2D) {
 
-    /*
-    if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-      this.worldLocation = new Point3d(this.powerMarker.worldLocation.x, this.powerMarker.worldLocation.y + 120, this.powerMarker.worldLocation.z)
-    }
-    */
-
     const props = {
       onHover: this.hover,
       tempGearBox: this.temperatureGearBox,
@@ -182,9 +175,9 @@ export class TemperatureMarker extends Marker {
 
   public onMouseButton(_ev: BeButtonEvent): boolean {
 
-    WindfarmExtension.viewport?.zoomToElements([this.cId, this.bId, this.sId], {animateFrustumChange: true, standardViewId: StandardViewId.Right});
+    WindfarmExtension.viewport?.zoomToElements([this.bId], {animateFrustumChange: true, standardViewId: StandardViewId.Front});
 
-    TimeSeries.loadDataForNode(this.id+"-S", ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
+    TimeSeries.loadDataForNodes(this.id + " - Temperatures", [this.id+"-S"], ["temperatureGearBox", "temperatureGenerator", "temperatureNacelle"]);
     if (_ev.isDoubleClick) TimeSeries.showTsiGraph();
 
     return true;

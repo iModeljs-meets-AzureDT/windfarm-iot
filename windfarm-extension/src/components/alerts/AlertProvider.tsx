@@ -2,18 +2,17 @@ import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, UiItemsProv
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { useState } from "react";
-import { ErrorType, PowerMarker } from "../components/markers/PowerMarker";
+import { ErrorType, PowerMarker } from "../markers/PowerMarker";
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { FrontstageManager, StagePanelState } from "@bentley/ui-framework";
-import { PowerDecorator } from "../components/decorators/PowerDecorator";
-import { WindfarmExtension } from "../WindfarmExtension";
+import { PowerDecorator } from "../decorators/PowerDecorator";
+import { WindfarmExtension } from "../../WindfarmExtension";
 import { IModelApp, StandardViewId } from "@bentley/imodeljs-frontend";
-import { TemperatureMarker } from "../components/markers/TemperatureMarker";
+import { TemperatureMarker } from "../markers/TemperatureMarker";
 import { Point3d } from "@bentley/geometry-core";
-import { TimeSeries } from "../client/TimeSeries";
+import { TimeSeries } from "../time-series/TimeSeries";
 
-// The lists continue to grow but we shouldn't pollute the DOM.
-const MAX_ELEMENTS = 12;
+const MAX_ALERTS = 12;
 
 function deactivateWidget() {
   FrontstageManager.activeFrontstageDef!.rightPanel!.panelState = StagePanelState.Off;
@@ -43,7 +42,7 @@ export function AggregateErrorList() {
     }
   })
 
-  const errors = errorList.slice(0, MAX_ELEMENTS).map((error: ErrorType, i: any) => {
+  const errors = errorList.slice(0, MAX_ALERTS).map((error: ErrorType, i: any) => {
 
     function onErrorClick(markerId: string, errorType: string) {
 
@@ -59,33 +58,33 @@ export function AggregateErrorList() {
             IModelApp.viewManager.dropDecorator(otherMarkers.temperatureData);
           });
           marker.clicked = true;
-          marker.worldLocation = new Point3d(marker.initialLocation.x, marker.initialLocation.y + 50, marker.initialLocation.z - 15);
 
+          const xOffset = 60;
           if (FrontstageManager.activeFrontstageDef!.bottomPanel!.panelState === StagePanelState.Open) {
-            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 35)
-            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 75, marker.worldLocation.z)
-            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z - 30)
+            marker.windData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset - 10, marker.worldLocation.y, marker.worldLocation.z - 55)
           } else {
-            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y, marker.worldLocation.z - 25)
-            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x, marker.worldLocation.y + 50, marker.worldLocation.z)
-            marker.windData.marker.worldLocation = new Point3d(marker.sensorData.marker.worldLocation.x, marker.temperatureData.marker.worldLocation.y, marker.sensorData.marker.worldLocation.z + 3)
+            marker.sensorData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z)
+            marker.temperatureData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 25)
+            marker.windData.marker.worldLocation = new Point3d(marker.worldLocation.x - xOffset + 5, marker.worldLocation.y, marker.worldLocation.z - 45)
           }
 
           IModelApp.viewManager.addDecorator(marker.sensorData);
           IModelApp.viewManager.addDecorator(marker.temperatureData);
           IModelApp.viewManager.addDecorator(marker.windData);
 
-          TimeSeries.loadDataForNode(marker.id);
+          TimeSeries.loadDataForNodes(marker.id + " - Power", [marker.id], ["powerObserved", "powerPM", "powerDM"]);
         }
 
         if (markerId === marker.id && errorType === "Power Alert") {
 
-          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+          WindfarmExtension.viewport?.zoomToElements([marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedPowerErrorList turbinePower={marker}></DetailedPowerErrorList>, document.getElementById("error-component"));
           return;
         } else if (markerId === marker.id && errorType === "Temperature Alert") {
-          WindfarmExtension.viewport?.zoomToElements([marker.cId, marker.sId, marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Right });
+          WindfarmExtension.viewport?.zoomToElements([marker.bId], { animateFrustumChange: true, standardViewId: StandardViewId.Front });
 
           ReactDOM.unmountComponentAtNode(document.getElementById("error-component")!);
           ReactDOM.render(<DetailedTemperatureErrorList turbineTemperature={marker.temperatureData.marker}></DetailedTemperatureErrorList>, document.getElementById("error-component"));
@@ -190,7 +189,7 @@ export function DetailedPowerErrorList({ turbinePower }: any) {
     }
   })
 
-  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
+  const items = errors.slice(0, MAX_ALERTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]
@@ -262,7 +261,7 @@ export function DetailedTemperatureErrorList({ turbineTemperature }: any) {
     }
   })
 
-  const items = errors.slice(0, MAX_ELEMENTS).map((error, i) => {
+  const items = errors.slice(0, MAX_ALERTS).map((error, i) => {
     // Reverse key to have transition occur at index 0.
     const date = error.timestamp.split("T")[0]
     const time = error.timestamp.split("T")[1].split(".")[0]
@@ -323,7 +322,7 @@ function ErrorListComponent() {
   )
 }
 
-export class ErrorUiItemsProvider implements UiItemsProvider {
+export class AlertItemsProvider implements UiItemsProvider {
   public readonly id = "ErrorUiProvider";
 
   public provideWidgets(stageId: string, _stageUsage: string, location: StagePanelLocation, _section?: StagePanelSection | undefined): ReadonlyArray<AbstractWidgetProps> {

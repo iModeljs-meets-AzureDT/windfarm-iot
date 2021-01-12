@@ -1,4 +1,21 @@
+# Explanation of the iTwin Viewer
+
+![Dataflow Diagram](../images/iTwinViewer.png)
+
+Written in typecript, the [itwin-viewer](https://github.com/imodeljs/itwin-viewer) is a publicly available npm package that serves as the template for an iModel.js viewer. This directory contains all the information required to load the imodel that we have uploaded to Bentley Systems CONNECT cloud service.
+
+Note that most of the files in src are automatically generated when installing the @bentley/itwin-viewer package, please refer to this link to learn more: https://github.com/imodeljs/itwin-viewer
+
+Notable Files in src:
+
+- App.tsx: Component "Viewer" is the main react component where we configure which iModel to connect to and control some UI like the status bar and tool settings. We define some view styles here, load the reality terrain data and attach event listeners to our ADT instance here.
+- AdtdataLink.ts: Our routing for our ADT instance host. In conjunction with "setupProxy.js", any route following "digitaltwins" gets forwarded to our Azure ADT instance. We call the endpoint for the specific dtId (i.e. WTG001) to pull all the data for the specified turbine.
+
+The app polls the ADT instance every 10 seconds and emits the data to all the event listeners that are used throughout the application, including the extension. The bulk of the custom UI components are defined in our [windfarm-extension](https://github.com/iModeljs-meets-AzureDT/windfarm-iot/tree/main/windfarm-extension) directory. When the app runs, it loads all the extensions in our build/imjs_extensions directory.
+
 # Getting Started with the itwin-viewer
+
+*NOTE: Instructions provided assuming you have the necessary permissions. The information below was designed for team members of the hackathon, and is retained purely for educational purposes. This code will not work without the appropriate resources and permissions.*
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

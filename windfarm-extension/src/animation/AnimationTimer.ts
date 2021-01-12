@@ -3,7 +3,6 @@ import { Viewport } from "@bentley/imodeljs-frontend";
 import { BeEvent } from "@bentley/bentleyjs-core";
 
 export class AnimationTimer {
-  // public onAnimationTick = new BeEvent<(vp: Viewport) => void>();
   public onAnimationTick = new BeEvent<(time: number) => void>();
   public isPlaying = false;
   private _totalMillis: number = 0;
@@ -60,7 +59,6 @@ export class AnimationTimer {
 
   private update() {
     const fraction = Math.min(1, this._elapsedMillis / this._totalMillis);
-    // this._slider.value = (fraction * 1000).toString();
     
     const point = this._timelineDuration.fractionToPoint(fraction);
     this._vp.timePoint = point;

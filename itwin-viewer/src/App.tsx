@@ -1,15 +1,14 @@
 import "./App.scss";
 
-import { IModelBackendOptions, Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
+import { Viewer, ViewerExtension } from "@bentley/itwin-viewer-react";
 import React, { useEffect, useState } from "react";
-import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport, Viewport } from "@bentley/imodeljs-frontend";
+import { findAvailableUnattachedRealityModels, IModelApp, RemoteBriefcaseConnection, ScreenViewport } from "@bentley/imodeljs-frontend";
 import { BackgroundMapType, ContextRealityModelProps, DisplayStyle3dSettingsProps, RenderMode } from "@bentley/imodeljs-common";
 import { AdtDataLink } from "./AdtDataLink";
 import 'tsiclient/tsiclient.css';
 
 import AuthorizationClient from "./AuthorizationClient";
 import { Header } from "./Header";
-import { AnimationTool } from "./animation/BladeAnimation";
 
 import { EventEmitter } from "events";
 
@@ -109,8 +108,6 @@ const App: React.FC = () => {
 
     // Add all unattached reality models to the viewport.
     await IModelApp.viewManager.onViewOpen.addOnce(async (vp: ScreenViewport) => {
-      const i18n = IModelApp.i18n.registerNamespace("WindIotDemo");
-      AnimationTool.register(i18n);
 
       vp.overrideDisplayStyle(ViewStyle);
       const settings = vp.backgroundMapSettings.clone( { useDepthBuffer: true } );
@@ -158,19 +155,6 @@ const App: React.FC = () => {
     }
   ]
 
-  const backendOptions: IModelBackendOptions = {
-    customBackend: {
-      rpcParams: {
-        info: {
-          title: "general-purpose-imodeljs-backend", version: "v2.0"
-        },
-        uriPrefix: "http://localhost:3003"
-      }
-
-    }
-  }
-
-  const useCustomBackend = true;
   const useExtensions = true;
 
   return (
@@ -191,7 +175,6 @@ const App: React.FC = () => {
             authConfig={{ oidcClient: AuthorizationClient.oidcClient }}
             onIModelConnected={onIModelConnection}
             extensions={useExtensions? extensions : undefined}
-            backend={useCustomBackend ? backendOptions : undefined}
             defaultUiConfig={{hideDefaultStatusBar: true, hideToolSettings: true}}
           />
           </div>
