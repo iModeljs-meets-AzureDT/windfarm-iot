@@ -6,7 +6,7 @@
 
 This hackathon was designed as a proof of concept demonstrating the capabilities of Microsoft's Azure IoT and Azure Digital Twins in conjunction with Bentley Systems' iTwin Platform. The diagram above explains the data flow of how this application comes together.
 
-The processes in the light blue background indicate Microsoft technologies, while the grey background indicate Bentley Systems technologies. The application focused in this repository center around three major components:
+The processes in the light blue background indicate Microsoft technologies, while the light green background indicate Bentley Systems technologies. The application focused in this repository center around three major components:
 
 1) [Azure Function](#1-azure-function)
 2) [iTwin Viewer](#2-itwin-viewer)
