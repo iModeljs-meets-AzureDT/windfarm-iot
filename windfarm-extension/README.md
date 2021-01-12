@@ -2,7 +2,7 @@
 
 ![Dataflow Diagram](../images/Extension.png)
 
-Extensions is a modular approach to adding functionality and UI to the itwin-viewer. This directory handles all the custom components designed specifically for this hackathon, namely these four components:
+Extensions are a modular approach to adding functionality and UI to the itwin-viewer. This directory handles all the custom components designed specifically for this hackathon, namely these four components:
 
 1) Live IoT data visualization, represented as markers and decorators that appear above each wind turbine.
 2) Historical data via a Time Series Insights widget that appears below the viewport, showing the power output within a 2 hour or 15 minute interval.
