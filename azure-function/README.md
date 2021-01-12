@@ -1,8 +1,29 @@
-# Getting Started with the WindFarmIot Azure Function
+# Explanation of the Azure Function
 
 ![Dataflow Diagram](../images/AzureFunction.png)
 
+Written in C#, the azure function serves as the mediator for all data between the IoT Hub and the iTwin Viewer. It calls three external APIs:
+
+1) Machine learning model, which takes parameters Blade 1/2/3 pitch angles, yaw position and wind speed and direction given from IoT to calculated the expected power output of the turbines - called in MLApi.cs.
+2) Physics model, which only takes the parameter of the wind speed given from IoT to calculate the expected power - called in PmApi.cs
+3) Weather service, which provides the wind speed and direction for next 24 hours of the following day given from an external service, called directly in WindFarmIoT.cs to calculate the predicted machine and physics model expected power output.
+
+File structure breakdown
+
+- API: This directory contains code to call the machine and physical learning models to produce expected power output.
+- WindFarmIot.cs: The bulk of the work done in this file, two functions are created:
+  1) "WindFarmIot" - This function is an event hub connection that streams data from the IoT Hub, parses and pushes the data into the ADT instance
+  2) "TriggerPrediction" - This function calls the weather forecast API to get forecasted wind speed/direction for tomorrow, and calls the machine learning and physics model api to calculate the expected power for the following day.
+- pysical-model-api: Contains sample code on how the physics model endpoint was constructed.
+- device-simulation: Contains sample code written in javascript to invoke custom commands on our IoT device simulations.
+
+# Getting Started with the WindFarmIot Azure Function
+
+*NOTE: Instructions provided assuming you have the necessary permissions. The information below was designed for team members of the hackathon, and is retained purely for educational purposes. This code will not work without the appropriate resources and permissions.*
+
 ## Environment Variables
+
+NOTE: You won't be able to 
 
 Prior to running the function app locally, you'll need to declare some environment variables:
 
