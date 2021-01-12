@@ -12,6 +12,8 @@ The processes in the light blue background indicate Microsoft technologies, whil
 2) iTwin Viewer
 3) Windfarm Extension
 
+Note that all data within this project are simulated.
+
 ## Overview of file structure
 
 ### **1. azure-function**

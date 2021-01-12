@@ -6,7 +6,7 @@ Written in typecript, the [itwin-viewer](https://github.com/imodeljs/itwin-viewe
 
 Note that most of the files in src are automatically generated when installing the @bentley/itwin-viewer package, please refer to this link to learn more: https://github.com/imodeljs/itwin-viewer
 
-Notable Files:
+Notable Files in src:
 
 - App.tsx: Component "Viewer" is the main react component where we configure which iModel to connect to and control some UI like the status bar and tool settings. We define some view styles here, load the reality terrain data and attach event listeners to our ADT instance here.
 - AdtdataLink.ts: Our routing for our ADT instance host. In conjunction with "setupProxy.js", any route following "digitaltwins" gets forwarded to our Azure ADT instance. We call the endpoint for the specific dtId (i.e. WTG001) to pull all the data for the specified turbine.

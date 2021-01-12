@@ -8,7 +8,7 @@ Written in C#, the azure function serves as the mediator for all data between th
 2) Physics model, which only takes the parameter of the wind speed given from IoT to calculate the expected power - called in PmApi.cs
 3) Weather service, which provides the wind speed and direction for next 24 hours of the following day given from an external service, called directly in WindFarmIoT.cs to calculate the predicted machine and physics model expected power output.
 
-File structure breakdown
+File structure breakdown:
 
 - API: This directory contains code to call the machine and physical learning models to produce expected power output.
 - WindFarmIot.cs: The bulk of the work done in this file, two functions are created:
