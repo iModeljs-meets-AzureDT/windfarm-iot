@@ -44,7 +44,6 @@ namespace Doosan.Function
         private const string adtInstanceUrl = "https://windfarm-iot.api.wcus.digitaltwins.azure.net";
         private const int interpolationSteps = 6;
         private static bool processingData = false;
-        /* We have this commented out since we don't want to run this locally.
         [FunctionName("WindFarmIoT")]
         public static async void RunWindFarmIoT([EventHubTrigger("iothub-m6vf5", Connection = "EventHubConnectionAppSetting")]EventData[] events, ILogger log)
         {
@@ -75,7 +74,6 @@ namespace Doosan.Function
                 processingData = false;
             }
         }
-        */
 
         private static void Authenticate(ILogger log)
         {
@@ -184,8 +182,7 @@ namespace Doosan.Function
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 if (requestBody.Length > 0)
                 {
-                    // Example request body:
-
+                    // Manual request test, Example request body:
                     /*
                     {     
                         "PowerInputs": [{
@@ -217,10 +214,9 @@ namespace Doosan.Function
 
                     using (HttpClient client = new HttpClient())
                     {
-                        // HttpResponseMessage response = await client.GetAsync("http://pysical-model-api.koreacentral.azurecontainer.io/api/predictiondata");
+                        HttpResponseMessage response = await client.GetAsync("http://iot-model-api.koreacentral.azurecontainer.io/api/predictiondata");
 
-                        // if (response.IsSuccessStatusCode)
-                        if (true)
+                        if (response.IsSuccessStatusCode)
                         {
 
                             IDictionary<string, string> urlParams = req.GetQueryParameterDictionary();
@@ -232,10 +228,10 @@ namespace Doosan.Function
                                 }
                             }
 
-                            // string result = await response.Content.ReadAsStringAsync();
+                            string result = await response.Content.ReadAsStringAsync();
 
-                            // Example data in case the prediction data endpoint is dead
-                            string tomorrow = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+                            // Example data.
+                            /*
                             string predictionRequest = "[" + 
                                 " {'forecastDateTime':'" + tomorrow + "T00:00:00','windspeed':5.9,'winddirection':-1,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
                                 " {'forecastDateTime':'" + tomorrow + "T03:00:00','windspeed':6.8,'winddirection':3,'yawposition':-109.37,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
@@ -246,8 +242,9 @@ namespace Doosan.Function
                                 " {'forecastDateTime':'" + tomorrow + "T18:00:00','windspeed':6.8,'winddirection':-4,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}," +
                                 " {'forecastDateTime':'" + tomorrow + "T21:00:00','windspeed':6.8,'winddirection':-3,'yawposition':-131.48,'bladepitch1':2,'bladepitch2':2,'bladepitch3':2}" +
                             " ]";
+                            */
 
-                            dynamic forecastData = JsonConvert.DeserializeObject(predictionRequest);
+                            dynamic forecastData = JsonConvert.DeserializeObject(result);
 
                             WTPowerRequestInfo predictionInput = new WTPowerRequestInfo { PowerInputs = new List<WTInfo>() };
 

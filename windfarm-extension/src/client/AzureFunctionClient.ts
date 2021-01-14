@@ -1,8 +1,8 @@
-export default class MLClient {
+export default class AzureFunctionClient {
 
   public static url: string = "http://localhost:7071/api/TriggerPrediction?steps=12&alldata";
 
-  public static async getPredictedMLPower(): Promise<any> {
+  public static async getPredictedPower(): Promise<any> {
 
     const response = await fetch(this.url, {
       method: "POST",

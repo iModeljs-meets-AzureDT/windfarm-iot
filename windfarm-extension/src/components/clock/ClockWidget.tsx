@@ -3,13 +3,13 @@ import * as React from "react";
 import Clock from "react-clock";
 import 'react-clock/dist/Clock.css';
 import Draggable from 'react-draggable';
-import MLClient from "../../client/MLClient";
 import { TimeSeries } from "../time-series/TimeSeries";
 import { PowerDecorator } from "../decorators/PowerDecorator";
 import HoverImage from "./HoverImage";
 import Reveal, { AttentionSeeker } from "react-awesome-reveal";
 import { keyframes } from "@emotion/core";
 import { WindfarmExtension } from "../../WindfarmExtension";
+import AzureFunctionClient from "../../client/AzureFunctionClient";
 
 export default class ClockWidget extends React.Component<{}, { 
     time: Date, 
@@ -178,7 +178,7 @@ export default class ClockWidget extends React.Component<{}, {
     // power prediction mode
 
     private runPowerPrediction = async() => {
-        this.predictedData = await MLClient.getPredictedMLPower();
+        this.predictedData = await AzureFunctionClient.getPredictedPower();
         TimeSeries.showTsiGraph();
         TimeSeries.loadPredictedData(this.predictedData);
 
